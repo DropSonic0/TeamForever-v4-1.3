@@ -1,4 +1,10 @@
 #include "RetroEngine.hpp"
+#include <string> 
+#if RETRO_USING_SDL2
+#include <SDL2/SDL_endian.h>
+#elif RETRO_USING_SDL1
+#include <SDL_endian.h>
+#endif
 
 struct GifDecoder {
     int depth;
@@ -303,82 +309,99 @@ int LoadBMPFile(const char *filePath, byte sheetID)
     }
     return false;
 }
-int LoadGIFFile(const char *filePath, byte sheetID)
-{
+int LoadGIFFile(const char *filePath, byte sheetID) {
+    PrintLog("LoadGIFFile: Solicitud para cargar: %s (Sheet ID: %d)", filePath, sheetID);
     FileInfo info;
-    if (LoadFile(filePath, &info)) {
+    if (LoadFile(filePath, &info)) { // LoadFile ya debería tener sus propios PrintLogs
         GFXSurface *surface = &gfxSurface[sheetID];
         StrCopy(surface->fileName, filePath);
+        
+        byte gif_header_bytes[2]; // Para leer shorts
 
-        byte fileBuffer = 0;
+        SetFilePosition(6); // Ir a Ancho de Pantalla Lógica
 
-        SetFilePosition(6); // GIF89a
-        FileRead(&fileBuffer, 1);
-        surface->width = fileBuffer;
-        FileRead(&fileBuffer, 1);
-        surface->width |= fileBuffer << 8;
-        FileRead(&fileBuffer, 1);
-        surface->height = fileBuffer;
-        FileRead(&fileBuffer, 1);
-        surface->height |= fileBuffer << 8;
+        FileRead(gif_header_bytes, 2); // Leer Ancho (2 bytes Little Endian)
+        surface->width = (gif_header_bytes[1] << 8) | gif_header_bytes[0]; // Convertir a Big Endian
+        
+        FileRead(gif_header_bytes, 2); // Leer Alto (2 bytes Little Endian)
+        surface->height = (gif_header_bytes[1] << 8) | gif_header_bytes[0]; // Convertir a Big Endian
+        PrintLog("LoadGIFFile: GIF Pantalla Logica - Ancho: %d, Alto: %d", surface->width, surface->height);
 
-        FileRead(&fileBuffer, 1); // Palette Size
-        // int has_pallete  = (fileBuffer & 0x80) >> 7;
-        // int colors       = ((fileBuffer & 0x70) >> 4) + 1;
-        int palette_size = (fileBuffer & 0x7) + 1;
-        if (palette_size > 0)
-            palette_size = 1 << palette_size;
-        FileRead(&fileBuffer, 1); // BG Color index (thrown away)
-        FileRead(&fileBuffer, 1); // idk actually (still thrown away)
+        byte packed_field_gct;
+        FileRead(&packed_field_gct, 1); 
+        bool globalColorTableFlag = (packed_field_gct & 0x80);
+        if (globalColorTableFlag) {
+            int sizeOfGlobalColorTable = 1 << ((packed_field_gct & 0x07) + 1);
+            PrintLog("LoadGIFFile: Tabla Color Global presente, %d colores. Saltando...", sizeOfGlobalColorTable);
+            FileSkip(sizeOfGlobalColorTable * 3);
+        } else {
+            PrintLog("LoadGIFFile: No hay Tabla Color Global.");
+        }
 
-        int c = 0;
-        byte clr[3];
+        FileRead(&packed_field_gct, 1); // Background Color Index (ignorar)
+        FileRead(&packed_field_gct, 1); // Pixel Aspect Ratio (ignorar)
+
+        byte image_separator;
+        PrintLog("LoadGIFFile: Buscando separador de imagen ',' ...");
         do {
-            ++c;
-            FileRead(clr, 3);
-        } while (c != palette_size);
+            FileRead(&image_separator, 1);
+            if (ReachedEndOfFile()) {
+                PrintLog("LoadGIFFile: ERROR - EOF buscando separador de imagen para %s", filePath);
+                CloseFile(); return false;
+            }
+        } while (image_separator != ',');
+        PrintLog("LoadGIFFile: Separador de imagen ',' encontrado.");
 
-        FileRead(&fileBuffer, 1);
-        while (fileBuffer != ',') FileRead(&fileBuffer, 1); // gif image start identifier
+        FileRead(gif_header_bytes, 2); // Image Left
+        ushort imageLeft = (gif_header_bytes[1] << 8) | gif_header_bytes[0];
+        FileRead(gif_header_bytes, 2); // Image Top
+        ushort imageTop = (gif_header_bytes[1] << 8) | gif_header_bytes[0];
+        FileRead(gif_header_bytes, 2); // Image Width
+        ushort imageWidth = (gif_header_bytes[1] << 8) | gif_header_bytes[0];
+        FileRead(gif_header_bytes, 2); // Image Height
+        ushort imageHeight = (gif_header_bytes[1] << 8) | gif_header_bytes[0];
+        PrintLog("LoadGIFFile: GIF Imagen Desc - Izq: %d, Arr: %d, Anc: %d, Alt: %d", imageLeft, imageTop, imageWidth, imageHeight);
+        
+        surface->width = imageWidth;   // Usar dimensiones de la imagen actual
+        surface->height = imageHeight;
 
-        ushort fileBuffer2 = 0;
-        FileRead(&fileBuffer2, 2);
-        FileRead(&fileBuffer2, 2);
-        FileRead(&fileBuffer2, 2);
-        FileRead(&fileBuffer2, 2);
-        FileRead(&fileBuffer, 1);
-        bool interlaced = (fileBuffer & 0x40) >> 6;
-        if (fileBuffer >> 7 == 1) {
-            int c = 0x80;
-            do {
-                ++c;
-                FileRead(clr, 3);
-            } while (c != 0x100);
+        byte packed_field_lct;
+        FileRead(&packed_field_lct, 1);
+        bool interlaced = (packed_field_lct & 0x40);
+        bool localColorTableFlag = (packed_field_lct & 0x80);
+
+        if (localColorTableFlag) {
+            int sizeOfLocalColorTable = 1 << ((packed_field_lct & 0x07) + 1);
+            PrintLog("LoadGIFFile: Tabla Color Local presente, %d colores. Saltando...", sizeOfLocalColorTable);
+            FileSkip(sizeOfLocalColorTable * 3);
+        } else {
+            PrintLog("LoadGIFFile: No hay Tabla Color Local.");
         }
 
         surface->dataPosition = gfxDataPosition;
+        PrintLog("LoadGIFFile: Surface W: %d, H: %d, dataPos: %d", surface->width, surface->height, surface->dataPosition);
 
-#if RETRO_SOFTWARE_RENDER
+        #if RETRO_SOFTWARE_RENDER
         surface->widthShift = 0;
-        int w               = surface->width;
-        while (w > 1) {
-            w >>= 1;
-            ++surface->widthShift;
-        }
-#endif
+        int w_shift_calc = surface->width;
+        while (w_shift_calc > 1) { w_shift_calc >>= 1; ++surface->widthShift; }
+        #endif
 
         gfxDataPosition += surface->width * surface->height;
         if (gfxDataPosition < GFXDATA_SIZE) {
+            PrintLog("LoadGIFFile: Llamando ReadGifPictureData (W: %d, H: %d, Interlaced: %d, Offset: %d)", surface->width, surface->height, interlaced, surface->dataPosition);
             ReadGifPictureData(surface->width, surface->height, interlaced, graphicData, surface->dataPosition);
+            PrintLog("LoadGIFFile: ReadGifPictureData completado para %s", filePath);
+        } else {
+            gfxDataPosition -= surface->width * surface->height; 
+            PrintLog("LoadGIFFile: ERROR - GFXDATA_SIZE excedido para %s", filePath);
+            CloseFile(); return false;
         }
-        else {
-            gfxDataPosition = 0;
-            PrintLog("WARNING: Exceeded max gfx size!");
-        }
-
         CloseFile();
+        PrintLog("LoadGIFFile: ÉXITO cargando: %s", filePath);
         return true;
     }
+    PrintLog("LoadGIFFile: FALLO LoadFile para: %s", filePath);
     return false;
 }
 int LoadPVRFile(const char *filePath, byte sheetID)

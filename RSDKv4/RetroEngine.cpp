@@ -9,6 +9,17 @@ bool engineDebugMode = false;
 #include <unistd.h>
 #endif
 
+#ifdef PS3_DISABLE_NETWORKING
+// Definitions for dummy global network variables
+char networkHost[64] = "";
+char networkGame[7] = "";
+int networkPort = 0;
+int dcError = 0;
+bool waitForVerify = false;
+bool waitingForPing = false;
+float lastPing = 0.0f;
+#endif // PS3_DISABLE_NETWORKING
+
 RetroEngine Engine = RetroEngine();
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -303,7 +314,9 @@ void RetroEngine::Init()
     InitMods();
 #endif
 #if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
     InitNetwork();
+#endif // PS3_DISABLE_NETWORKING
 #endif
 
     char dest[0x200];
@@ -626,7 +639,9 @@ void RetroEngine::Run()
 #if !RETRO_USE_ORIGINAL_CODE
     ReleaseInputDevices();
 #if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
     DisconnectNetwork(true);
+#endif // PS3_DISABLE_NETWORKING
 #endif
     WriteSettings();
 #if RETRO_USE_MOD_LOADER
@@ -1221,7 +1236,9 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("TransmitGlobal", TransmitGlobal);
     AddNativeFunction("ShowPromoPopup", ShowPromoPopup);
 #if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
     AddNativeFunction("SetNetworkGameName", SetNetworkGameName);
+#endif // PS3_DISABLE_NETWORKING
 #endif
 #if RETRO_USE_MOD_LOADER
     AddNativeFunction("ExitGame", ExitGame);

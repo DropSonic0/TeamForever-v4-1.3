@@ -1,3 +1,4 @@
+#ifndef PS3_DISABLE_NETWORKING
 #include "RetroEngine.hpp"
 
 #if RETRO_USE_NETWORKING
@@ -401,3 +402,4 @@ void SetRoomCode(int code) { session->room = code; }
 
 void SetNetworkGameName(int *a1, const char *name) { StrCopy(networkGame, name); }
 #endif
+#endif // PS3_DISABLE_NETWORKING

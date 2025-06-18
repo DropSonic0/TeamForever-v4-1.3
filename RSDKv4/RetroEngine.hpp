@@ -27,6 +27,20 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 // typedef unsigned long long ulong;
 
+#ifdef PS3_DISABLE_NETWORKING
+// Dummy declarations for global network variables when networking is disabled for PS3
+extern char networkHost[64];
+extern char networkGame[7];
+extern int networkPort;
+extern int dcError;
+extern bool waitForVerify;
+extern bool waitingForPing;
+extern float lastPing;
+// Note: std::shared_ptr<NetworkSession> session; would also need a dummy if it were used directly
+// when PS3_DISABLE_NETWORKING is on, but its extern declaration is also guarded now.
+// If any code tries to use 'session' it would be an undeclared identifier, which is fine for now.
+#endif // PS3_DISABLE_NETWORKING
+
 // Platforms (RSDKv4 only defines these 7 (I assume), but feel free to add your own custom platform define for easier platform code changes)
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
@@ -91,7 +105,7 @@ typedef unsigned int uint;
 #define RETRO_USING_TOUCH
 
 #ifndef BASE_PATH
-#define BASE_PATH ""
+#define BASE_PATH "/dev_hdd0/game/S1F00S2A0/USRDIR/"
 #endif
 
 #if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX || RETRO_PLATFORM == RETRO_UWP                       \
@@ -284,7 +298,7 @@ enum RetroGameType {
 
 #if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_UWP || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_LINUX
 #if RETRO_USING_SDL2
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #elif RETRO_USING_SDL1
 #include <SDL.h>
 #endif
@@ -327,7 +341,9 @@ extern bool engineDebugMode;
 #include "Script.hpp"
 #include "Sprite.hpp"
 #include "Text.hpp"
+#ifndef PS3_DISABLE_NETWORKING
 #include "Networking.hpp"
+#endif // PS3_DISABLE_NETWORKING
 #include "Renderer.hpp"
 #include "Userdata.hpp"
 #include "Debug.hpp"

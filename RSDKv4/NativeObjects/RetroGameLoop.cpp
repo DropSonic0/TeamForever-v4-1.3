@@ -86,7 +86,7 @@ void RetroGameLoop_Main(void *objPtr)
             }
             break;
 
-#if !RETRO_USE_ORIGINAL_CODE && RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
         case ENGINE_CONNECT2PVS: {
             CREATE_ENTITY(MultiplayerScreen)->bg = CREATE_ENTITY(MenuBG);
             NativeEntity_FadeScreen *fade        = CREATE_ENTITY(FadeScreen);

@@ -51,8 +51,10 @@ extern ushort helpText[0x1000];
 #include "StaffCredits.hpp"
 #include "OptionsMenu.hpp"
 #if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
 #include "MultiplayerHandler.hpp"
 #include "MultiplayerScreen.hpp"
+#endif
 #endif
 
 #endif // !NATIVE_OBJECTS_H

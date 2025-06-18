@@ -694,6 +694,31 @@ void SetSfxName(const char *sfxName, int sfxID)
     PrintLog("Set SFX (%d) name to: %s", sfxID, sfxName);
 }
 
+#ifdef PS3
+// Define a custom ov_callbacks structure for PS3 if OV_CALLBACKS_NOCLOSE is not available
+// These are typical stdio callbacks.
+size_t ps3_ov_read_func(void *ptr, size_t size, size_t nmemb, void *datasource) {
+    return fread(ptr, size, nmemb, (FILE*)datasource);
+}
+
+int ps3_ov_seek_func(void *datasource, ogg_int64_t offset, int whence) {
+    return fseek((FILE*)datasource, (long)offset, whence);
+}
+
+long ps3_ov_tell_func(void *datasource) {
+    return ftell((FILE*)datasource);
+}
+
+// close_func is NULL for NOCLOSE behavior
+ov_callbacks ps3_ov_callbacks_noclose = {
+    ps3_ov_read_func,
+    ps3_ov_seek_func,
+    NULL, // close_func
+    ps3_ov_tell_func
+};
+#define OV_CALLBACKS_NOCLOSE ps3_ov_callbacks_noclose
+#endif
+
 void LoadSfx(char *filePath, byte sfxID)
 {
     if (!audioEnabled)

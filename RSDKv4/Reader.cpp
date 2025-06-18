@@ -24,6 +24,7 @@ FileIO *cFileHandle = nullptr;
 
 bool CheckRSDKFile(const char *filePath)
 {
+	PrintLog("CheckRSDKFile: Solicitado RSDK: %s", filePath);
     FileInfo info;
 
     char filePathBuffer[0x100];
@@ -33,6 +34,7 @@ bool CheckRSDKFile(const char *filePath)
     sprintf(filePathBuffer, "%s", filePath);
 #endif
 
+	PrintLog("CheckRSDKFile: Intentando fOpen con ruta construida: %s", filePathBuffer);
     cFileHandle = fOpen(filePathBuffer, "rb");
     if (cFileHandle) {
         byte signature[6] = { 'R', 'S', 'D', 'K', 'v', 'B' };
@@ -136,6 +138,7 @@ inline bool ends_with(std::string const &value, std::string const &ending)
 
 bool LoadFile(const char *filePath, FileInfo *fileInfo)
 {
+	PrintLog("LoadFile: Solicitud para cargar: %s", filePath);
     MEM_ZEROP(fileInfo);
 
     if (cFileHandle)
@@ -203,6 +206,7 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
         RSDKFileInfo *file = &rsdkContainer.files[fileIndex];
         packID      = file->packID;
         cFileHandle = fOpen(rsdkContainer.packNames[file->packID], "rb");
+		PrintLog("LoadFile (desde DataPack): Abriendo packID %d (%s) para archivo %s", file->packID, rsdkContainer.packNames[file->packID], filePath);
         if (cFileHandle) {
             fSeek(cFileHandle, 0, SEEK_END);
             fileSize = (int)fTell(cFileHandle);

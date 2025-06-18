@@ -25,7 +25,7 @@ void MultiplayerButton_Main(void *objPtr)
 {
     RSDK_THIS(MultiplayerButton);
 
-#if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
     if (self->connectTimer) {
         self->connectTimer += Engine.deltaTime;
         if (self->connectTimer >= 0.7f) {
@@ -69,7 +69,7 @@ void MultiplayerButton_Main(void *objPtr)
             if (label->alpha < 0x100)
                 label->alpha += 8;
         }
-#if RETRO_USE_NETWORKING
+#ifndef PS3_DISABLE_NETWORKING
         if (!Engine.onlineActive && self->labelPtr->state == TEXTLABEL_STATE_BLINK_FAST && !self->connectTimer) {
             self->connectTimer = 0.1f;
             DisconnectNetwork();

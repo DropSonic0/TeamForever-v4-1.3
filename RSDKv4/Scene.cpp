@@ -127,6 +127,9 @@ void ProcessStage(void)
 {
 #if !RETRO_USE_ORIGINAL_CODE
     debugHitboxCount = 0;
+bool allowProcess_2P = true;
+            #ifndef PS3_DISABLE_NETWORKING
+            allowProcess_2P = !waitForVerify;
 #endif
 
     switch (stageMode) {
@@ -350,8 +353,8 @@ void ProcessStage(void)
                 PauseSound();
             }
 			*/
-
-            if (!waitForVerify) {
+            #endif
+            if (allowProcess_2P) {
                 if (timeEnabled) {
                     if (++frameCounter == 60) {
                         frameCounter = 0;
