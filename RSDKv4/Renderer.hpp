@@ -55,7 +55,12 @@ struct TextureInfo {
     float widthN;
     float heightN;
     int format;
-    uint id;
+#ifdef PS3
+    SDL_Texture *texture; // Changed from uint id for PS3 SDL_Renderer
+#else
+    uint id; // OpenGL texture ID
+#endif
+    // SDL_Surface *surface; // Optional: if we want to keep surface data around
 };
 
 struct MeshVertex {

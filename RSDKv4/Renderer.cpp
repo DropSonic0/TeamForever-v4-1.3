@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "Text.hpp" // Added for FONT_COUNT/FONTLIST_COUNT
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -257,8 +258,10 @@ void ResetRenderStates()
 void SetRenderBlendMode(byte mode)
 {
     if (currentRenderState.blendMode != mode && currentRenderState.indexCount) {
-        RenderState *state = &renderStateList[renderStateCount++];
-        memcpy(state, &currentRenderState, sizeof(RenderState));
+        if (renderStateCount < RENDERSTATE_COUNT) { // Check bounds
+            RenderState *state = &renderStateList[renderStateCount++];
+            memcpy(state, &currentRenderState, sizeof(RenderState));
+        }
 
         currentRenderState.indexCount = 0;
         currentRenderState.id         = 0;
@@ -296,7 +299,7 @@ void SetPerspectiveMatrix(float w, float h, float near, float far)
     m[5]      = 1.0 / (val * h);
     m[10]     = (far + near) / (far - near);
     m[14]     = -((far + far) * near) / (far - near);
-#if RETRO_USING_OPENGL
+#if RETRO_USING_OPENGL && !defined(PS3) 
     glMultMatrixf(m);
 #endif
 }
@@ -318,72 +321,160 @@ void SetRenderMatrix(MatrixF *matrix) { currentRenderState.renderMatrix = matrix
 void NewRenderState()
 {
     if (renderStateCount < RENDERSTATE_COUNT) {
-        if (currentRenderState.indexCount) {
+        if (currentRenderState.indexCount) { 
             RenderState *state = &renderStateList[renderStateCount];
             memcpy(state, &currentRenderState, sizeof(RenderState));
-
-            currentRenderState.id         = 0;
-            currentRenderState.indexCount = 0;
-            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-            currentRenderState.indexPtr   = drawIndexList;
             renderStateCount++;
         }
+        currentRenderState.id         = 0;
+        currentRenderState.indexCount = 0;
+        currentRenderState.vertPtr    = &drawVertexList[vertexListSize]; 
+        currentRenderState.indexPtr   = drawIndexList; 
     }
 }
+
 void RenderScene()
 {
+#ifdef PS3
+    if (!Engine.renderer) return;
+
+    SDL_SetRenderDrawColor(Engine.renderer, activePalette32[0].r, activePalette32[0].g, activePalette32[0].b, 255);
+    SDL_RenderClear(Engine.renderer);
+
+    if (renderStateCount == -1 && currentRenderState.indexCount == 0) return; 
+
+    if (currentRenderState.indexCount > 0 && renderStateCount < RENDERSTATE_COUNT -1) { 
+        RenderState *state = &renderStateList[renderStateCount];
+        memcpy(state, &currentRenderState, sizeof(RenderState));
+        renderStateCount++;
+    }
+    
+    for (int i = 0; i < renderStateCount; ++i) {
+        RenderState *state = &renderStateList[i];
+        if (state->indexCount == 0) continue;
+
+        SDL_BlendMode sdlBlendMode = SDL_BLENDMODE_BLEND; 
+        switch (state->blendMode) {
+            case RENDER_BLEND_NONE: sdlBlendMode = SDL_BLENDMODE_NONE; break;
+            case RENDER_BLEND_ALPHA: sdlBlendMode = SDL_BLENDMODE_BLEND; break;
+            case RENDER_BLEND_ALPHA2: sdlBlendMode = SDL_BLENDMODE_ADD; break;
+            case RENDER_BLEND_ALPHA3: sdlBlendMode = SDL_BLENDMODE_MOD; break; 
+            default: sdlBlendMode = SDL_BLENDMODE_BLEND; break;
+        }
+
+        if (state->useTexture) {
+            SDL_Texture *tex = nullptr;
+            TextureInfo* texInfo = nullptr;
+
+            if (state->id < TEXTURE_COUNT) { 
+                texInfo = &textureList[state->id];
+                if (texInfo) tex = texInfo->texture;
+            }
+
+            if (tex) {
+                SDL_SetTextureBlendMode(tex, sdlBlendMode);
+
+                for (ushort k = 0; k < state->indexCount; k += 6) { 
+                    // Ensure we have enough vertices for a quad in drawVertexList, relative to state->vertPtr start
+                    // This check might need refinement based on how vertexListSize is managed globally vs. per-state.
+                    // For now, assume state->vertPtr is a valid pointer within drawVertexList.
+                    DrawVertex *vQuad = state->vertPtr + (k / 6 * 4); 
+                    SDL_Rect srcrect, dstrect;
+
+                    if(state->id == 0 && state->useFilter) { 
+                        srcrect = {0, 0, texInfo->width, texInfo->height};
+                        int window_w, window_h;
+                        SDL_GetRendererOutputSize(Engine.renderer, &window_w, &window_h);
+                        dstrect = {0, 0, window_w, window_h };
+                         if (state->useColors) { 
+                            SDL_SetTextureColorMod(tex, vQuad[0].r, vQuad[0].g, vQuad[0].b);
+                            SDL_SetTextureAlphaMod(tex, vQuad[0].a);
+                        } else {
+                            SDL_SetTextureColorMod(tex, 255, 255, 255);
+                            SDL_SetTextureAlphaMod(tex, 255);
+                        }
+                        SDL_RenderCopy(Engine.renderer, tex, &srcrect, &dstrect);
+                    } else {
+                        float tex_w = (float)texInfo->width;
+                        float tex_h = (float)texInfo->height;
+
+                        float min_tx = vQuad[0].texCoordX; float max_tx = vQuad[1].texCoordX; 
+                        float min_ty = vQuad[0].texCoordY; float max_ty = vQuad[2].texCoordY;
+                        
+                        srcrect.x = (int)(min_tx * tex_w);
+                        srcrect.y = (int)(min_ty * tex_h);
+                        srcrect.w = (int)((max_tx - min_tx) * tex_w);
+                        srcrect.h = (int)((max_ty - min_ty) * tex_h);
+
+                        if (srcrect.w == 0) srcrect.w = 1; 
+                        if (srcrect.h == 0) srcrect.h = 1;
+                        if (srcrect.w < 0) { srcrect.x += srcrect.w; srcrect.w = -srcrect.w; } 
+                        if (srcrect.h < 0) { srcrect.y += srcrect.h; srcrect.h = -srcrect.h; }
+
+                        dstrect.x = (int)vQuad[0].vertX;
+                        dstrect.y = (int)vQuad[0].vertY; 
+                        dstrect.w = (int)(vQuad[1].vertX - vQuad[0].vertX);
+                        dstrect.h = (int)(vQuad[2].vertY - vQuad[0].vertY); 
+
+                        if (dstrect.w == 0) dstrect.w = 1;
+                        if (dstrect.h == 0) dstrect.h = 1;
+                        if (dstrect.w < 0) { dstrect.x += dstrect.w; dstrect.w = -dstrect.w; }
+                        if (dstrect.h < 0) { dstrect.y += dstrect.h; dstrect.h = -dstrect.h; }
+                        
+                        if (state->useColors) {
+                            SDL_SetTextureColorMod(tex, vQuad[0].r, vQuad[0].g, vQuad[0].b);
+                            SDL_SetTextureAlphaMod(tex, vQuad[0].a);
+                        } else {
+                            SDL_SetTextureColorMod(tex, 255, 255, 255);
+                            SDL_SetTextureAlphaMod(tex, 255);
+                        }
+                        SDL_RenderCopyEx(Engine.renderer, tex, &srcrect, &dstrect, 0.0, NULL, SDL_FLIP_NONE);
+                    }
+                }
+            }
+        } else if (state->useColors) { 
+            SDL_SetRenderDrawBlendMode(Engine.renderer, sdlBlendMode);
+            for (ushort k = 0; k < state->indexCount; k += 6) { 
+                DrawVertex *vQuad = state->vertPtr + (k / 6 * 4);
+                SDL_SetRenderDrawColor(Engine.renderer, vQuad[0].r, vQuad[0].g, vQuad[0].b, vQuad[0].a);
+                
+                SDL_Rect fillrect;
+                fillrect.x = (int)vQuad[0].vertX;
+                fillrect.y = (int)vQuad[0].vertY; 
+                fillrect.w = (int)(vQuad[1].vertX - vQuad[0].vertX);
+                fillrect.h = (int)(vQuad[2].vertY - vQuad[0].vertY);
+                if (fillrect.w < 0) { fillrect.x += fillrect.w; fillrect.w = -fillrect.w; }
+                if (fillrect.h < 0) { fillrect.y += fillrect.h; fillrect.h = -fillrect.h; }
+
+                SDL_RenderFillRect(Engine.renderer, &fillrect);
+            }
+        }
+    }
+#else 
+    // Original OpenGL rendering path 
 #if RETRO_USING_OPENGL
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_BLEND);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#endif
-    if (renderStateCount == -1)
-        return;
 
-#if !RETRO_USE_ORIGINAL_CODE
-    float dimAmount = 1.0;
-    if ((!Engine.masterPaused || Engine.frameStep) && !drawStageGFXHQ) {
-        if (Engine.dimTimer < Engine.dimLimit) {
-            if (Engine.dimPercent < 1.0) {
-                Engine.dimPercent += 0.05;
-                if (Engine.dimPercent > 1.0)
-                    Engine.dimPercent = 1.0;
-            }
-        }
-        else if (Engine.dimPercent > 0.25 && Engine.dimLimit >= 0) {
-            Engine.dimPercent *= 0.9;
-        }
-
-        dimAmount = Engine.dimMax * Engine.dimPercent;
-    }
-
-    if (dimAmount < 1.0) {
-        SetRenderBlendMode(RENDER_BLEND_ALPHA);
-        RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
-        SetRenderBlendMode(RENDER_BLEND_NONE);
-    }
-#endif
-
-#if RETRO_USING_OPENGL
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glLoadIdentity();
-#endif
-    if (currentRenderState.indexCount) {
+    if (renderStateCount == -1) return;
+    
+    if (currentRenderState.indexCount > 0 && renderStateCount < RENDERSTATE_COUNT) {
         RenderState *state = &renderStateList[renderStateCount];
         memcpy(state, &currentRenderState, sizeof(RenderState));
-
-        currentRenderState.indexCount = 0;
-        currentRenderState.id         = 0;
-        currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
         renderStateCount++;
     }
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glLoadIdentity();
+    
     MatrixF *prevMat   = NULL;
     bool prevTextures  = false;
-    uint prevTexID     = 0;
+    uint prevTexID     = 0; 
     bool prevColors    = false;
     bool prevNormals   = false;
     bool prevDepth     = false;
@@ -391,181 +482,114 @@ void RenderScene()
 
     for (int i = 0; i < renderStateCount; ++i) {
         RenderState *state = &renderStateList[i];
+        if (state->indexCount == 0) continue;
 
         if (state->renderMatrix != prevMat) {
             if (state->renderMatrix) {
-#if RETRO_USING_OPENGL
                 glLoadMatrixf((const GLfloat *)state->renderMatrix);
-#endif
                 prevMat = state->renderMatrix;
             }
             else {
-#if RETRO_USING_OPENGL
                 glLoadIdentity();
-#endif
                 prevMat = NULL;
             }
         }
-
-#if RETRO_USING_OPENGL
         glVertexPointer(3, GL_FLOAT, sizeof(DrawVertex), &state->vertPtr->vertX);
-#endif
         if (state->useTexture) {
             if (!prevTextures) {
-#if RETRO_USING_OPENGL
                 glEnable(GL_TEXTURE_2D);
                 glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
             }
-#if RETRO_USING_OPENGL
             glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertex), &state->vertPtr->texCoordX);
-#endif
             prevTextures = true;
-            if (state->id != prevTexID) {
-#if RETRO_USING_OPENGL
+            if (state->id != prevTexID) { 
                 glBindTexture(GL_TEXTURE_2D, state->id);
-#endif
                 prevTexID = state->id;
             }
         }
         else {
             if (prevTextures) {
-#if RETRO_USING_OPENGL
                 glDisable(GL_TEXTURE_2D);
                 glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
             }
             prevTextures = false;
         }
-
         if (state->useColors) {
-#if RETRO_USING_OPENGL
             if (!prevColors)
                 glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(DrawVertex), &state->vertPtr->r);
-#endif
             prevColors = true;
         }
         else {
-#if RETRO_USING_OPENGL
             if (prevColors)
                 glDisableClientState(GL_COLOR_ARRAY);
-#endif
             prevColors = false;
         }
-
         if (state->useNormals) {
             if (!prevNormals) {
-#if RETRO_USING_OPENGL
                 glEnableClientState(GL_NORMAL_ARRAY);
                 glEnable(GL_LIGHTING);
-#endif
             }
-#if RETRO_USING_OPENGL
             glNormalPointer(GL_FLOAT, sizeof(DrawVertex), &state->vertPtr->normalX);
-#endif
             prevNormals = true;
         }
         else {
             if (prevNormals) {
-#if RETRO_USING_OPENGL
                 glDisableClientState(GL_NORMAL_ARRAY);
                 glDisable(GL_LIGHTING);
-#endif
             }
             prevNormals = false;
         }
-
         if (state->depthTest) {
-#if RETRO_USING_OPENGL
             if (!prevDepth)
                 glEnable(GL_DEPTH_TEST);
-#endif
             prevDepth = true;
         }
         else {
-#if RETRO_USING_OPENGL
             if (prevDepth)
                 glDisable(GL_DEPTH_TEST);
-#endif
             prevDepth = false;
         }
-
         if (state->blendMode != prevBlendMode) {
             switch (state->blendMode) {
                 default: prevBlendMode = state->blendMode; break;
-                case 0:
-#if RETRO_USING_OPENGL
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                case 0: 
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
                     glDisable(GL_BLEND);
-#endif
                     prevBlendMode = 0;
                     break;
-                case 1:
-#if RETRO_USING_OPENGL
+                case 1: 
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                     glEnable(GL_BLEND);
-#endif
                     prevBlendMode = 1;
                     break;
-                case 2:
-#if RETRO_USING_OPENGL
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                case 2: 
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
                     glEnable(GL_BLEND);
-#endif
-                    prevBlendMode = 2;
+                    prevBlendMode = 2; 
                     break;
-                case 3:
-#if RETRO_USING_OPENGL
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                case 3: 
+                    glBlendFunc(GL_DST_COLOR, GL_ZERO); 
                     glEnable(GL_BLEND);
-#endif
                     prevBlendMode = 3;
                     break;
             }
         }
-
-        if (state->useFilter && mixFiltersOnJekyll) {
-#if RETRO_USING_OPENGL
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
-            glBindFramebuffer(GL_FRAMEBUFFER, framebufferHiRes);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Engine.scalingMode ? GL_LINEAR : GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Engine.scalingMode ? GL_LINEAR : GL_NEAREST);
-            glVertexPointer(3, GL_FLOAT, sizeof(DrawVertex), screenBufferVertexList);
-            glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertex), &screenBufferVertexList[6]);
-            glViewport(0, 0, GFX_LINESIZE_DOUBLE, SCREEN_YSIZE * 2);
-            glPushMatrix();
-            glLoadIdentity();
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
-            glLoadIdentity();
-            glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
-
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-            glBindTexture(GL_TEXTURE_2D, renderbufferHiRes);
-            glVertexPointer(3, GL_FLOAT, sizeof(DrawVertex), state->vertPtr);
-            glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertex), &state->vertPtr->texCoordX);
-            glViewport(displaySettings.offsetX, 0, displaySettings.width, displaySettings.height);
-            glPopMatrix();
-            glMatrixMode(GL_MODELVIEW);
-            glPopMatrix();
-#endif
-        }
-
-#if RETRO_USING_OPENGL
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
-#endif
     }
-
-#if RETRO_USING_OPENGL
     glDisableClientState(GL_VERTEX_ARRAY);
     if (prevTextures)
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     if (prevColors)
         glDisableClientState(GL_COLOR_ARRAY);
-#endif
+
+#else 
+    if(Engine.renderer) {
+        SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 255);
+        SDL_RenderClear(Engine.renderer);
+    }
+#endif 
+#endif 
 }
 
 int stb_read_cb(void *user, char *data, int size)
@@ -611,93 +635,90 @@ int LoadTexture(const char *filePath, int format)
             StrCopy(texture->fileName, filePath);
 
             float normalize = 0;
-            if (FindStringToken(fileName, "@2", 1) > 0)
+            if (FindStringToken((char*)filePath, (char*)"@2", 1) > 0) 
                 normalize = 2.0;
-            else if (FindStringToken(fileName, "@1", 1) > 0)
+            else if (FindStringToken((char*)filePath, (char*)"@1", 1) > 0)
                 normalize = 0.5;
             else
                 normalize = 1.0;
             texture->widthN  = normalize / width;
             texture->heightN = normalize / height;
 
+#ifdef PS3
+            texture->texture = NULL; 
+            SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * 4,
+                                                            0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            if (surface) {
+                texture->texture = SDL_CreateTextureFromSurface(Engine.renderer, surface);
+                if (!texture->texture) {
+                    PrintLog("Unable to create texture for %s: %s", filePath, SDL_GetError());
+                } else {
+                    SDL_SetTextureBlendMode(texture->texture, SDL_BLENDMODE_BLEND);
+                }
+                SDL_FreeSurface(surface);
+            } else {
+                PrintLog("Unable to create surface for %s: %s", filePath, SDL_GetError());
+            }
+#else
 #if RETRO_USING_OPENGL
             glGenTextures(1, &texture->id);
             glBindTexture(GL_TEXTURE_2D, texture->id);
 #endif
 
-            int id = 0;
+            int id_stb = 0; 
             switch (format) {
                 default: break;
                 case TEXFMT_RGBA4444: {
                     ushort *pixels = (ushort *)malloc(width * height * sizeof(ushort));
-
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            int r                   = (data[id++] >> 4) << 12;
-                            int g                   = (data[id++] >> 4) << 8;
-                            int b                   = (data[id++]) & 0xF0;
-                            int a                   = (data[id++] >> 4);
-                            pixels[x + (y * width)] = a | r | g | b;
+                            int r_val               = (data[id_stb++] >> 4) << 12;
+                            int g_val               = (data[id_stb++] >> 4) << 8;
+                            int b_val               = (data[id_stb++]) & 0xF0;
+                            int a_val               = (data[id_stb++] >> 4);
+                            pixels[x + (y * width)] = a_val | r_val | g_val | b_val;
                         }
                     }
-
 #if RETRO_USING_OPENGL
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, pixels);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
                     free(pixels);
                     break;
                 }
                 case TEXFMT_RGBA5551: {
                     ushort *pixels = (ushort *)malloc(width * height * sizeof(ushort));
-
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            int r                   = data[id++];
-                            int g                   = data[id++];
-                            int b                   = data[id++];
-                            int a                   = data[id++];
-                            pixels[x + (y * width)] = RGB888_TO_RGB5551(r, g, b) | (a ? 1 : 0);
+                            int r_val               = data[id_stb++];
+                            int g_val               = data[id_stb++];
+                            int b_val               = data[id_stb++];
+                            int a_val               = data[id_stb++];
+                            pixels[x + (y * width)] = RGB888_TO_RGB5551(r_val, g_val, b_val) | (a_val ? 1 : 0);
                         }
                     }
-
 #if RETRO_USING_OPENGL
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, pixels);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
                     free(pixels);
                     break;
                 }
                 case TEXFMT_RGBA8888: {
-                    uint *pixels = (uint *)malloc(width * height * sizeof(uint));
-
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            int r                   = data[id++];
-                            int g                   = data[id++];
-                            int b                   = data[id++];
-                            int a                   = data[id++];
-                            pixels[x + (y * width)] = (a << 24) | (b << 16) | (g << 8) | (r << 0);
-                        }
-                    }
-
 #if RETRO_USING_OPENGL
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
-                    free(pixels);
                     break;
                 }
             }
+#endif // PS3
         }
 
         CloseFile();
@@ -727,52 +748,64 @@ void ReplaceTexture(const char *filePath, int texID)
             StrCopy(texture->fileName, filePath);
 
             float normalize = 0;
-            if (FindStringToken(fileName, "@2", 1) > 0)
+            if (FindStringToken((char*)filePath, (char*)"@2", 1) > 0)
                 normalize = 2.0;
-            else if (FindStringToken(fileName, "@1", 1) > 0)
+            else if (FindStringToken((char*)filePath, (char*)"@1", 1) > 0)
                 normalize = 0.5;
             else
                 normalize = 1.0;
             texture->widthN  = normalize / width;
             texture->heightN = normalize / height;
 
-#if RETRO_USING_OPENGL
+#if defined(PS3)
+            if(texture->texture) SDL_DestroyTexture(texture->texture); 
+            texture->texture = NULL; 
+            SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(data, width, height, 32, width * 4,
+                                                            0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+            if (surface) {
+                texture->texture = SDL_CreateTextureFromSurface(Engine.renderer, surface);
+                if (!texture->texture) {
+                    PrintLog("Unable to replace texture for %s: %s", filePath, SDL_GetError());
+                } else {
+                    SDL_SetTextureBlendMode(texture->texture, SDL_BLENDMODE_BLEND);
+                }
+                SDL_FreeSurface(surface);
+            } else {
+                 PrintLog("Unable to create surface for replacing %s: %s", filePath, SDL_GetError());
+            }
+#else
+#if RETRO_USING_OPENGL 
             glBindTexture(GL_TEXTURE_2D, texture->id);
 #endif
-
-            int id = 0;
+            int id_stb = 0; 
             switch (texture->format) {
                 default: break;
                 case TEXFMT_RGBA4444: {
                     ushort *pixels = (ushort *)malloc(width * height * sizeof(ushort));
-
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            int r                   = (data[id++] >> 4) << 12;
-                            int g                   = (data[id++] >> 4) << 8;
-                            int b                   = (data[id++]) & 0xF0;
-                            int a                   = (data[id++] >> 4);
+                            int r                   = (data[id_stb++] >> 4) << 12;
+                            int g                   = (data[id_stb++] >> 4) << 8;
+                            int b                   = (data[id_stb++]) & 0xF0;
+                            int a                   = (data[id_stb++] >> 4);
                             pixels[x + (y * width)] = a | r | g | b;
                         }
                     }
-
 #if RETRO_USING_OPENGL
                     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, pixels);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
                     free(pixels);
                     break;
                 }
                 case TEXFMT_RGBA5551: {
                     ushort *pixels = (ushort *)malloc(width * height * sizeof(ushort));
-
                     for (int y = 0; y < height; ++y) {
                         for (int x = 0; x < width; ++x) {
-                            int r                   = data[id++];
-                            int g                   = data[id++];
-                            int b                   = data[id++];
-                            int a                   = data[id++];
+                            int r                   = data[id_stb++];
+                            int g                   = data[id_stb++];
+                            int b                   = data[id_stb++];
+                            int a                   = data[id_stb++];
                             pixels[x + (y * width)] = RGB888_TO_RGB5551(r, g, b) | (a ? 1 : 0);
                         }
                     }
@@ -780,32 +813,18 @@ void ReplaceTexture(const char *filePath, int texID)
                     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, pixels);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
                     free(pixels);
                     break;
                 }
                 case TEXFMT_RGBA8888: {
-                    uint *pixels = (uint *)malloc(width * height * sizeof(uint));
-
-                    for (int y = 0; y < height; ++y) {
-                        for (int x = 0; x < width; ++x) {
-                            int r                   = data[id++];
-                            int g                   = data[id++];
-                            int b                   = data[id++];
-                            int a                   = data[id++];
-                            pixels[x + (y * width)] = (a << 24) | (b << 16) | (g << 8) | (r << 0);
-                        }
-                    }
-
 #if RETRO_USING_OPENGL
-                    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+                    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texture->width, texture->height, GL_RGBA, GL_UNSIGNED_BYTE, data);
                     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
-
-                    free(pixels);
                     break;
                 }
             }
+#endif // PS3
         }
 
         CloseFile();
@@ -815,10 +834,20 @@ void ReplaceTexture(const char *filePath, int texID)
 void ClearTextures(bool keepBuffer)
 {
     for (int i = (keepBuffer ? 1 : 0); i < TEXTURE_COUNT; ++i) {
+#ifdef PS3
+        if (textureList[i].texture) {
+            SDL_DestroyTexture(textureList[i].texture);
+            textureList[i].texture = NULL;
+        }
+#else
 #if RETRO_USING_OPENGL
-        glDeleteTextures(1, &textureList[i].id);
+        if (textureList[i].id > 0) 
+            glDeleteTextures(1, &textureList[i].id);
+        textureList[i].id = 0; 
+#endif
 #endif
         StrCopy(textureList[i].fileName, "");
+        textureList[i].format = TEXFMT_NONE; 
     }
 }
 
@@ -1056,6 +1085,25 @@ void SetMeshVertexColors(MeshInfo *mesh, byte r, byte g, byte b, byte a)
 // Rendering
 void TransferRetroBuffer()
 {
+#ifdef PS3
+    if (textureList[0].texture && Engine.renderer) {
+        if (convertTo32Bit) { 
+            ushort *frameBufferPtr = Engine.frameBuffer;
+            uint *texBufferPtr     = Engine.texBuffer;
+            for (int y = 0; y < SCREEN_YSIZE; ++y) {
+                for (int x = 0; x < GFX_LINESIZE; ++x) {
+                    texBufferPtr[x] = gfxPalette16to32[frameBufferPtr[x]];
+                }
+                texBufferPtr += GFX_LINESIZE;
+                frameBufferPtr += GFX_LINESIZE;
+            }
+            SDL_UpdateTexture(textureList[0].texture, NULL, Engine.texBuffer, GFX_LINESIZE * sizeof(uint));
+        }
+        else { 
+            SDL_UpdateTexture(textureList[0].texture, NULL, Engine.frameBuffer, GFX_LINESIZE * sizeof(ushort));
+        }
+    }
+#else
 #if RETRO_USING_OPENGL
     glBindTexture(GL_TEXTURE_2D, textureList[0].id);
     if (convertTo32Bit) {
@@ -1076,26 +1124,38 @@ void TransferRetroBuffer()
     }
     glBindTexture(GL_TEXTURE_2D, 0);
 #endif
+#endif
 }
 void RenderRetroBuffer(int alpha, float z)
 {
-    if (vertexListSize < DRAWVERTEX_COUNT && textureList[0].format) {
-        if (renderStateCount < 0 || currentRenderState.id != textureList[0].id) {
-            if (renderStateCount >= 0) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-            }
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[0].id;
-            currentRenderState.useColors  = true;
-            currentRenderState.useTexture = true;
-            currentRenderState.useFilter  = true;
-            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-            currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
-        }
+    if (vertexListSize >= DRAWVERTEX_COUNT || !textureList[0].format) return;
 
-        if (renderStateCount < RENDERSTATE_COUNT) {
+    bool newStateNeeded = false;
+    if (renderStateCount < 0 || !currentRenderState.useTexture || !currentRenderState.useFilter) {
+        newStateNeeded = true;
+    } else {
+#ifdef PS3
+        if (!textureList[0].texture) return;
+        if (currentRenderState.id != 0) newStateNeeded = true; 
+#else
+        if (currentRenderState.id != textureList[0].id) newStateNeeded = true; 
+#endif
+    }
+
+    if (newStateNeeded) {
+        NewRenderState(); 
+#ifdef PS3
+        currentRenderState.id = 0; 
+#else
+        currentRenderState.id = textureList[0].id;
+#endif
+        currentRenderState.useColors  = true;
+        currentRenderState.useTexture = true;
+        currentRenderState.useFilter  = true; 
+        currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+        currentRenderState.indexPtr   = drawIndexList;
+    }
+    if (renderStateCount < RENDERSTATE_COUNT) { 
             int a = 0;
             if (alpha >= 0)
                 a = alpha;
@@ -1149,41 +1209,35 @@ void RenderRetroBuffer(int alpha, float z)
             currentRenderState.indexCount += 6;
             vertexListSize += 4;
         }
-    }
 }
 
 void RenderImage(float x, float y, float z, float scaleX, float scaleY, float pivotX, float pivotY, float sprW, float sprH, float sprX, float sprY,
-                 int alpha, byte texture)
+                 int alpha, byte texture_idx) 
 {
-    if (vertexListSize < DRAWVERTEX_COUNT && textureList[texture].format) {
-        if (renderStateCount < 0) {
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[texture].id;
+    if (vertexListSize < DRAWVERTEX_COUNT && texture_idx < TEXTURE_COUNT && textureList[texture_idx].format) {
+        bool newStateNeeded = false;
+        if (renderStateCount < 0 || !currentRenderState.useTexture || currentRenderState.useFilter) { 
+            newStateNeeded = true;
+        } else {
+#ifdef PS3
+            if (currentRenderState.id != texture_idx) newStateNeeded = true; 
+#else
+            if (currentRenderState.id != textureList[texture_idx].id) newStateNeeded = true; 
+#endif
+        }
+
+        if (newStateNeeded) {
+            NewRenderState();
+#ifdef PS3
+            currentRenderState.id = texture_idx;
+#else
+            currentRenderState.id = textureList[texture_idx].id;
+#endif
             currentRenderState.useColors  = true;
             currentRenderState.useTexture = true;
-            currentRenderState.useFilter  = false;
+            currentRenderState.useFilter  = false; 
             currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
             currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
-        }
-        else {
-            bool flag = false;
-            if (currentRenderState.useTexture)
-                flag = currentRenderState.id == textureList[texture].id;
-
-            if (!flag) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-
-                currentRenderState.indexCount = 0;
-                currentRenderState.id         = textureList[texture].id;
-                currentRenderState.useColors  = true;
-                currentRenderState.useTexture = true;
-                currentRenderState.useFilter  = false;
-                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-                currentRenderState.indexPtr   = drawIndexList;
-                renderStateCount++;
-            }
         }
 
         if (renderStateCount < RENDERSTATE_COUNT) {
@@ -1197,8 +1251,8 @@ void RenderImage(float x, float y, float z, float scaleX, float scaleY, float pi
             vertex1->vertX      = x - (pivotX * scaleX);
             vertex1->vertY      = (pivotY * scaleY) + y;
             vertex1->vertZ      = z;
-            vertex1->texCoordX  = sprX * textureList[texture].widthN;
-            vertex1->texCoordY  = sprY * textureList[texture].heightN;
+            vertex1->texCoordX  = sprX * textureList[texture_idx].widthN;
+            vertex1->texCoordY  = sprY * textureList[texture_idx].heightN;
             vertex1->r          = vertexR;
             vertex1->g          = vertexG;
             vertex1->b          = vertexB;
@@ -1208,7 +1262,7 @@ void RenderImage(float x, float y, float z, float scaleX, float scaleY, float pi
             vertex2->vertX      = ((sprW - pivotX) * scaleX) + x;
             vertex2->vertY      = vertex1->vertY;
             vertex2->vertZ      = z;
-            vertex2->texCoordX  = (sprX + sprW) * textureList[texture].widthN;
+            vertex2->texCoordX  = (sprX + sprW) * textureList[texture_idx].widthN;
             vertex2->texCoordY  = vertex1->texCoordY;
             vertex2->r          = vertexR;
             vertex2->g          = vertexG;
@@ -1220,7 +1274,7 @@ void RenderImage(float x, float y, float z, float scaleX, float scaleY, float pi
             vertex3->vertY      = y - ((sprH - pivotY) * scaleY);
             vertex3->vertZ      = z;
             vertex3->texCoordX  = vertex1->texCoordX;
-            vertex3->texCoordY  = (sprY + sprH) * textureList[texture].heightN;
+            vertex3->texCoordY  = (sprY + sprH) * textureList[texture_idx].heightN;
             vertex3->r          = vertexR;
             vertex3->g          = vertexG;
             vertex3->b          = vertexB;
@@ -1242,39 +1296,34 @@ void RenderImage(float x, float y, float z, float scaleX, float scaleY, float pi
     }
 }
 void RenderImageClipped(float x, float y, float z, float scaleX, float scaleY, float pivotX, float pivotY, float sprW, float sprH, float sprX,
-                        float sprY, int alpha, byte texture)
+                        float sprY, int alpha, byte texture_idx) 
 {
-    if (vertexListSize < DRAWVERTEX_COUNT && textureList[texture].format) {
-        if (renderStateCount < 0) {
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[texture].id;
+    if (vertexListSize < DRAWVERTEX_COUNT && texture_idx < TEXTURE_COUNT && textureList[texture_idx].format) {
+        bool newStateNeeded = false;
+        if (renderStateCount < 0 || !currentRenderState.useTexture || currentRenderState.useFilter) {
+            newStateNeeded = true;
+        } else {
+#ifdef PS3
+            if (currentRenderState.id != texture_idx) newStateNeeded = true;
+#else
+            if (currentRenderState.id != textureList[texture_idx].id) newStateNeeded = true;
+#endif
+        }
+
+        if (newStateNeeded) {
+            NewRenderState();
+#ifdef PS3
+            currentRenderState.id = texture_idx;
+#else
+            currentRenderState.id = textureList[texture_idx].id;
+#endif
             currentRenderState.useColors  = true;
             currentRenderState.useTexture = true;
             currentRenderState.useFilter  = false;
             currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
             currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
         }
-        else {
-            bool flag = false;
-            if (currentRenderState.useTexture)
-                flag = currentRenderState.id == textureList[texture].id;
-
-            if (!flag) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-
-                currentRenderState.indexCount = 0;
-                currentRenderState.id         = textureList[texture].id;
-                currentRenderState.useColors  = true;
-                currentRenderState.useTexture = true;
-                currentRenderState.useFilter  = false;
-                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-                currentRenderState.indexPtr   = drawIndexList;
-                renderStateCount++;
-            }
-        }
-
+        
         if (renderStateCount < RENDERSTATE_COUNT) {
             int a = 0;
             if (alpha >= 0)
@@ -1286,14 +1335,14 @@ void RenderImageClipped(float x, float y, float z, float scaleX, float scaleY, f
             vertex1->vertX      = x - (pivotX * scaleX);
             vertex1->vertY      = (pivotY * scaleY) + y;
             vertex1->vertZ      = z;
-            vertex1->texCoordX  = sprX * textureList[texture].widthN;
-            vertex1->texCoordY  = sprY * textureList[texture].heightN;
+            vertex1->texCoordX  = sprX * textureList[texture_idx].widthN;
+            vertex1->texCoordY  = sprY * textureList[texture_idx].heightN;
             vertex1->r          = vertexR;
             vertex1->g          = vertexG;
             vertex1->b          = vertexB;
             vertex1->a          = a;
             if (vertex1->vertY > 76.0) {
-                vertex1->texCoordY = (((vertex1->vertY - 76.0) / scaleY) + sprY) * textureList[texture].heightN;
+                vertex1->texCoordY = (((vertex1->vertY - 76.0) / scaleY) + sprY) * textureList[texture_idx].heightN;
                 vertex1->vertY     = 76.0;
             }
 
@@ -1301,7 +1350,7 @@ void RenderImageClipped(float x, float y, float z, float scaleX, float scaleY, f
             vertex2->vertX      = ((sprW - pivotX) * scaleX) + x;
             vertex2->vertY      = vertex1->vertY;
             vertex2->vertZ      = z;
-            vertex2->texCoordX  = (sprX + sprW) * textureList[texture].widthN;
+            vertex2->texCoordX  = (sprX + sprW) * textureList[texture_idx].widthN;
             vertex2->texCoordY  = vertex1->texCoordY;
             vertex2->r          = vertexR;
             vertex2->g          = vertexG;
@@ -1313,13 +1362,13 @@ void RenderImageClipped(float x, float y, float z, float scaleX, float scaleY, f
             vertex3->vertY      = y - ((sprH - pivotY) * scaleY);
             vertex3->vertZ      = z;
             vertex3->texCoordX  = vertex1->texCoordX;
-            vertex3->texCoordY  = (sprY + sprH) * textureList[texture].heightN;
+            vertex3->texCoordY  = (sprY + sprH) * textureList[texture_idx].heightN;
             vertex3->r          = vertexR;
             vertex3->g          = vertexG;
             vertex3->b          = vertexB;
             vertex3->a          = a;
             if (vertex3->vertY < -76.0) {
-                vertex3->texCoordY = (((vertex3->vertY + 76.0) / scaleY) + (sprY + sprH)) * textureList[texture].heightN;
+                vertex3->texCoordY = (((vertex3->vertY + 76.0) / scaleY) + (sprY + sprH)) * textureList[texture_idx].heightN;
                 vertex3->vertY     = -76.0;
             }
 
@@ -1340,37 +1389,32 @@ void RenderImageClipped(float x, float y, float z, float scaleX, float scaleY, f
 }
 
 void RenderImageFlipH(float x, float y, float z, float scaleX, float scaleY, float pivotX, float pivotY, float sprW, float sprH, float sprX,
-                      float sprY, int alpha, byte texture)
+                      float sprY, int alpha, byte texture_idx) 
 {
-    if (vertexListSize < DRAWVERTEX_COUNT && textureList[texture].format) {
-        if (renderStateCount < 0) {
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[texture].id;
+    if (vertexListSize < DRAWVERTEX_COUNT && texture_idx < TEXTURE_COUNT && textureList[texture_idx].format) {
+        bool newStateNeeded = false;
+        if (renderStateCount < 0 || !currentRenderState.useTexture || currentRenderState.useFilter) {
+            newStateNeeded = true;
+        } else {
+#ifdef PS3
+            if (currentRenderState.id != texture_idx) newStateNeeded = true; 
+#else
+            if (currentRenderState.id != textureList[texture_idx].id) newStateNeeded = true;
+#endif
+        }
+
+        if (newStateNeeded) {
+            NewRenderState();
+#ifdef PS3
+            currentRenderState.id = texture_idx;
+#else
+            currentRenderState.id = textureList[texture_idx].id;
+#endif
             currentRenderState.useColors  = true;
             currentRenderState.useTexture = true;
-            currentRenderState.useFilter  = false;
+            currentRenderState.useFilter  = false; 
             currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
             currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
-        }
-        else {
-            bool flag = false;
-            if (currentRenderState.useTexture)
-                flag = currentRenderState.id == textureList[texture].id;
-
-            if (!flag) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-
-                currentRenderState.indexCount = 0;
-                currentRenderState.id         = textureList[texture].id;
-                currentRenderState.useColors  = true;
-                currentRenderState.useTexture = true;
-                currentRenderState.useFilter  = false;
-                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-                currentRenderState.indexPtr   = drawIndexList;
-                renderStateCount++;
-            }
         }
 
         if (renderStateCount < RENDERSTATE_COUNT) {
@@ -1384,8 +1428,8 @@ void RenderImageFlipH(float x, float y, float z, float scaleX, float scaleY, flo
             vertex1->vertX      = x - (pivotX * scaleX);
             vertex1->vertY      = (pivotY * scaleY) + y;
             vertex1->vertZ      = z;
-            vertex1->texCoordX  = (sprX + sprW) * textureList[texture].widthN;
-            vertex1->texCoordY  = sprY * textureList[texture].heightN;
+            vertex1->texCoordX  = (sprX + sprW) * textureList[texture_idx].widthN;
+            vertex1->texCoordY  = sprY * textureList[texture_idx].heightN;
             vertex1->r          = vertexR;
             vertex1->g          = vertexG;
             vertex1->b          = vertexB;
@@ -1395,7 +1439,7 @@ void RenderImageFlipH(float x, float y, float z, float scaleX, float scaleY, flo
             vertex2->vertX      = ((sprW - pivotX) * scaleX) + x;
             vertex2->vertY      = vertex1->vertY;
             vertex2->vertZ      = z;
-            vertex2->texCoordX  = sprX * textureList[texture].widthN;
+            vertex2->texCoordX  = sprX * textureList[texture_idx].widthN;
             vertex2->texCoordY  = vertex1->texCoordY;
             vertex2->r          = vertexR;
             vertex2->g          = vertexG;
@@ -1407,7 +1451,7 @@ void RenderImageFlipH(float x, float y, float z, float scaleX, float scaleY, flo
             vertex3->vertY      = y - ((sprH - pivotY) * scaleY);
             vertex3->vertZ      = z;
             vertex3->texCoordX  = vertex1->texCoordX;
-            vertex3->texCoordY  = (sprY + sprH) * textureList[texture].heightN;
+            vertex3->texCoordY  = (sprY + sprH) * textureList[texture_idx].heightN;
             vertex3->r          = vertexR;
             vertex3->g          = vertexG;
             vertex3->b          = vertexB;
@@ -1431,25 +1475,47 @@ void RenderImageFlipH(float x, float y, float z, float scaleX, float scaleY, flo
 
 void RenderText(ushort *text, int fontID, float x, float y, int z, float scale, int alpha)
 {
+    if (fontID >= FONTLIST_COUNT) return; 
     BitmapFont *font = &fontList[fontID];
     float posX       = x;
     float posY       = (font->base * scale) + y;
 
     if (vertexListSize < DRAWVERTEX_COUNT) {
-        if (renderStateCount < 0 || (!currentRenderState.useTexture || currentRenderState.useColors)) {
-            if (renderStateCount >= 0) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
+        bool firstChar = true;
+        if (renderStateCount >= 0) firstChar = false;
+
+        if (*text == 0 && firstChar) { 
+             if (renderStateCount < 0 || currentRenderState.useTexture || currentRenderState.useColors) { 
+                NewRenderState(); 
+                currentRenderState.useColors  = true; 
+                currentRenderState.useTexture = false; 
+                currentRenderState.useFilter  = false;
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
+             }
+        } else if (firstChar || !currentRenderState.useTexture || currentRenderState.useColors || currentRenderState.useFilter) {
+            if (*text < FONTLIST_CHAR_COUNT && font->characters[*text].textureID < TEXTURE_COUNT) { 
+                NewRenderState();
+#ifdef PS3
+                currentRenderState.id = font->characters[*text].textureID; 
+#else
+                currentRenderState.id = textureList[font->characters[*text].textureID].id; 
+#endif
+                currentRenderState.useColors  = true;  
+                currentRenderState.useTexture = true;
+                currentRenderState.useFilter  = false; 
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
+            } else {
+                 NewRenderState(); 
+                currentRenderState.useColors  = true; 
+                currentRenderState.useTexture = false; 
+                currentRenderState.useFilter  = false;
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
             }
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[font->characters[*text].textureID].id;
-            currentRenderState.useColors  = true;
-            currentRenderState.useTexture = true;
-            currentRenderState.useFilter  = false;
-            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-            currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
         }
+
 
         if (renderStateCount < RENDERSTATE_COUNT) {
             int a = 0;
@@ -1460,29 +1526,43 @@ void RenderText(ushort *text, int fontID, float x, float y, int z, float scale, 
 
             ushort character = *text++;
             while (character && vertexListSize < DRAWVERTEX_COUNT) {
+                if (character >= FONTLIST_CHAR_COUNT) { character = *text++; continue; } 
                 BitmapFontCharacter *fontChar = &font->characters[character];
-                TextureInfo *texture          = &textureList[fontChar->textureID];
+                if (fontChar->textureID >= TEXTURE_COUNT) { character = *text++; continue; }
+                TextureInfo *texture_info     = &textureList[fontChar->textureID]; 
 
-                if (texture->format) {
-                    if (character == 1) {
+                if (texture_info->format) {
+                    if (character == 1) { 
                         posX = x;
                         posY -= (font->lineHeight * scale);
                     }
                     else {
-                        if (currentRenderState.id != texture->id && renderStateCount < RENDERSTATE_COUNT) {
-                            currentRenderState.indexCount = 0;
-                            memcpy(&renderStateList[renderStateCount++], &currentRenderState, sizeof(RenderState));
-                            currentRenderState.vertPtr  = &drawVertexList[vertexListSize];
-                            currentRenderState.indexPtr = drawIndexList;
-                            currentRenderState.id       = texture->id;
+                        bool stateChanged = false;
+#ifdef PS3
+                        if (currentRenderState.id != fontChar->textureID) stateChanged = true;
+#else
+                        if (currentRenderState.id != texture_info->id) stateChanged = true;
+#endif
+                        if (stateChanged || !currentRenderState.useTexture) { 
+                             if (renderStateCount < RENDERSTATE_COUNT) NewRenderState(); 
+#ifdef PS3
+                            currentRenderState.id = fontChar->textureID;
+#else
+                            currentRenderState.id = texture_info->id;
+#endif
+                            currentRenderState.useColors  = true;
+                            currentRenderState.useTexture = true;
+                            currentRenderState.useFilter  = false;
+                            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                            currentRenderState.indexPtr   = drawIndexList;
                         }
 
                         DrawVertex *vertex1 = &drawVertexList[vertexListSize];
                         vertex1->vertX      = posX + (fontChar->xOffset * scale);
                         vertex1->vertY      = posY - (fontChar->yOffset * scale);
                         vertex1->vertZ      = z;
-                        vertex1->texCoordX  = fontChar->x * texture->widthN;
-                        vertex1->texCoordY  = fontChar->y * texture->heightN;
+                        vertex1->texCoordX  = fontChar->x * texture_info->widthN;
+                        vertex1->texCoordY  = fontChar->y * texture_info->heightN;
                         vertex1->r          = vertexR;
                         vertex1->g          = vertexG;
                         vertex1->b          = vertexB;
@@ -1492,7 +1572,7 @@ void RenderText(ushort *text, int fontID, float x, float y, int z, float scale, 
                         vertex2->vertX      = posX + ((fontChar->width + fontChar->xOffset) * scale);
                         vertex2->vertY      = vertex1->vertY;
                         vertex2->vertZ      = z;
-                        vertex2->texCoordX  = (fontChar->x + fontChar->width) * texture->widthN;
+                        vertex2->texCoordX  = (fontChar->x + fontChar->width) * texture_info->widthN;
                         vertex2->texCoordY  = vertex1->texCoordY;
                         vertex2->r          = vertexR;
                         vertex2->g          = vertexG;
@@ -1504,7 +1584,7 @@ void RenderText(ushort *text, int fontID, float x, float y, int z, float scale, 
                         vertex3->vertY      = posY - ((fontChar->height + fontChar->yOffset) * scale);
                         vertex3->vertZ      = z;
                         vertex3->texCoordX  = vertex1->texCoordX;
-                        vertex3->texCoordY  = (fontChar->y + fontChar->height) * texture->heightN;
+                        vertex3->texCoordY  = (fontChar->y + fontChar->height) * texture_info->heightN;
                         vertex3->r          = vertexR;
                         vertex3->g          = vertexG;
                         vertex3->b          = vertexB;
@@ -1532,24 +1612,45 @@ void RenderText(ushort *text, int fontID, float x, float y, int z, float scale, 
 }
 void RenderTextClipped(ushort *text, int fontID, float x, float y, int z, float scale, int alpha)
 {
+    if (fontID >= FONTLIST_COUNT) return;
     BitmapFont *font = &fontList[fontID];
     float posX       = x;
     float posY       = (font->base * scale) + y;
 
     if (vertexListSize < DRAWVERTEX_COUNT) {
-        if (renderStateCount < 0 || (!currentRenderState.useTexture || currentRenderState.useColors)) {
-            if (renderStateCount >= 0) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
+        bool firstChar = true;
+        if (renderStateCount >= 0) firstChar = false;
+        
+        if (*text == 0 && firstChar) { 
+             if (renderStateCount < 0 || currentRenderState.useTexture || currentRenderState.useColors) { 
+                NewRenderState(); 
+                currentRenderState.useColors  = true; 
+                currentRenderState.useTexture = false; 
+                currentRenderState.useFilter  = false;
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
+             }
+        } else if (firstChar || !currentRenderState.useTexture || currentRenderState.useColors || currentRenderState.useFilter) {
+            if (*text < FONTLIST_CHAR_COUNT && font->characters[*text].textureID < TEXTURE_COUNT) { // Bounds check
+                NewRenderState();
+#ifdef PS3
+                currentRenderState.id = font->characters[*text].textureID; 
+#else
+                currentRenderState.id = textureList[font->characters[*text].textureID].id; 
+#endif
+                currentRenderState.useColors  = true;
+                currentRenderState.useTexture = true;
+                currentRenderState.useFilter  = false; 
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
+            } else {
+                 NewRenderState(); 
+                currentRenderState.useColors  = true; 
+                currentRenderState.useTexture = false; 
+                currentRenderState.useFilter  = false;
+                currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                currentRenderState.indexPtr   = drawIndexList;
             }
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = textureList[font->characters[*text].textureID].id;
-            currentRenderState.useColors  = true;
-            currentRenderState.useTexture = true;
-            currentRenderState.useFilter  = false;
-            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
-            currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
         }
 
         if (renderStateCount < RENDERSTATE_COUNT) {
@@ -1561,35 +1662,49 @@ void RenderTextClipped(ushort *text, int fontID, float x, float y, int z, float 
 
             ushort character = *text++;
             while (character && vertexListSize < DRAWVERTEX_COUNT) {
+                if (character >= FONTLIST_CHAR_COUNT) { character = *text++; continue; } 
                 BitmapFontCharacter *fontChar = &font->characters[character];
-                TextureInfo *texture          = &textureList[fontChar->textureID];
+                if (fontChar->textureID >= TEXTURE_COUNT) { character = *text++; continue; }
+                TextureInfo *texture_info     = &textureList[fontChar->textureID];
 
-                if (texture->format) {
-                    if (character == 1) {
+                if (texture_info->format) {
+                    if (character == 1) { 
                         posX = x;
                         posY -= (font->lineHeight * scale);
                     }
                     else {
-                        if (currentRenderState.id != texture->id && renderStateCount < RENDERSTATE_COUNT) {
-                            currentRenderState.indexCount = 0;
-                            memcpy(&renderStateList[renderStateCount++], &currentRenderState, sizeof(RenderState));
-                            currentRenderState.vertPtr  = &drawVertexList[vertexListSize];
-                            currentRenderState.indexPtr = drawIndexList;
-                            currentRenderState.id       = texture->id;
+                        bool stateChanged = false;
+#ifdef PS3
+                        if (currentRenderState.id != fontChar->textureID) stateChanged = true;
+#else
+                        if (currentRenderState.id != texture_info->id) stateChanged = true;
+#endif
+                        if (stateChanged || !currentRenderState.useTexture) { 
+                            if (renderStateCount < RENDERSTATE_COUNT) NewRenderState(); 
+#ifdef PS3
+                            currentRenderState.id = fontChar->textureID;
+#else
+                            currentRenderState.id = texture_info->id;
+#endif
+                            currentRenderState.useColors  = true;
+                            currentRenderState.useTexture = true;
+                            currentRenderState.useFilter  = false;
+                            currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+                            currentRenderState.indexPtr   = drawIndexList;
                         }
 
                         DrawVertex *vertex1 = &drawVertexList[vertexListSize];
                         vertex1->vertX      = posX + (fontChar->xOffset * scale);
                         vertex1->vertY      = posY - (fontChar->yOffset * scale);
                         vertex1->vertZ      = z;
-                        vertex1->texCoordX  = fontChar->x * texture->widthN;
-                        vertex1->texCoordY  = fontChar->y * texture->heightN;
+                        vertex1->texCoordX  = fontChar->x * texture_info->widthN;
+                        vertex1->texCoordY  = fontChar->y * texture_info->heightN;
                         vertex1->r          = vertexR;
                         vertex1->g          = vertexG;
                         vertex1->b          = vertexB;
                         vertex1->a          = a;
                         if (vertex1->vertY > 76.0) {
-                            vertex1->texCoordY = (((vertex1->vertY - 76.0) / scale) + fontChar->y) * texture->heightN;
+                            vertex1->texCoordY = (((vertex1->vertY - 76.0) / scale) + fontChar->y) * texture_info->heightN;
                             vertex1->vertY     = 76.0;
                         }
 
@@ -1597,7 +1712,7 @@ void RenderTextClipped(ushort *text, int fontID, float x, float y, int z, float 
                         vertex2->vertX      = posX + ((fontChar->width + fontChar->xOffset) * scale);
                         vertex2->vertY      = vertex1->vertY;
                         vertex2->vertZ      = z;
-                        vertex2->texCoordX  = (fontChar->x + fontChar->width) * texture->widthN;
+                        vertex2->texCoordX  = (fontChar->x + fontChar->width) * texture_info->widthN;
                         vertex2->texCoordY  = vertex1->texCoordY;
                         vertex2->r          = vertexR;
                         vertex2->g          = vertexG;
@@ -1609,13 +1724,13 @@ void RenderTextClipped(ushort *text, int fontID, float x, float y, int z, float 
                         vertex3->vertY      = posY - ((fontChar->height + fontChar->yOffset) * scale);
                         vertex3->vertZ      = z;
                         vertex3->texCoordX  = vertex1->texCoordX;
-                        vertex3->texCoordY  = (fontChar->y + fontChar->height) * texture->heightN;
+                        vertex3->texCoordY  = (fontChar->y + fontChar->height) * texture_info->heightN;
                         vertex3->r          = vertexR;
                         vertex3->g          = vertexG;
                         vertex3->b          = vertexB;
                         vertex3->a          = a;
                         if (vertex3->vertY < -76.0) {
-                            vertex3->texCoordY = (((vertex3->vertY + 76.0) / scale) + (fontChar->y + fontChar->height)) * texture->heightN;
+                            vertex3->texCoordY = (((vertex3->vertY + 76.0) / scale) + (fontChar->y + fontChar->height)) * texture_info->heightN;
                             vertex3->vertY     = -76.0;
                         }
 
@@ -1644,19 +1759,13 @@ void RenderRect(float x, float y, float z, float w, float h, byte r, byte g, byt
 {
     if (vertexListSize < DRAWVERTEX_COUNT) {
         if (renderStateCount < 0 || (currentRenderState.useTexture || !currentRenderState.useColors)) {
-            if (renderStateCount >= 0) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-            }
-
-            currentRenderState.indexCount = 0;
-            currentRenderState.id         = 0;
+            NewRenderState();
+            currentRenderState.id         = 0; 
             currentRenderState.useColors  = true;
             currentRenderState.useTexture = false;
             currentRenderState.useFilter  = false;
             currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
             currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
         }
 
         if (renderStateCount < RENDERSTATE_COUNT) {
@@ -1713,19 +1822,13 @@ void RenderRectClipped(float x, float y, float z, float w, float h, byte r, byte
 {
     if (vertexListSize < DRAWVERTEX_COUNT) {
         if (renderStateCount < 0 || (currentRenderState.useTexture || !currentRenderState.useColors)) {
-            if (renderStateCount >= 0) {
-                RenderState *state = &renderStateList[renderStateCount];
-                memcpy(state, &currentRenderState, sizeof(RenderState));
-            }
-
-            currentRenderState.indexCount = 0;
+             NewRenderState();
             currentRenderState.id         = 0;
             currentRenderState.useColors  = true;
             currentRenderState.useTexture = false;
             currentRenderState.useFilter  = false;
             currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
             currentRenderState.indexPtr   = drawIndexList;
-            renderStateCount++;
         }
 
         if (renderStateCount < RENDERSTATE_COUNT) {
@@ -1791,25 +1894,27 @@ void RenderMesh(MeshInfo *mesh, byte type, byte depthTest)
     if (!mesh)
         return;
 
-    if (renderStateCount < RENDERSTATE_COUNT) {
-        if (currentRenderState.indexCount) {
-            RenderState *state = &renderStateList[renderStateCount++];
-            memcpy(state, &currentRenderState, sizeof(RenderState));
-        }
+    if (renderStateCount < RENDERSTATE_COUNT) { 
+        NewRenderState(); 
 
         currentRenderState.vertPtr    = mesh->vertices;
         currentRenderState.indexPtr   = mesh->indices;
         currentRenderState.indexCount = mesh->indexCount * 3;
-        if (mesh->textureID >= TEXTURE_COUNT) {
+        
+        if (mesh->textureID >= TEXTURE_COUNT) { 
             currentRenderState.useTexture = false;
-            currentRenderState.id         = 0;
-        }
-        else {
+            currentRenderState.id         = 0; 
+        } 
+        else { 
             currentRenderState.useTexture = true;
-            currentRenderState.id         = textureList[mesh->textureID].id;
-        }
+#ifdef PS3
+            currentRenderState.id         = mesh->textureID; 
+#else
+            currentRenderState.id         = textureList[mesh->textureID].id; 
+#endif
+        } 
 
-        switch (type) {
+        switch (type) { 
             case MESH_COLORS:
                 currentRenderState.useColors  = true;
                 currentRenderState.useNormals = false;
@@ -1822,22 +1927,24 @@ void RenderMesh(MeshInfo *mesh, byte type, byte depthTest)
                 currentRenderState.useColors  = true;
                 currentRenderState.useNormals = true;
                 break;
-        }
+        } 
         currentRenderState.depthTest = depthTest;
+        currentRenderState.useFilter  = false; 
 
-        RenderState *state = &renderStateList[renderStateCount];
-        memcpy(state, &currentRenderState, sizeof(RenderState));
+        if (currentRenderState.indexCount > 0) { 
+             RenderState *listState = &renderStateList[renderStateCount]; 
+             memcpy(listState, &currentRenderState, sizeof(RenderState));
+             renderStateCount++; 
+        }
 
         currentRenderState.indexCount = 0;
         currentRenderState.id         = 0;
-        currentRenderState.useColors  = true;
-        currentRenderState.useTexture = false;
+        currentRenderState.useColors  = true; 
+        currentRenderState.useTexture = false; 
         currentRenderState.useNormals = false;
         currentRenderState.depthTest  = false;
         currentRenderState.useFilter  = false;
-        currentRenderState.vertPtr    = &drawVertexList[vertexListSize];
+        currentRenderState.vertPtr    = &drawVertexList[vertexListSize]; 
         currentRenderState.indexPtr   = drawIndexList;
-
-        renderStateCount++;
-    }
+    } 
 }

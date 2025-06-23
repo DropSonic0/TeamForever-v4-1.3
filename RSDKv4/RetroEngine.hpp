@@ -109,7 +109,7 @@ extern float lastPing;
 #endif
 
 #if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX || RETRO_PLATFORM == RETRO_UWP                       \
-    || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH
+    || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH || RETRO_PLATFORM == RETRO_PS3
 #define RETRO_USING_SDL1 (0)
 #define RETRO_USING_SDL2 (1)
 #else // Since its an else & not an elif these platforms probably aren't supported yet
@@ -121,13 +121,20 @@ extern float lastPing;
 #define RETRO_GAMEPLATFORM (RETRO_MOBILE)
 #elif RETRO_PLATFORM == RETRO_UWP
 #define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
+#elif RETRO_PLATFORM == RETRO_PS3 // PS3 is a standard platform
+#define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #else
 #define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #endif
 
 #define RETRO_SW_RENDER  (0)
 #define RETRO_HW_RENDER  (1)
-#define RETRO_RENDERTYPE (RETRO_SW_RENDER)
+
+#if RETRO_PLATFORM == RETRO_PS3
+#define RETRO_RENDERTYPE (RETRO_HW_RENDER) // PS3 will use SDL_Renderer, considered HW accelerated
+#else
+#define RETRO_RENDERTYPE (RETRO_SW_RENDER) // Default for other platforms, can be overridden
+#endif
 
 #ifdef USE_SW_REN
 #undef RETRO_RENDERTYPE
@@ -139,7 +146,11 @@ extern float lastPing;
 #define RETRO_RENDERTYPE (RETRO_HW_RENDER)
 #endif
 
-#define RETRO_USING_OPENGL (0)
+#if RETRO_PLATFORM == RETRO_PS3
+#define RETRO_USING_OPENGL (0) // PS3 will use SDL_Renderer, not direct OpenGL
+#else
+#define RETRO_USING_OPENGL (0) // Default for other platforms, original RSDKv4 might enable it elsewhere for other HW platforms
+#endif
 
 #define RETRO_SOFTWARE_RENDER (RETRO_RENDERTYPE == RETRO_SW_RENDER)
 #define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
@@ -197,6 +208,11 @@ extern float lastPing;
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <glad/glad.h>  // OpenGL loader
+#elif RETRO_PLATFORM == RETRO_PS3
+#include <GLES/gl.h> // SDL2PSL1GHT should provide GLES headers
+// May need specific EGL headers too, or SDL handles it.
+// #include <EGL/egl.h>
+// #include <EGL/eglext.h>
 #else
 #include <GL/glew.h>
 #endif
@@ -506,9 +522,10 @@ public:
 
     SDL_Event sdlEvents;
 
-#if RETRO_USING_OPENGL
-    SDL_GLContext glContext; // OpenGL context
-#endif // RETRO_USING_OPENGL
+// Ya no se necesita glContext con SDL_Renderer
+//#if RETRO_USING_OPENGL 
+//    SDL_GLContext glContext; // OpenGL context
+//#endif // RETRO_USING_OPENGL
 #endif // RETRO_USING_SDL2
 
 #if RETRO_USING_SDL1

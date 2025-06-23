@@ -454,6 +454,33 @@ void RetroEngine::Init()
     }
 #endif
 
+#ifdef PS3
+    if (Engine.renderer) {
+        // Determine pixel format based on convertTo32Bit
+        Uint32 sdlPixelFormat = convertTo32Bit ? SDL_PIXELFORMAT_ABGR8888 : SDL_PIXELFORMAT_RGB555;
+
+        textureList[0].texture = SDL_CreateTexture(Engine.renderer, sdlPixelFormat,
+                                                   SDL_TEXTUREACCESS_STREAMING, GFX_LINESIZE, SCREEN_YSIZE);
+        if (!textureList[0].texture) {
+            PrintLog("PS3: Failed to create screen buffer texture: %s", SDL_GetError());
+        }
+        textureList[0].format = TEXFMT_RETROBUFFER; // Mark it
+        StrCopy(textureList[0].fileName, "RetroBuffer");
+        textureList[0].width = GFX_LINESIZE;
+        textureList[0].height = SCREEN_YSIZE;
+        textureList[0].widthN = 1.0f / GFX_LINESIZE; // Assuming normalized coords are still useful
+        textureList[0].heightN = 1.0f / SCREEN_YSIZE;
+
+
+        // Initialize other textures to NULL, already handled by ClearTextures called in InitRenderDevice or similar
+        // but good to be explicit if ClearTextures wasn't called or didn't set .texture to NULL for PS3
+        for (int i = 1; i < TEXTURE_COUNT; ++i) {
+            textureList[i].texture = NULL;
+            textureList[i].format = TEXFMT_NONE;
+        }
+    }
+#endif
+
 #if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;
     skipStartMenu  = skipStart;
@@ -571,9 +598,17 @@ void RetroEngine::Run()
                 FlipScreen();
 
 #if !RETRO_USE_ORIGINAL_CODE
-#if RETRO_USING_OPENGL && RETRO_USING_SDL2
+#if RETRO_USING_SDL2
+#ifdef PS3
+                SDL_RenderPresent(Engine.renderer);
+#else // NOT PS3
+#if RETRO_USING_OPENGL
                 SDL_GL_SwapWindow(Engine.window);
-#endif
+#else // NOT OPENGL (but also not PS3, so generic SDL2 render)
+                SDL_RenderPresent(Engine.renderer);
+#endif // RETRO_USING_OPENGL
+#endif // PS3
+#endif // RETRO_USING_SDL2
                 frameStep = false;
             }
 #endif
@@ -635,7 +670,16 @@ void RetroEngine::Run()
 
     ReleaseAudioDevice();
     StopVideoPlayback();
-    ReleaseRenderDevice();
+
+#ifdef PS3
+    if (textureList[0].texture) { // Specifically destroy retro buffer texture
+        SDL_DestroyTexture(textureList[0].texture);
+        textureList[0].texture = NULL;
+    }
+    // ClearTextures(false); // This will be called by ReleaseRenderDevice or similar, ensure it handles .texture field
+#endif
+    ReleaseRenderDevice(); // This should handle destroying Engine.renderer and Engine.window, and other textures via ClearTextures
+
 #if !RETRO_USE_ORIGINAL_CODE
     ReleaseInputDevices();
 #if RETRO_USE_NETWORKING
