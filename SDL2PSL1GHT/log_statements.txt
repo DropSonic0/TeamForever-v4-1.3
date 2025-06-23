@@ -1,0 +1,1632 @@
+src/SDL_assert.c:174:    SDL_snprintf(message, SDL_MAX_LOG_MESSAGE,
+src/SDL_assert.c:273:            fprintf(stderr, "Abort/Break/Retry/Ignore/AlwaysIgnore? [abriA] : ");
+src/SDL_error.c:41:        SDL_vsnprintf(error->str, ERR_MAX_STRLEN, fmt, ap);
+src/SDL_error.c:46:            SDL_LogDebug(SDL_LOG_CATEGORY_ERROR, "%s", error->str);
+src/SDL_error.c:94:    printf("Error 1: %s\n", SDL_GetError());
+src/SDL_error.c:99:    printf("Error 2: %s\n", SDL_GetError());
+src/filesystem/winrt/SDL_sysfilesystem.cpp:134:    SDL_snprintf(destPath, destPathLen, "%s\\", srcPath);
+src/filesystem/emscripten/SDL_sysfilesystem.c:65:        SDL_snprintf(retval, len, "%s%s/%s/", append, org, app);
+src/filesystem/emscripten/SDL_sysfilesystem.c:67:        SDL_snprintf(retval, len, "%s%s/", append, app);
+src/filesystem/unix/SDL_sysfilesystem.c:143:            const int rc = SDL_snprintf(path, sizeof(path),
+src/filesystem/unix/SDL_sysfilesystem.c:225:        SDL_snprintf(retval, len, "%s%s%s/%s/", envr, append, org, app);
+src/filesystem/unix/SDL_sysfilesystem.c:227:        SDL_snprintf(retval, len, "%s%s%s/", envr, append, app);
+src/filesystem/android/SDL_sysfilesystem.c:54:        SDL_snprintf(fullpath, pathlen, "%s/", path);
+src/video/SDL_vulkan_utils.c:275:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display properties for device %u: %u",
+src/video/SDL_vulkan_utils.c:302:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Display: %s Native resolution: %ux%u",
+src/video/SDL_vulkan_utils.c:316:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display modes: %u", displayModePropertiesCount);
+src/video/SDL_vulkan_utils.c:353:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Matching mode %ux%u with refresh rate %u",
+src/video/SDL_vulkan_utils.c:369:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display planes: %u", displayPlanePropertiesCount);
+src/video/SDL_vulkan_utils.c:404:            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of supported displays for plane %u: %u", i, planeSupportedDisplaysCount);
+src/video/SDL_vulkan_utils.c:449:                SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Choosing plane %d, minimum extent %dx%d maximum extent %dx%d", i,
+src/video/SDL_vulkan_utils.c:477:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Chose alpha mode 0x%x", createInfo.alphaMode);
+src/video/SDL_vulkan_utils.c:505:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Created surface");
+src/video/offscreen/SDL_offscreenframebuffer.c:73:        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+src/video/x11/SDL_x11events.c:396:    printf("window %p: Dispatching FocusIn\n", data);
+src/video/x11/SDL_x11events.c:414:    printf("window %p: Dispatching FocusOut\n", data);
+src/video/x11/SDL_x11events.c:550:        printf("window %p: updating _NET_WM_USER_TIME to %lu\n", data, latest);
+src/video/x11/SDL_x11events.c:576:            printf("window CLIPBOARD: SelectionRequest (requestor = %ld, target = %ld)\n",
+src/video/x11/SDL_x11events.c:620:            printf("window CLIPBOARD: SelectionNotify (requestor = %ld, target = %ld)\n",
+src/video/x11/SDL_x11events.c:632:            printf("window CLIPBOARD: SelectionClear (requestor = %ld, target = %ld)\n",
+src/video/x11/SDL_x11events.c:679:        printf("Filtered event type = %d display = %d window = %d\n",
+src/video/x11/SDL_x11events.c:719:    printf("type = %d display = %d window = %d\n",
+src/video/x11/SDL_x11events.c:750:            printf("window %p: MappingNotify!\n", data);
+src/video/x11/SDL_x11events.c:768:            printf("window %p: EnterNotify! (%d,%d,%d)\n", data,
+src/video/x11/SDL_x11events.c:773:                printf("Mode: NotifyGrab\n");
+src/video/x11/SDL_x11events.c:775:                printf("Mode: NotifyUngrab\n");
+src/video/x11/SDL_x11events.c:790:            printf("window %p: LeaveNotify! (%d,%d,%d)\n", data,
+src/video/x11/SDL_x11events.c:795:                printf("Mode: NotifyGrab\n");
+src/video/x11/SDL_x11events.c:797:                printf("Mode: NotifyUngrab\n");
+src/video/x11/SDL_x11events.c:816:                printf("window %p: FocusIn (NotifyGrab/NotifyUngrab, ignoring)\n", data);
+src/video/x11/SDL_x11events.c:823:                printf("window %p: FocusIn (NotifierInferior, ignoring)\n", data);
+src/video/x11/SDL_x11events.c:828:            printf("window %p: FocusIn!\n", data);
+src/video/x11/SDL_x11events.c:850:                printf("window %p: FocusOut (NotifyGrab/NotifyUngrab, ignoring)\n", data);
+src/video/x11/SDL_x11events.c:857:                printf("window %p: FocusOut (NotifierInferior, ignoring)\n", data);
+src/video/x11/SDL_x11events.c:862:            printf("window %p: FocusOut!\n", data);
+src/video/x11/SDL_x11events.c:887:            printf("window %p: KeyPress (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
+src/video/x11/SDL_x11events.c:894:                fprintf(stderr,
+src/video/x11/SDL_x11events.c:937:            printf("window %p: KeyRelease (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
+src/video/x11/SDL_x11events.c:950:            printf("window %p: UnmapNotify!\n", data);
+src/video/x11/SDL_x11events.c:959:            printf("window %p: MapNotify!\n", data);
+src/video/x11/SDL_x11events.c:968:            printf("window %p: ConfigureNotify! (position: %d,%d, size: %dx%d)\n", data,
+src/video/x11/SDL_x11events.c:1018:                printf("XID of source window : %ld\n", data->xdnd_source);
+src/video/x11/SDL_x11events.c:1019:                printf("Protocol version to use : %d\n", xdnd_version);
+src/video/x11/SDL_x11events.c:1020:                printf("More then 3 data types : %d\n", (int) use_list);
+src/video/x11/SDL_x11events.c:1042:                printf("Action requested by user is : %s\n", X11_XGetAtomName(display , act));
+src/video/x11/SDL_x11events.c:1090:                printf("window %p: _NET_WM_PING\n", data);
+src/video/x11/SDL_x11events.c:1102:                printf("window %p: WM_DELETE_WINDOW\n", data);
+src/video/x11/SDL_x11events.c:1112:                printf("window %p: WM_TAKE_FOCUS\n", data);
+src/video/x11/SDL_x11events.c:1123:            printf("window %p: Expose (count = %d)\n", data, xevent.xexpose.count);
+src/video/x11/SDL_x11events.c:1133:                printf("window %p: X11 motion: %d,%d\n", data, xevent.xmotion.x, xevent.xmotion.y);
+src/video/x11/SDL_x11events.c:1144:            printf("window %p: ButtonPress (X11 button = %d)\n", data, xevent.xbutton.button);
+src/video/x11/SDL_x11events.c:1182:            printf("window %p: ButtonRelease (X11 button = %d)\n", data, xevent.xbutton.button);
+src/video/x11/SDL_x11events.c:1203:                printf("window %p: PropertyNotify: %s %s time=%lu\n", data, name, (xevent.xproperty.state == PropertyDelete) ? "deleted" : "changed", xevent.xproperty.time);
+src/video/x11/SDL_x11events.c:1212:                    printf("{");
+src/video/x11/SDL_x11events.c:1214:                        printf(" %d", values[i]);
+src/video/x11/SDL_x11events.c:1216:                    printf(" }\n");
+src/video/x11/SDL_x11events.c:1221:                        printf("{");
+src/video/x11/SDL_x11events.c:1223:                            printf(" %d", values[i]);
+src/video/x11/SDL_x11events.c:1225:                        printf(" }\n");
+src/video/x11/SDL_x11events.c:1229:                        printf("{");
+src/video/x11/SDL_x11events.c:1231:                            printf(" %d", values[i]);
+src/video/x11/SDL_x11events.c:1233:                        printf(" }\n");
+src/video/x11/SDL_x11events.c:1237:                        printf("{");
+src/video/x11/SDL_x11events.c:1239:                            printf(" %d", values[i]);
+src/video/x11/SDL_x11events.c:1241:                        printf(" }\n");
+src/video/x11/SDL_x11events.c:1245:                    printf("{ \"%s\" }\n", propdata);
+src/video/x11/SDL_x11events.c:1249:                    printf("{");
+src/video/x11/SDL_x11events.c:1253:                            printf(" %s", atomname);
+src/video/x11/SDL_x11events.c:1257:                    printf(" }\n");
+src/video/x11/SDL_x11events.c:1260:                    printf("Unknown type: %ld (%s)\n", real_type, atomname ? atomname : "UNKNOWN");
+src/video/x11/SDL_x11events.c:1330:                    printf("New _NET_FRAME_EXTENTS: left=%d right=%d, top=%d, bottom=%d\n", data->border_left, data->border_right, data->border_top, data->border_bottom);
+src/video/x11/SDL_x11events.c:1340:            printf("window %p: SelectionNotify (requestor = %ld, target = %ld)\n", data,
+src/video/x11/SDL_x11events.c:1386:            printf("window %p: Unhandled event %d\n", data, xevent.type);
+src/video/x11/SDL_x11window.c:1164:        /*printf("SDL Window %p: sending _NET_ACTIVE_WINDOW with timestamp %lu\n", window, data->user_time);*/
+src/video/x11/SDL_x11window.c:1596:                SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "The X server refused to let us grab the mouse. You might experience input bugs.");
+src/video/x11/SDL_x11dyn.c:92:        printf("X11: Found '%s' in %s (%p)\n", fnname, x11libs[i].libname, fn);
+src/video/x11/SDL_x11dyn.c:94:        printf("X11: Symbol '%s' NOT FOUND!\n", fnname);
+src/video/x11/SDL_x11video.c:70:    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
+src/video/x11/SDL_x11video.c:72:    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
+src/video/x11/SDL_x11video.c:382:        printf("Couldn't get _NET_SUPPORTING_WM_CHECK property\n");
+src/video/x11/SDL_x11video.c:390:    printf("Window manager: %s\n", wm_name);
+src/video/x11/SDL_x11modes.c:164:        printf("Xinerama disabled due to hint\n");
+src/video/x11/SDL_x11modes.c:171:        printf("Xinerama support not available\n");
+src/video/x11/SDL_x11modes.c:181:        printf("Xinerama not active on the display\n");
+src/video/x11/SDL_x11modes.c:186:    printf("Xinerama available at version %d.%d!\n", *major, *minor);
+src/video/x11/SDL_x11modes.c:199:    fprintf(stderr, "XINERAMA X ERROR: type=%d serial=%lu err=%u req=%u minor=%u\n",
+src/video/x11/SDL_x11modes.c:218:        printf("XRandR disabled by default due to window manager issues\n");
+src/video/x11/SDL_x11modes.c:225:        printf("XRandR disabled due to hint\n");
+src/video/x11/SDL_x11modes.c:233:        printf("XRandR support not available\n");
+src/video/x11/SDL_x11modes.c:242:        printf("XRandR not active on the display\n");
+src/video/x11/SDL_x11modes.c:248:    printf("XRandR available at version %d.%d!\n", *major, *minor);
+src/video/x11/SDL_x11modes.c:290:            printf("XRandR mode %d: %dx%d@%dHz\n", (int) modeID, mode->w, mode->h, mode->refresh_rate);
+src/video/x11/SDL_x11modes.c:321:                    printf("Found EDID data for %s\n", name);
+src/video/x11/SDL_x11modes.c:340:        SDL_snprintf(&name[len], namelen-len, " %d\"", inches);
+src/video/x11/SDL_x11modes.c:344:    printf("Display name: %s\n", name);
+src/video/x11/SDL_x11modes.c:516:        printf("XVidMode disabled due to hint\n");
+src/video/x11/SDL_x11modes.c:523:        printf("XVidMode support not available\n");
+src/video/x11/SDL_x11modes.c:532:        printf("XVidMode not active on the display\n");
+src/video/x11/SDL_x11modes.c:537:    printf("XVidMode available at version %d.%d!\n", *major, *minor);
+src/video/x11/SDL_x11modes.c:928:        printf("VidMode modes: (unsorted)\n");
+src/video/x11/SDL_x11modes.c:930:            printf("Mode %d: %d x %d @ %d, flags: 0x%x\n", i,
+src/video/x11/SDL_x11keyboard.c:372:        printf("Using scancode set %d, min_keycode = %d, max_keycode = %d, table_size = %d\n", best_index, min_keycode, max_keycode, scancode_set[best_index].table_size);
+src/video/x11/SDL_x11keyboard.c:389:                printf("code = %d, sym = 0x%X (%s) ", i - min_keycode,
+src/video/x11/SDL_x11keyboard.c:394:                    printf("scancode not found\n");
+src/video/x11/SDL_x11keyboard.c:396:                    printf("scancode = %d (%s)\n", scancode, SDL_GetScancodeName(scancode));
+src/video/raspberry/SDL_rpiopengles.c:50:        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+src/video/winrt/SDL_winrtvideo.cpp:609:            SDL_snprintf(buf, sizeof(buf), "SDL_EGL_ChooseConfig failed: %s", SDL_GetError());
+src/video/winrt/SDL_winrtkeyboard.cpp:310:        SDL_Log("WinRT TranslateKeycode, unknown keycode=%d\n", (int)keycode);
+src/video/winrt/SDL_winrtkeyboard.cpp:322:    SDL_Log("key down, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
+src/video/winrt/SDL_winrtkeyboard.cpp:348:    SDL_Log("key up, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
+src/video/psl1ght/SDL_PSL1GHTmodes.c:35:    deprintf(1, "+PSL1GHT_InitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:75:    deprintf(1, "-PSL1GHT_InitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:123:    deprintf(1, "+PSL1GHT_GetDisplayModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:134:        deprintf(2, "Adding resolution %u x %u\n", ps3fb_modedb[n].w, ps3fb_modedb[n].h);
+src/video/psl1ght/SDL_PSL1GHTmodes.c:137:    deprintf(1, "-PSL1GHT_GetDisplayModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:143:    deprintf(1, "+PSL1GHT_SetDisplayMode()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:148:    deprintf(2, "Setting PS3_MODE to %u\n", dispdata->vconfig.resolution);
+src/video/psl1ght/SDL_PSL1GHTmodes.c:151:        deprintf(2, "Could not set PS3FB_MODE\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:162:    deprintf(1, "-PSL1GHT_SetDisplayMode()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:169:    deprintf(1, "+PSL1GHT_QuitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:180:    deprintf(1, "-PSL1GHT_QuitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTevents.c:51:	    deprintf(1, "Quit game requested\n");
+src/video/psl1ght/SDL_PSL1GHTevents.c:66:	    deprintf(1, "Unhandled event: %08llX\n", (unsigned long long int)status);
+src/video/emscripten/SDL_emscriptenframebuffer.c:161:        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+src/video/SDL_egl.c:141:        SDL_snprintf(altErrorText, SDL_arraysize(altErrorText), "0x%x", (unsigned int)eglErrorCode);
+src/video/SDL_egl.c:162:        /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid EGL extension"); */
+src/video/SDL_egl.c:196:        /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid extension type"); */
+src/video/SDL_egl.c:462:                SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not parse EGL version string: %s", egl_version);
+src/video/SDL_egl.c:672:        SDL_Log("\t%-32s: %10d (0x%08x)\n", attributes[attr].name, value, value);
+src/video/dummy/SDL_nullframebuffer.c:72:        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+src/video/vivante/SDL_vivantevulkan.c:70:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vivante: Loaded vulkan driver %s", path);
+src/video/directfb/SDL_DirectFB_events.c:236:                /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
+src/video/directfb/SDL_DirectFB_events.c:304:        printf("Event Clazz %d\n", evt->clazz);
+src/video/directfb/SDL_DirectFB_events.c:372:            /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
+src/video/directfb/SDL_DirectFB_dyn.c:80:            fprintf(stderr,
+src/video/windows/SDL_windowsmodes.c:151:    SDL_Log("Display: %s\n", WIN_StringToUTF8(info->szDevice));
+src/video/windows/SDL_windowsevents.c:431:            SDL_snprintf(message, sizeof(message), "Received windows message: %p UNKNOWN (%d) -- 0x%X, 0x%X\n", hwnd, msg, wParam, lParam);
+src/video/windows/SDL_windowsevents.c:433:            SDL_snprintf(message, sizeof(message), "Received windows message: %p %s -- 0x%X, 0x%X\n", hwnd, wmtab[msg], wParam, lParam);
+src/video/nacl/SDL_naclevents.c:317:        SDL_Log("The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> NACL KeyCode %d", keycode);
+src/video/pandora/SDL_pandora.c:623:        printf( "Error: Wiz framebuffer allocatation failed\n" );
+src/video/pandora/SDL_pandora.c:625:        printf( "SDL: Wiz framebuffer allocated: %X\n", hNativeWnd );
+src/video/pandora/SDL_pandora.c:628:        printf( "SDL: Wiz framebuffer already allocated: %X\n", hNativeWnd );
+src/video/pandora/SDL_pandora.c:829:      printf( "SDL: Wiz framebuffer released\n" );
+src/video/wayland/SDL_waylandevents.c:611:        fprintf(stderr, "failed to compile keymap\n");
+src/video/wayland/SDL_waylandevents.c:617:        fprintf(stderr, "failed to create XKB state\n");
+src/video/wayland/SDL_waylanddyn.c:73:        SDL_Log("WAYLAND: Found '%s' in %s (%p)\n", fnname, waylandlibs[i].libname, fn);
+src/video/wayland/SDL_waylanddyn.c:75:        SDL_Log("WAYLAND: Symbol '%s' NOT FOUND!\n", fnname);
+src/video/wayland/SDL_waylandvideo.c:100:    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
+src/video/wayland/SDL_waylandvideo.c:102:    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
+src/video/wayland/SDL_waylandvideo.c:361:    /*printf("WAYLAND INTERFACE: %s\n", interface);*/
+src/video/wayland/SDL_waylandtouch.c:96:         SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
+src/video/kmsdrm/SDL_kmsdrmdyn.c:69:        SDL_Log("KMSDRM: Found '%s' in %s (%p)\n", fnname, kmsdrmlibs[i].libname, fn);
+src/video/kmsdrm/SDL_kmsdrmdyn.c:71:        SDL_Log("KMSDRM: Symbol '%s' NOT FOUND!\n", fnname);
+src/video/kmsdrm/SDL_kmsdrmopengles.c:101:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:109:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:112:            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
+src/video/kmsdrm/SDL_kmsdrmopengles.c:127:		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:136:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:142:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:150:            /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
+src/video/kmsdrm/SDL_kmsdrmopengles.c:173:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:180:            /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
+src/video/kmsdrm/SDL_kmsdrmopengles.c:188:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:199:             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:202:             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
+src/video/kmsdrm/SDL_kmsdrmopengles.c:216:		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
+src/video/kmsdrm/SDL_kmsdrmopengles.c:226:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:58:    SDL_snprintf(device, sizeof (device), "%scard%d", KMSDRM_DRI_PATH, devindex);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:65:                SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "%scard%d connector, encoder and CRTC counts are: %d %d %d",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:91:        printf("The path %s cannot be opened or is not available\n",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:97:        printf("The path %s cannot be opened\n",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:250:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Delete DRM FB %u", fb_info->fb_id);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:294:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "New DRM FB (%u): %ux%u, stride %u from BO %p",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:331:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll error");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:336:            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll hup or error");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:349:            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Dropping frame while waiting_for_flip");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:408:        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "GBM surface format not supported. Trying anyway.");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:456:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoInit()");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:459:    SDL_snprintf(devname, sizeof(devname), "/dev/dri/card%d", viddata->devindex);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:461:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opening device %s", devname);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:469:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opened DRM FD (%d)", viddata->drm_fd);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:492:            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found connector %d with %d modes.",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:515:            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:552:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
+src/video/kmsdrm/SDL_kmsdrmvideo.c:573:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Saved crtc_id %u, fb_id %u, (%u,%u), %ux%u",
+src/video/kmsdrm/SDL_kmsdrmvideo.c:586:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO,
+src/video/kmsdrm/SDL_kmsdrmvideo.c:664:    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoQuit()");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:685:            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not restore original CRTC mode");
+src/video/kmsdrm/SDL_kmsdrmvideo.c:702:        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Closed DRM FD %d", viddata->drm_fd);
+src/video/android/SDL_androidtouch.c:63:        SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
+src/power/linux/SDL_syspower.c:53:    snprintf(path, pathlen, "%s/%s/%s", base, node, key);
+src/stdlib/SDL_malloc.c:3013:        fprintf(stderr, "max system bytes = %10lu\n",
+src/stdlib/SDL_malloc.c:3015:        fprintf(stderr, "system bytes     = %10lu\n", (unsigned long) (fp));
+src/stdlib/SDL_malloc.c:3016:        fprintf(stderr, "in use bytes     = %10lu\n", (unsigned long) (used));
+src/stdlib/SDL_getenv.c:104:    SDL_snprintf(new_variable, len, "%s=%s", name, value);
+src/stdlib/SDL_getenv.c:134:    SDL_snprintf(new_variable, len, "%s=%s", name, value);
+src/stdlib/SDL_getenv.c:252:    printf("Checking for non-existent variable... ");
+src/stdlib/SDL_getenv.c:255:        printf("okay\n");
+src/stdlib/SDL_getenv.c:257:        printf("failed\n");
+src/stdlib/SDL_getenv.c:259:    printf("Setting FIRST=VALUE1 in the environment... ");
+src/stdlib/SDL_getenv.c:262:        printf("okay\n");
+src/stdlib/SDL_getenv.c:264:        printf("failed\n");
+src/stdlib/SDL_getenv.c:266:    printf("Getting FIRST from the environment... ");
+src/stdlib/SDL_getenv.c:270:        printf("okay\n");
+src/stdlib/SDL_getenv.c:272:        printf("failed\n");
+src/stdlib/SDL_getenv.c:274:    printf("Setting SECOND=VALUE2 in the environment... ");
+src/stdlib/SDL_getenv.c:277:        printf("okay\n");
+src/stdlib/SDL_getenv.c:279:        printf("failed\n");
+src/stdlib/SDL_getenv.c:281:    printf("Getting SECOND from the environment... ");
+src/stdlib/SDL_getenv.c:285:        printf("okay\n");
+src/stdlib/SDL_getenv.c:287:        printf("failed\n");
+src/stdlib/SDL_getenv.c:289:    printf("Setting FIRST=NOVALUE in the environment... ");
+src/stdlib/SDL_getenv.c:292:        printf("okay\n");
+src/stdlib/SDL_getenv.c:294:        printf("failed\n");
+src/stdlib/SDL_getenv.c:296:    printf("Getting FIRST from the environment... ");
+src/stdlib/SDL_getenv.c:300:        printf("okay\n");
+src/stdlib/SDL_getenv.c:302:        printf("failed\n");
+src/stdlib/SDL_getenv.c:304:    printf("Checking for non-existent variable... ");
+src/stdlib/SDL_getenv.c:307:        printf("okay\n");
+src/stdlib/SDL_getenv.c:309:        printf("failed\n");
+src/stdlib/SDL_qsort.c:373:fprintf(stderr, "pivot_big: first=%p last=%p size=%lu n=%lu\n", first, (unsigned long)last, size, (unsigned long)((last-first+1)/size));
+src/stdlib/SDL_qsort.c:378:fprintf(stderr,"< %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+src/stdlib/SDL_qsort.c:386:fprintf(stderr,". %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+src/stdlib/SDL_qsort.c:394:fprintf(stderr,"> %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+src/stdlib/SDL_qsort.c:401:fprintf(stderr,"-> %d %d %d @ %p %p %p\n",*(int*)m1,*(int*)m2,*(int*)m3, m1,m2,m3);
+src/stdlib/SDL_qsort.c:487:fprintf(stderr,"Doing %d:%d: ",
+src/stdlib/SDL_qsort.c:496:fprintf(stderr,"pivot = %p = #%lu = %d\n", mid, (unsigned long)(((int*)mid)-((int*)base)), *(int*)mid);
+src/stdlib/SDL_qsort.c:502:fprintf(stderr, "after partitioning first=#%lu last=#%lu\n", (first-(char*)base)/4lu, (last-(char*)base)/4lu);
+src/stdlib/SDL_string.c:1359:SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/stdlib/SDL_string.c:1365:    retval = SDL_vsnprintf(text, maxlen, fmt, ap);
+src/stdlib/SDL_string.c:1372:/* _vsnprintf() doesn't ensure nul termination */
+src/stdlib/SDL_string.c:1373:int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+src/stdlib/SDL_string.c:1377:    retval = _vsnprintf(text, maxlen, fmt, ap);
+src/stdlib/SDL_string.c:1383:int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+src/stdlib/SDL_string.c:1388:    return vsnprintf(text, maxlen, fmt, ap);
+src/stdlib/SDL_string.c:1646:SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+src/dynapi/SDL_dynapi.c:76:        jump_table.SDL_vsnprintf(buf, sizeof (buf), fmt, ap); \
+src/dynapi/SDL_dynapi.c:88:        retval = jump_table.SDL_vsnprintf(buf, maxlen, fmt, ap); \
+src/dynapi/SDL_dynapi.c:274:    fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
+src/audio/jack/SDL_jackaudio.c:368:        SDL_snprintf(portname, sizeof (portname), "sdl_jack_%s_%d", sdlportstr, i);
+src/audio/arts/SDL_artsaudio.c:184:    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+src/audio/arts/SDL_artsaudio.c:237:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/qsa/SDL_qsa_audio.c:514:                    sprintf(qsa_playback_device[qsa_playback_devices].name +
+src/audio/qsa/SDL_qsa_audio.c:572:                    sprintf(qsa_capture_device[qsa_capture_devices].name +
+src/audio/esd/SDL_esdaudio.c:192:    SDL_snprintf(temp, SDL_arraysize(temp), "/proc/%d/cmdline", getpid());
+src/audio/esd/SDL_esdaudio.c:231:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/sun/SDL_sunaudio.c:75:        fprintf(stderr, "audio underflow!\n");
+src/audio/sun/SDL_sunaudio.c:324:    fprintf(stderr, "Audio device %s U-Law only\n",
+src/audio/sun/SDL_sunaudio.c:326:    fprintf(stderr, "format=0x%x chan=%d freq=%d\n",
+src/audio/psl1ght/SDL_psl1ghtaudio.c:40:#define deprintf(...) printf(__VA_ARGS__)
+src/audio/psl1ght/SDL_psl1ghtaudio.c:42:#define deprintf(...)
+src/audio/psl1ght/SDL_psl1ghtaudio.c:48:	deprintf( "PSL1GHT_AUD_OpenDevice(%08X.%08X, %s, %d)\n", SHW64(this), devname, iscapture);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:86:	deprintf("audioPortOpen: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:87:	deprintf("  portNum: %d\n",_portNum);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:90:	deprintf("audioGetPortConfig: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:91:	deprintf("  readIndex: 0x%8X\n",_config.readIndex);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:92:	deprintf("  status: %d\n",_config.status);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:93:	deprintf("  channelCount: %ld\n",_config.channelCount);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:94:	deprintf("  numBlocks: %ld\n",_config.numBlocks);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:95:	deprintf("  portSize: %d\n",_config.portSize);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:96:	deprintf("  audioDataStart: 0x%8X\n",_config.audioDataStart);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:100:	printf("audioCreateNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:104:	printf("audioSetNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:108:	printf("sysEentQueueDrain: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:111:	deprintf("audioPortStart: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:127:	deprintf( "PSL1GHT_AUD_PlayDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:132:		deprintf( "\tplaying too fast... waiting a ms\n");
+src/audio/psl1ght/SDL_psl1ghtaudio.c:147:	deprintf( "PSL1GHT_AUD_CloseDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:150:	deprintf("audioPortStop: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:152:	deprintf("audioRemoveNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:154:	deprintf("audioPortClose: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:156:	deprintf("sysEventQueueDestroy: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:158:	deprintf("audioQuit: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:167:	//deprintf( "PSL1GHT_AUD_GetDeviceBuf(%08X.%08X) at %d ms\n", SHW64(this), SDL_GetTicks());
+src/audio/psl1ght/SDL_psl1ghtaudio.c:173:	//deprintf( "\tWriting to buffer %d \n", filling);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:174:	// deprintf( "\tbuffer address (%08X.%08X => %08X.%08X)\n", SHW64(_config.audioDataStart), SHW64(dma_buf));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:185:	//deprintf( "ALSA_WaitDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:190:	//deprintf( "sysEventQueueReceive: %08X\n", ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:197:	deprintf( "PSL1GHT_AUD_Init(%08X.%08X)\n", SHW64(impl));
+src/audio/dsp/SDL_dspaudio.c:132:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/dsp/SDL_dspaudio.c:220:    fprintf(stderr, "Requesting %d fragments of size %d\n",
+src/audio/dsp/SDL_dspaudio.c:230:        fprintf(stderr, "fragments = %d\n", info.fragments);
+src/audio/dsp/SDL_dspaudio.c:231:        fprintf(stderr, "fragstotal = %d\n", info.fragstotal);
+src/audio/dsp/SDL_dspaudio.c:232:        fprintf(stderr, "fragsize = %d\n", info.fragsize);
+src/audio/dsp/SDL_dspaudio.c:233:        fprintf(stderr, "bytes = %d\n", info.bytes);
+src/audio/dsp/SDL_dspaudio.c:261:    fprintf(stderr, "Wrote %d bytes of audio data\n", h->mixlen);
+src/audio/SDL_audio.c:422:        SDL_snprintf(replacement, len, "%s (%d)", name, dupenum + 1);
+src/audio/SDL_audio.c:1449:        SDL_snprintf(threadname, sizeof (threadname), "SDLAudio%c%d", (iscapture) ? 'C' : 'P', (int) device->id);
+src/audio/pulseaudio/SDL_pulseaudio.c:387:            /*printf("PULSEAUDIO: fed %d captured bytes\n", cpy);*/
+src/audio/pulseaudio/SDL_pulseaudio.c:415:            /*printf("PULSEAUDIO: captured %d new bytes\n", (int) nbytes);*/
+src/audio/pulseaudio/SDL_pulseaudio.c:539:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/fusionsound/SDL_fsaudio.c:150:    fprintf(stderr, "Wrote %d bytes of audio data\n", this->hidden->mixlen);
+src/audio/fusionsound/SDL_fsaudio.c:197:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/SDL_audiocvt.c:566:    printf("Converting byte order\n");
+src/audio/SDL_audiocvt.c:909:    printf("Build format %04x->%04x, channels %u->%u, rate %d->%d\n",
+src/audio/SDL_audiocvt.c:1413:        printf("AUDIOSTREAM: will resample %d bytes to %d (ratio=%.6f)\n", workbuflen, resamplebuflen, stream->rate_incr);
+src/audio/SDL_audiocvt.c:1426:    printf("AUDIOSTREAM: Putting %d bytes of preconverted audio, need %d byte work buffer\n", buflen, workbuflen);
+src/audio/SDL_audiocvt.c:1447:        printf("AUDIOSTREAM: After initial conversion we have %d bytes\n", buflen);
+src/audio/SDL_audiocvt.c:1474:        printf("AUDIOSTREAM: After resampling we have %d bytes\n", buflen);
+src/audio/SDL_audiocvt.c:1487:        printf("AUDIOSTREAM: After final conversion we have %d bytes\n", buflen);
+src/audio/SDL_audiocvt.c:1492:    printf("AUDIOSTREAM: Final output is %d bytes\n", buflen);
+src/audio/SDL_audiocvt.c:1518:    printf("AUDIOSTREAM: wants to put %d preconverted bytes\n", buflen);
+src/audio/SDL_audiocvt.c:1535:        printf("AUDIOSTREAM: no conversion needed at all, queueing %d bytes.\n", len);
+src/audio/SDL_audiocvt.c:1578:    printf("AUDIOSTREAM: flushing! staging_buffer_filled=%d bytes\n", stream->staging_buffer_filled);
+src/audio/SDL_audiocvt.c:1599:            printf("AUDIOSTREAM: flushing with padding to get max %d bytes!\n", flush_remaining);
+src/audio/SDL_audiocvt.c:1628:    printf("AUDIOSTREAM: want to get %d converted bytes\n", len);
+src/audio/nas/SDL_nasaudio.c:181:    fprintf(stderr, "Wrote %d bytes of audio data\n", this->hidden->mixlen);
+src/audio/nas/SDL_nasaudio.c:202:        /*printf("read %d capture bytes\n", (int) retval);*/
+src/audio/nas/SDL_nasaudio.c:225:        /*printf("flushed %d capture bytes\n", (int) br);*/
+src/audio/paudio/SDL_paudio.c:107:        SDL_snprintf(audiopath, SDL_arraysize(audiopath),
+src/audio/paudio/SDL_paudio.c:146:            fprintf(stderr, "Couldn't get audio buffer information\n");
+src/audio/paudio/SDL_paudio.c:152:            fprintf(stderr, "Waiting for write_buf_time=%d ms\n", timeoutMS);
+src/audio/paudio/SDL_paudio.c:157:        fprintf(stderr, "Waiting for audio to get ready\n");
+src/audio/paudio/SDL_paudio.c:165:            fprintf(stderr, "SDL: %s - Audio timeout - buggy audio driver? (disabled)\n", strerror(errno));
+src/audio/paudio/SDL_paudio.c:170:            fprintf(stderr, "Done disabling audio\n");
+src/audio/paudio/SDL_paudio.c:174:        fprintf(stderr, "Ready!\n");
+src/audio/paudio/SDL_paudio.c:205:    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+src/audio/paudio/SDL_paudio.c:323:        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+src/audio/paudio/SDL_paudio.c:371:        fprintf(stderr, "Couldn't find any hardware audio formats\n");
+src/audio/paudio/SDL_paudio.c:460:        fprintf(stderr, "Can't change audio display settings\n");
+src/audio/paudio/SDL_paudio.c:472:        fprintf(stderr, "Can't start audio play\n");
+src/audio/disk/SDL_diskaudio.c:64:    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+src/audio/directsound/SDL_directsound.c:141:        SDL_snprintf(errbuf, SDL_arraysize(errbuf),
+src/audio/directsound/SDL_directsound.c:146:        SDL_snprintf(errbuf, SDL_arraysize(errbuf), "%s: %s", function,
+src/audio/directsound/SDL_directsound.c:281:            fprintf(stderr, "Audio dropout, missed %d fragments\n",
+src/audio/SDL_audiodev.c:107:            SDL_snprintf(audiopath, SDL_arraysize(audiopath),
+src/audio/SDL_wave.c:201:            if (SDL_snprintf(channelstr, sizeof(channelstr), "%u channels", format->channels) >= 0) {
+src/audio/SDL_wave.c:225:    SDL_LogDebug(SDL_LOG_CATEGORY_AUDIO, fmtstr, waveformat, format->frequency, wavechannel, format->bitspersample, wavebps, wavebpsunit);
+src/audio/SDL_wave.c:268:    res = SDL_snprintf(dumpstr, bufsize, fmtstr1, rifflen, fmtlen, format->formattag, format->channels, format->frequency, format->byterate, format->blockalign);
+src/audio/SDL_wave.c:271:        res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr2, format->bitspersample);
+src/audio/SDL_wave.c:275:        res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr3, format->extsize);
+src/audio/SDL_wave.c:286:            res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr4a, format->validsamplebits);
+src/audio/SDL_wave.c:291:            res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr4b, format->samplesperblock);
+src/audio/SDL_wave.c:295:        res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr5, format->channelmask, g1, g2, g3, g[8], g[9], g[10], g[11], g[12], g[13], g[14], g[15]);
+src/audio/SDL_wave.c:302:                res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr4b, format->samplesperblock);
+src/audio/SDL_wave.c:309:        res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr6, file->fact.samplelength);
+src/audio/SDL_wave.c:312:    res = SDL_snprintf(dumpstr + dumppos, bufsize - dumppos, fmtstr7, datalen);
+src/audio/SDL_wave.c:315:    SDL_LogDebug(SDL_LOG_CATEGORY_AUDIO, "%s", dumpstr);
+src/audio/sndio/SDL_sndioaudio.c:180:    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+src/audio/winmm/SDL_winmm.c:138:    SDL_snprintf(errbuf, SDL_arraysize(errbuf), "%s: ", function);
+src/audio/winmm/SDL_winmm.c:364:            printf("Audio device: %s\n", caps.szPname);
+src/audio/winmm/SDL_winmm.c:372:            printf("Audio device: %s\n", caps.szPname);
+src/audio/wasapi/SDL_wasapi.c:319:                /*SDL_Log("WASAPI EVENT! padding=%u maxpadding=%u", (unsigned int)padding, (unsigned int)maxpadding);*/
+src/audio/wasapi/SDL_wasapi.c:325:            /*SDL_Log("WASAPI FAILED EVENT!");*/
+src/audio/alsa/SDL_alsa_audio.c:261:            fprintf(stderr, "ALSA snd_pcm_avail failed (unrecoverable): %s\n",
+src/audio/alsa/SDL_alsa_audio.c:371:                fprintf(stderr, "ALSA write failed (unrecoverable): %s\n",
+src/audio/alsa/SDL_alsa_audio.c:419:            /*printf("ALSA: capture error %d\n", status);*/
+src/audio/alsa/SDL_alsa_audio.c:423:                fprintf(stderr, "ALSA read failed (unrecoverable): %s\n",
+src/audio/alsa/SDL_alsa_audio.c:430:        /*printf("ALSA: captured %d bytes\n", status * frame_size);*/
+src/audio/alsa/SDL_alsa_audio.c:510:        fprintf(stderr,
+src/audio/alsa/SDL_alsa_audio.c:758:    /*printf("ALSA: adding %s device '%s' (%s)\n", iscapture ? "capture" : "output", name, desc);*/
+src/audio/alsa/SDL_alsa_audio.c:905:                /*printf("ALSA: removing usb %s device '%s'\n", dev->iscapture ? "capture" : "output", dev->name);*/
+src/audio/alsa/SDL_alsa_audio.c:928:        /*printf("ALSA: at shutdown, removing %s device '%s'\n", dev->iscapture ? "capture" : "output", dev->name);*/
+src/audio/netbsd/SDL_netbsdaudio.c:64:        fprintf(stderr, "AUDIO_GETINFO failed.\n");
+src/audio/netbsd/SDL_netbsdaudio.c:70:    fprintf(stderr, "\n"
+src/audio/netbsd/SDL_netbsdaudio.c:99:    fprintf(stderr, "\n"
+src/audio/netbsd/SDL_netbsdaudio.c:114:    fprintf(stderr, "\n"
+src/audio/netbsd/SDL_netbsdaudio.c:142:    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+src/audio/netbsd/SDL_netbsdaudio.c:167:    fprintf(stderr, "Captured %d bytes of audio data\n", br);
+src/cpuinfo/SDL_cpuinfo.c:977:    printf("CPU count: %d\n", SDL_GetCPUCount());
+src/cpuinfo/SDL_cpuinfo.c:978:    printf("CPU type: %s\n", SDL_GetCPUType());
+src/cpuinfo/SDL_cpuinfo.c:979:    printf("CPU name: %s\n", SDL_GetCPUName());
+src/cpuinfo/SDL_cpuinfo.c:980:    printf("CacheLine size: %d\n", SDL_GetCPUCacheLineSize());
+src/cpuinfo/SDL_cpuinfo.c:981:    printf("RDTSC: %d\n", SDL_HasRDTSC());
+src/cpuinfo/SDL_cpuinfo.c:982:    printf("Altivec: %d\n", SDL_HasAltiVec());
+src/cpuinfo/SDL_cpuinfo.c:983:    printf("MMX: %d\n", SDL_HasMMX());
+src/cpuinfo/SDL_cpuinfo.c:984:    printf("3DNow: %d\n", SDL_Has3DNow());
+src/cpuinfo/SDL_cpuinfo.c:985:    printf("SSE: %d\n", SDL_HasSSE());
+src/cpuinfo/SDL_cpuinfo.c:986:    printf("SSE2: %d\n", SDL_HasSSE2());
+src/cpuinfo/SDL_cpuinfo.c:987:    printf("SSE3: %d\n", SDL_HasSSE3());
+src/cpuinfo/SDL_cpuinfo.c:988:    printf("SSE4.1: %d\n", SDL_HasSSE41());
+src/cpuinfo/SDL_cpuinfo.c:989:    printf("SSE4.2: %d\n", SDL_HasSSE42());
+src/cpuinfo/SDL_cpuinfo.c:990:    printf("AVX: %d\n", SDL_HasAVX());
+src/cpuinfo/SDL_cpuinfo.c:991:    printf("AVX2: %d\n", SDL_HasAVX2());
+src/cpuinfo/SDL_cpuinfo.c:992:    printf("AVX-512F: %d\n", SDL_HasAVX512F());
+src/cpuinfo/SDL_cpuinfo.c:993:    printf("ARM SIMD: %d\n", SDL_HasARMSIMD());
+src/cpuinfo/SDL_cpuinfo.c:994:    printf("NEON: %d\n", SDL_HasNEON());
+src/cpuinfo/SDL_cpuinfo.c:995:    printf("RAM: %d MB\n", SDL_GetSystemRAM());
+src/SDL_log.c:171:SDL_Log(SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:181:SDL_LogVerbose(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:191:SDL_LogDebug(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:201:SDL_LogInfo(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:211:SDL_LogWarn(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:221:SDL_LogError(int category, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:241:SDL_LogMessage(int category, SDL_LogPriority priority, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+src/SDL_log.c:291:    SDL_vsnprintf(message, SDL_MAX_LOG_MESSAGE, fmt, ap);
+src/SDL_log.c:370:        SDL_snprintf(output, length, "%s: %s\r\n", SDL_priority_prefixes[priority], message);
+src/SDL_log.c:400:        SDL_snprintf(tag, SDL_arraysize(tag), "SDL/%s", GetCategoryPrefix(category));
+src/SDL_log.c:412:            SDL_snprintf(text, SDL_MAX_LOG_MESSAGE, "%s: %s", SDL_priority_prefixes[priority], message);
+src/SDL_log.c:422:        fprintf(pFile, "%s: %s\n", SDL_priority_prefixes[priority], message);
+src/SDL_log.c:427:    fprintf(stderr, "%s: %s\n", SDL_priority_prefixes[priority], message);
+src/locale/windows/SDL_syslocale.c:55:        SDL_snprintf(buf, buflen, "%s%s%s", lang, ctryrc ? "_" : "", ctryrc ? country : "");
+src/events/SDL_gesture.c:84:    printf("Path:");
+src/events/SDL_gesture.c:86:        printf(" (%f,%f)",path[i].x,path[i].y);
+src/events/SDL_gesture.c:88:    printf("\n");
+src/events/SDL_gesture.c:264:            /* printf("Adding loaded gesture to 1 touch\n"); */
+src/events/SDL_gesture.c:269:            /* printf("Adding to: %i touches\n",SDL_numGestureTouches); */
+src/events/SDL_gesture.c:272:                /* printf("Adding loaded gesture to + touches\n"); */
+src/events/SDL_gesture.c:332:          printf("Min angle (x1): %f\n",x1);
+src/events/SDL_gesture.c:334:          printf("Min angle (x2): %f\n",x2);
+src/events/SDL_gesture.c:367:    /* printf("(%f,%f)\n",path->p[path->numPoints-1].x,path->p[path->numPoints-1].y); */
+src/events/SDL_gesture.c:371:        /* printf("d = %f dist = %f/%f\n",d,dist,interval); */
+src/events/SDL_gesture.c:398:    /* printf("Centroid (%f,%f)",centroid.x,centroid.y); */
+src/events/SDL_gesture.c:498:        /* printf("%i ?= %i\n",SDL_gestureTouch[i].id,id); */
+src/events/SDL_gesture.c:649:            /* printf("Centrid : (%f,%f)\n",inTouch->centroid.x,inTouch->centroid.y); */
+src/events/SDL_gesture.c:657:                /* printf("lDist = %f\n",lDist); */
+src/events/SDL_gesture.c:677:                printf("dDist = %f, dTheta = %f\n",dDist,dtheta);
+src/events/SDL_gesture.c:682:                printf("thetaSum = %f, distSum = %f\n",gdtheta,gdDist);
+src/events/SDL_gesture.c:683:                printf("id: %i dTheta = %f, dDist = %f\n",j,dtheta,dDist); */
+src/events/SDL_gesture.c:704:            /* printf("Finger Down: (%f,%f). Centroid: (%f,%f\n",x,y,
+src/events/SDL_events.c:117:    /* this is to make SDL_snprintf() calls cleaner. */
+src/events/SDL_events.c:129:            SDL_snprintf(plusstr, sizeof (plusstr), "+%u", ((uint) event->type) - SDL_USEREVENT);
+src/events/SDL_events.c:133:        SDL_snprintf(details, sizeof (details), "%s (timestamp=%u windowid=%u code=%d data1=%p data2=%p)",
+src/events/SDL_events.c:141:        SDL_EVENT_CASE(SDL_QUIT) SDL_snprintf(details, sizeof (details), " (timestamp=%u)", (uint) event->quit.timestamp); break;
+src/events/SDL_events.c:177:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u event=%s data1=%d data2=%d)",
+src/events/SDL_events.c:184:            SDL_snprintf(details, sizeof (details), " (timestamp=%u)", (uint) event->syswm.timestamp);
+src/events/SDL_events.c:188:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u state=%s repeat=%s scancode=%u keycode=%u mod=%u)", \
+src/events/SDL_events.c:200:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u text='%s' start=%d length=%d)",
+src/events/SDL_events.c:206:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u text='%s')", (uint) event->text.timestamp, (uint) event->text.windowID, event->text.text);
+src/events/SDL_events.c:211:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u which=%u state=%u x=%d y=%d xrel=%d yrel=%d)",
+src/events/SDL_events.c:219:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u which=%u button=%u state=%s clicks=%u x=%d y=%d)", \
+src/events/SDL_events.c:230:            SDL_snprintf(details, sizeof (details), " (timestamp=%u windowid=%u which=%u x=%d y=%d direction=%s)",
+src/events/SDL_events.c:237:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d axis=%u value=%d)",
+src/events/SDL_events.c:243:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d ball=%u xrel=%d yrel=%d)",
+src/events/SDL_events.c:249:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d hat=%u value=%u)",
+src/events/SDL_events.c:255:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d button=%u state=%s)", \
+src/events/SDL_events.c:262:        #define PRINT_JOYDEV_EVENT(event) SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d)", (uint) event->jdevice.timestamp, (int) event->jdevice.which)
+src/events/SDL_events.c:268:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d axis=%u value=%d)",
+src/events/SDL_events.c:274:            SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d button=%u state=%s)", \
+src/events/SDL_events.c:281:        #define PRINT_CONTROLLERDEV_EVENT(event) SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%d)", (uint) event->cdevice.timestamp, (int) event->cdevice.which)
+src/events/SDL_events.c:288:            SDL_snprintf(details, sizeof (details), " (timestamp=%u touchid=%"SDL_PRIs64" fingerid=%"SDL_PRIs64" x=%f y=%f dx=%f dy=%f pressure=%f)", \
+src/events/SDL_events.c:298:            SDL_snprintf(details, sizeof (details), " (timestamp=%u touchid=%"SDL_PRIs64" gestureid=%"SDL_PRIs64" numfingers=%u error=%f x=%f y=%f)", \
+src/events/SDL_events.c:307:            SDL_snprintf(details, sizeof (details), " (timestamp=%u touchid=%"SDL_PRIs64" dtheta=%f ddist=%f x=%f y=%f numfingers=%u)",
+src/events/SDL_events.c:313:        #define PRINT_DROP_EVENT(event) SDL_snprintf(details, sizeof (details), " (file='%s' timestamp=%u windowid=%u)", event->drop.file, (uint) event->drop.timestamp, (uint) event->drop.windowID)
+src/events/SDL_events.c:320:        #define PRINT_AUDIODEV_EVENT(event) SDL_snprintf(details, sizeof (details), " (timestamp=%u which=%u iscapture=%s)", (uint) event->adevice.timestamp, (uint) event->adevice.which, event->adevice.iscapture ? "true" : "false");
+src/events/SDL_events.c:330:                SDL_snprintf(details, sizeof (details), " #%u! (Bug? FIXME?)", (uint) event->type);
+src/events/SDL_events.c:336:        SDL_Log("SDL EVENT: %s%s", name, details);
+src/events/SDL_events.c:361:        SDL_Log("SDL EVENT QUEUE: Maximum events in-flight: %d\n",
+src/events/SDL_keyboard.c:583:    printf("Resetting keyboard\n");
+src/events/SDL_keyboard.c:698:    printf("The '%s' key has been %s\n", SDL_GetScancodeName(scancode),
+src/events/SDL_mouse.c:191:    printf("Resetting mouse\n");
+src/events/SDL_mouse.c:270:            printf("Mouse left window, synthesizing move & focus lost event\n");
+src/events/SDL_mouse.c:282:        printf("Mouse entered window, synthesizing focus gain & move event\n");
+src/events/SDL_mouse.c:383:        printf("Mouse event didn't change state - dropped!\n");
+src/events/SDL_touch.c:412:        printf("Touch event didn't change state - dropped!\n");
+src/core/winrt/SDL_winrtapp_direct3d.cpp:280:            SDL_Log("%s, current orientation=%d, native orientation=%d, auto rot. pref=%d, CoreWindow Bounds={%f,%f,%f,%f}\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:290:            SDL_Log("%s, current orientation=%d, native orientation=%d, auto rot. pref=%d\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:325:    SDL_Log("%s, current orientation=%d, native orientation=%d, auto rot. pref=%d, window bounds={%f, %f, %f,%f}\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:545:    SDL_Log("%s, size={%f,%f}, bounds={%f,%f,%f,%f}, current orientation=%d, native orientation=%d, auto rot. pref=%d, WINRT_GlobalSDLWindow?=%s\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:561:    SDL_Log("%s, visible?=%s, bounds={%f,%f,%f,%f}, WINRT_GlobalSDLWindow?=%s\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:600:    SDL_Log("%s, WINRT_GlobalSDLWindow?=%s\n\n",
+src/core/winrt/SDL_winrtapp_direct3d.cpp:662:    SDL_Log("%s\n", __FUNCTION__);
+src/core/winrt/SDL_winrtapp_direct3d.cpp:734:    SDL_Log("%s: Position={%f,%f}, Transformed Pos={%f, %f}, MouseWheelDelta=%d, FrameId=%d, PointerId=%d, SDL button=%d\n",
+src/core/windows/SDL_windows.c:180:    SDL_snprintf(keystr, sizeof (keystr),
+src/core/android/SDL_android.c:1341:    SDL_Log("Entering function %s", func);
+src/core/android/SDL_android.c:1361:    SDL_Log("Leaving function %s", refholder->m_func);
+src/core/linux/SDL_ibus.c:274:        SDL_snprintf(config_dir, sizeof(config_dir), "%s/.config", home_env);
+src/core/linux/SDL_ibus.c:280:    SDL_snprintf(file_path, sizeof(file_path), "%s/ibus/bus/%s-%s-%s",
+src/core/linux/SDL_fcitx.c:68:    SDL_snprintf(procfile, sizeof(procfile), "/proc/%d/exe", getpid());
+src/core/linux/SDL_fcitx.c:70:    SDL_snprintf(procfile, sizeof(procfile), "/proc/%d/file", getpid());
+src/core/linux/SDL_evdev_kbd.c:111:    printf("static struct kbdiacrs default_accents = {\n");
+src/core/linux/SDL_evdev_kbd.c:112:    printf("    %d,\n", kbd->accents->kb_cnt);
+src/core/linux/SDL_evdev_kbd.c:113:    printf("    {\n");
+src/core/linux/SDL_evdev_kbd.c:116:        printf("        { 0x%.2x, 0x%.2x, 0x%.2x },\n",
+src/core/linux/SDL_evdev_kbd.c:120:        printf("        { 0x00, 0x00, 0x00 },\n");
+src/core/linux/SDL_evdev_kbd.c:123:    printf("    }\n");
+src/core/linux/SDL_evdev_kbd.c:124:    printf("};\n");
+src/core/linux/SDL_evdev_kbd.c:135:            printf("static unsigned short default_key_map_%d[NR_KEYS] = {", i);
+src/core/linux/SDL_evdev_kbd.c:138:                    printf("\n    ");
+src/core/linux/SDL_evdev_kbd.c:140:                printf("0x%.4x, ", kbd->key_maps[i][j]);
+src/core/linux/SDL_evdev_kbd.c:142:            printf("\n};\n");
+src/core/linux/SDL_evdev_kbd.c:145:    printf("\n");
+src/core/linux/SDL_evdev_kbd.c:146:    printf("static unsigned short *default_key_maps[MAX_NR_KEYMAPS] = {\n");
+src/core/linux/SDL_evdev_kbd.c:149:            printf("    default_key_map_%d,\n", i);
+src/core/linux/SDL_evdev_kbd.c:151:            printf("    NULL,\n");
+src/core/linux/SDL_evdev_kbd.c:154:    printf("};\n");
+src/core/linux/SDL_evdev.c:458:                SDL_Log("The key you just pressed is not recognized by SDL. To help "
+src/test/SDL_test_harness.c:135:    SDL_snprintf(iterationString, sizeof(iterationString) - 1, "%d", iteration);
+src/test/SDL_test_harness.c:149:    SDL_snprintf(buffer, entireStringLength, "%s%s%s%d", runSeed, suiteName, testName, iteration);
+src/test/SDL_test_common.c:54:    SDL_vsnprintf(text, maxlen, fmt, ap);
+src/test/SDL_test_common.c:502:    SDL_Log("USAGE: %s", argv0);
+src/test/SDL_test_common.c:503:    SDL_Log("    %s", "[--trackmem]");
+src/test/SDL_test_common.c:507:            SDL_Log("    %s", video_usage[i]);
+src/test/SDL_test_common.c:513:            SDL_Log("    %s", audio_usage[i]);
+src/test/SDL_test_common.c:519:            SDL_Log("    %s", options[i]);
+src/test/SDL_test_common.c:735:    SDL_Log("  Renderer %s:\n", info->name);
+src/test/SDL_test_common.c:737:    SDL_snprintf(text, sizeof(text), "    Flags: 0x%8.8X", info->flags);
+src/test/SDL_test_common.c:751:    SDL_Log("%s\n", text);
+src/test/SDL_test_common.c:753:    SDL_snprintf(text, sizeof(text), "    Texture formats (%d): ", info->num_texture_formats);
+src/test/SDL_test_common.c:760:    SDL_Log("%s\n", text);
+src/test/SDL_test_common.c:763:        SDL_Log("    Max Texture Size: %dx%d\n",
+src/test/SDL_test_common.c:776:        SDL_Log("Couldn't load %s: %s\n", file, SDL_GetError());
+src/test/SDL_test_common.c:795:    /*SDL_Log("Hit test point %d,%d\n", area->x, area->y);*/
+src/test/SDL_test_common.c:801:            SDL_Log("SDL_HITTEST_RESIZE_TOPLEFT\n");
+src/test/SDL_test_common.c:804:            SDL_Log("SDL_HITTEST_RESIZE_BOTTOMLEFT\n");
+src/test/SDL_test_common.c:807:            SDL_Log("SDL_HITTEST_RESIZE_LEFT\n");
+src/test/SDL_test_common.c:812:            SDL_Log("SDL_HITTEST_RESIZE_TOPRIGHT\n");
+src/test/SDL_test_common.c:815:            SDL_Log("SDL_HITTEST_RESIZE_BOTTOMRIGHT\n");
+src/test/SDL_test_common.c:818:            SDL_Log("SDL_HITTEST_RESIZE_RIGHT\n");
+src/test/SDL_test_common.c:822:        SDL_Log("SDL_HITTEST_RESIZE_BOTTOM\n");
+src/test/SDL_test_common.c:825:        SDL_Log("SDL_HITTEST_RESIZE_TOP\n");
+src/test/SDL_test_common.c:828:        SDL_Log("SDL_HITTEST_DRAGGABLE\n");
+src/test/SDL_test_common.c:845:                SDL_Log("No built-in video drivers\n");
+src/test/SDL_test_common.c:847:                SDL_snprintf(text, sizeof(text), "Built-in video drivers:");
+src/test/SDL_test_common.c:854:                SDL_Log("%s\n", text);
+src/test/SDL_test_common.c:858:            SDL_Log("Couldn't initialize video driver: %s\n",
+src/test/SDL_test_common.c:863:            SDL_Log("Video driver: %s\n",
+src/test/SDL_test_common.c:911:            SDL_Log("Number of displays: %d\n", n);
+src/test/SDL_test_common.c:913:                SDL_Log("Display %d: %s\n", i, SDL_GetDisplayName(i));
+src/test/SDL_test_common.c:923:                SDL_Log("Bounds: %dx%d at %d,%d\n", bounds.w, bounds.h, bounds.x, bounds.y);
+src/test/SDL_test_common.c:924:                SDL_Log("Usable bounds: %dx%d at %d,%d\n", usablebounds.w, usablebounds.h, usablebounds.x, usablebounds.y);
+src/test/SDL_test_common.c:925:                SDL_Log("DPI: %fx%f\n", hdpi, vdpi);
+src/test/SDL_test_common.c:930:                SDL_Log("  Current mode: %dx%d@%dHz, %d bits-per-pixel (%s)\n",
+src/test/SDL_test_common.c:934:                    SDL_Log("      Red Mask   = 0x%.8x\n", Rmask);
+src/test/SDL_test_common.c:935:                    SDL_Log("      Green Mask = 0x%.8x\n", Gmask);
+src/test/SDL_test_common.c:936:                    SDL_Log("      Blue Mask  = 0x%.8x\n", Bmask);
+src/test/SDL_test_common.c:938:                        SDL_Log("      Alpha Mask = 0x%.8x\n", Amask);
+src/test/SDL_test_common.c:944:                    SDL_Log("No available fullscreen video modes\n");
+src/test/SDL_test_common.c:946:                    SDL_Log("  Fullscreen video modes:\n");
+src/test/SDL_test_common.c:951:                        SDL_Log("    Mode %d: %dx%d@%dHz, %d bits-per-pixel (%s)\n",
+src/test/SDL_test_common.c:955:                            SDL_Log("        Red Mask   = 0x%.8x\n",
+src/test/SDL_test_common.c:957:                            SDL_Log("        Green Mask = 0x%.8x\n",
+src/test/SDL_test_common.c:959:                            SDL_Log("        Blue Mask  = 0x%.8x\n",
+src/test/SDL_test_common.c:962:                                SDL_Log("        Alpha Mask = 0x%.8x\n",
+src/test/SDL_test_common.c:971:                SDL_Log("D3D9 Adapter Index: %d", adapterIndex);
+src/test/SDL_test_common.c:975:                SDL_Log("DXGI Adapter Index: %d  Output Index: %d", adapterIndex, outputIndex);
+src/test/SDL_test_common.c:985:                SDL_Log("No built-in render drivers\n");
+src/test/SDL_test_common.c:987:                SDL_Log("Built-in render drivers:\n");
+src/test/SDL_test_common.c:1025:            SDL_Log("Out of memory!\n");
+src/test/SDL_test_common.c:1041:                SDL_snprintf(title, SDL_arraysize(title), "%s %d",
+src/test/SDL_test_common.c:1049:                SDL_Log("Couldn't create window: %s\n",
+src/test/SDL_test_common.c:1062:                printf("Window requested size %dx%d, got %dx%d\n", state->window_w, state->window_h, w, h);
+src/test/SDL_test_common.c:1067:                SDL_Log("Can't set up fullscreen display mode: %s\n",
+src/test/SDL_test_common.c:1104:                        SDL_Log("Couldn't find render driver named %s",
+src/test/SDL_test_common.c:1112:                    SDL_Log("Couldn't create renderer: %s\n",
+src/test/SDL_test_common.c:1124:                    SDL_Log("Current renderer:\n");
+src/test/SDL_test_common.c:1136:                SDL_Log("No built-in audio drivers\n");
+src/test/SDL_test_common.c:1138:                SDL_snprintf(text, sizeof(text), "Built-in audio drivers:");
+src/test/SDL_test_common.c:1145:                SDL_Log("%s\n", text);
+src/test/SDL_test_common.c:1149:            SDL_Log("Couldn't initialize audio driver: %s\n",
+src/test/SDL_test_common.c:1154:            SDL_Log("Audio driver: %s\n",
+src/test/SDL_test_common.c:1159:            SDL_Log("Couldn't open audio: %s\n", SDL_GetError());
+src/test/SDL_test_common.c:1240:            SDL_Log("SDL EVENT: Display %d changed orientation to %s", event->display.display, DisplayOrientationName(event->display.data1));
+src/test/SDL_test_common.c:1243:            SDL_Log("SDL EVENT: Display %d got unknown event 0x%4.4x",
+src/test/SDL_test_common.c:1251:            SDL_Log("SDL EVENT: Window %d shown", event->window.windowID);
+src/test/SDL_test_common.c:1254:            SDL_Log("SDL EVENT: Window %d hidden", event->window.windowID);
+src/test/SDL_test_common.c:1257:            SDL_Log("SDL EVENT: Window %d exposed", event->window.windowID);
+src/test/SDL_test_common.c:1260:            SDL_Log("SDL EVENT: Window %d moved to %d,%d",
+src/test/SDL_test_common.c:1265:            SDL_Log("SDL EVENT: Window %d resized to %dx%d",
+src/test/SDL_test_common.c:1270:            SDL_Log("SDL EVENT: Window %d changed size to %dx%d",
+src/test/SDL_test_common.c:1275:            SDL_Log("SDL EVENT: Window %d minimized", event->window.windowID);
+src/test/SDL_test_common.c:1278:            SDL_Log("SDL EVENT: Window %d maximized", event->window.windowID);
+src/test/SDL_test_common.c:1281:            SDL_Log("SDL EVENT: Window %d restored", event->window.windowID);
+src/test/SDL_test_common.c:1284:            SDL_Log("SDL EVENT: Mouse entered window %d",
+src/test/SDL_test_common.c:1288:            SDL_Log("SDL EVENT: Mouse left window %d", event->window.windowID);
+src/test/SDL_test_common.c:1291:            SDL_Log("SDL EVENT: Window %d gained keyboard focus",
+src/test/SDL_test_common.c:1295:            SDL_Log("SDL EVENT: Window %d lost keyboard focus",
+src/test/SDL_test_common.c:1299:            SDL_Log("SDL EVENT: Window %d closed", event->window.windowID);
+src/test/SDL_test_common.c:1302:            SDL_Log("SDL EVENT: Window %d take focus", event->window.windowID);
+src/test/SDL_test_common.c:1305:            SDL_Log("SDL EVENT: Window %d hit test", event->window.windowID);
+src/test/SDL_test_common.c:1308:            SDL_Log("SDL EVENT: Window %d got unknown event 0x%4.4x",
+src/test/SDL_test_common.c:1314:        SDL_Log("SDL EVENT: Keyboard: key pressed  in window %d: scancode 0x%08X = %s, keycode 0x%08X = %s",
+src/test/SDL_test_common.c:1321:        SDL_Log("SDL EVENT: Keyboard: key released in window %d: scancode 0x%08X = %s, keycode 0x%08X = %s",
+src/test/SDL_test_common.c:1328:        SDL_Log("SDL EVENT: Keyboard: text editing \"%s\" in window %d",
+src/test/SDL_test_common.c:1332:        SDL_Log("SDL EVENT: Keyboard: text input \"%s\" in window %d",
+src/test/SDL_test_common.c:1336:        SDL_Log("SDL EVENT: Keymap changed");
+src/test/SDL_test_common.c:1339:        SDL_Log("SDL EVENT: Mouse: moved to %d,%d (%d,%d) in window %d",
+src/test/SDL_test_common.c:1345:        SDL_Log("SDL EVENT: Mouse: button %d pressed at %d,%d with click count %d in window %d",
+src/test/SDL_test_common.c:1350:        SDL_Log("SDL EVENT: Mouse: button %d released at %d,%d with click count %d in window %d",
+src/test/SDL_test_common.c:1355:        SDL_Log("SDL EVENT: Mouse: wheel scrolled %d in x and %d in y (reversed: %d) in window %d",
+src/test/SDL_test_common.c:1359:        SDL_Log("SDL EVENT: Joystick index %d attached",
+src/test/SDL_test_common.c:1363:        SDL_Log("SDL EVENT: Joystick %d removed",
+src/test/SDL_test_common.c:1367:        SDL_Log("SDL EVENT: Joystick %d: ball %d moved by %d,%d",
+src/test/SDL_test_common.c:1403:            SDL_Log("SDL EVENT: Joystick %d: hat %d moved to %s", event->jhat.which,
+src/test/SDL_test_common.c:1408:        SDL_Log("SDL EVENT: Joystick %d: button %d pressed",
+src/test/SDL_test_common.c:1412:        SDL_Log("SDL EVENT: Joystick %d: button %d released",
+src/test/SDL_test_common.c:1416:        SDL_Log("SDL EVENT: Controller index %d attached",
+src/test/SDL_test_common.c:1420:        SDL_Log("SDL EVENT: Controller %d removed",
+src/test/SDL_test_common.c:1424:        SDL_Log("SDL EVENT: Controller %d axis %d ('%s') value: %d",
+src/test/SDL_test_common.c:1431:        SDL_Log("SDL EVENT: Controller %d button %d ('%s') down",
+src/test/SDL_test_common.c:1436:        SDL_Log("SDL EVENT: Controller %d button %d ('%s') up",
+src/test/SDL_test_common.c:1441:        SDL_Log("SDL EVENT: Clipboard updated");
+src/test/SDL_test_common.c:1445:        SDL_Log("SDL EVENT: Finger: motion touch=%ld, finger=%ld, x=%f, y=%f, dx=%f, dy=%f, pressure=%f",
+src/test/SDL_test_common.c:1453:        SDL_Log("SDL EVENT: Finger: %s touch=%ld, finger=%ld, x=%f, y=%f, dx=%f, dy=%f, pressure=%f",
+src/test/SDL_test_common.c:1461:        SDL_Log("SDL_EVENT: Dollar gesture detect: %ld", (long) event->dgesture.gestureId);
+src/test/SDL_test_common.c:1464:        SDL_Log("SDL_EVENT: Dollar gesture record: %ld", (long) event->dgesture.gestureId);
+src/test/SDL_test_common.c:1467:        SDL_Log("SDL_EVENT: Multi gesture fingers: %d", event->mgesture.numFingers);
+src/test/SDL_test_common.c:1471:        SDL_Log("SDL EVENT: render device reset");
+src/test/SDL_test_common.c:1474:        SDL_Log("SDL EVENT: render targets reset");
+src/test/SDL_test_common.c:1478:        SDL_Log("SDL EVENT: App terminating");
+src/test/SDL_test_common.c:1481:        SDL_Log("SDL EVENT: App running low on memory");
+src/test/SDL_test_common.c:1484:        SDL_Log("SDL EVENT: App will enter the background");
+src/test/SDL_test_common.c:1487:        SDL_Log("SDL EVENT: App entered the background");
+src/test/SDL_test_common.c:1490:        SDL_Log("SDL EVENT: App will enter the foreground");
+src/test/SDL_test_common.c:1493:        SDL_Log("SDL EVENT: App entered the foreground");
+src/test/SDL_test_common.c:1496:        SDL_Log("SDL EVENT: Drag and drop beginning");
+src/test/SDL_test_common.c:1499:        SDL_Log("SDL EVENT: Drag and drop file: '%s'", event->drop.file);
+src/test/SDL_test_common.c:1502:        SDL_Log("SDL EVENT: Drag and drop text: '%s'", event->drop.file);
+src/test/SDL_test_common.c:1505:        SDL_Log("SDL EVENT: Drag and drop ending");
+src/test/SDL_test_common.c:1508:        SDL_Log("SDL EVENT: Quit requested");
+src/test/SDL_test_common.c:1511:        SDL_Log("SDL EVENT: User event %d", event->user.code);
+src/test/SDL_test_common.c:1514:        SDL_Log("Unknown event 0x%4.4x", event->type);
+src/test/SDL_test_common.c:1538:        SDL_Log("Couldn't create surface: %s\n", SDL_GetError());
+src/test/SDL_test_common.c:1544:        SDL_Log("Couldn't read screen: %s\n", SDL_GetError());
+src/test/SDL_test_common.c:1550:        SDL_Log("Couldn't save screenshot.bmp: %s\n", SDL_GetError());
+src/test/SDL_test_common.c:1673:                        SDL_Log("Centering on display %d\n", dest);
+src/test/SDL_test_common.c:1693:                    SDL_Log("Setting position to (%d, %d)\n", x, y);
+src/test/SDL_test_common.c:1720:                printf("Copied text to clipboard\n");
+src/test/SDL_test_common.c:1747:                    SDL_Log("%sapturing mouse %s!\n", shouldCapture ? "C" : "Unc", (rc == 0) ? "succeeded" : "failed");
+src/test/SDL_test_common.c:1756:                    printf("Clipboard: %s\n", text);
+src/test/SDL_test_common.c:1758:                    printf("Clipboard is empty\n");
+src/test/SDL_test_common.c:1854:                SDL_Log("ABSOLUTE MOUSE: (%d, %d)%s%s%s%s%s\n", x, y,
+src/test/SDL_test_common.c:1886:            SDL_snprintf(message, sizeof(message), "(%i, %i), rel (%i, %i)\n", lastEvent.x, lastEvent.y, lastEvent.xrel, lastEvent.yrel);
+src/test/SDL_test_memory.c:112:                snprintf(entry->stack_names[stack_index], sizeof(entry->stack_names[stack_index]), "%s+0x%llx", sym, (unsigned long long)offset);
+src/test/SDL_test_memory.c:207:        SDL_Log("SDLTest_TrackAllocations(): There are %d previous allocations, disabling free() validation", s_previous_allocations);
+src/test/SDL_test_memory.c:253:            SDL_snprintf(line, sizeof(line), "Allocation %d: %d bytes\n", count, (int)entry->size);
+src/test/SDL_test_memory.c:260:                SDL_snprintf(line, sizeof(line), "\t0x%"SDL_PRIx64": %s\n", entry->stack[stack_index], entry->stack_names[stack_index]);
+src/test/SDL_test_memory.c:267:    SDL_snprintf(line, sizeof(line), "Total: %.2f Kb in %d allocations\n", (float)total_allocated / 1024, count);
+src/test/SDL_test_memory.c:271:    SDL_Log("%s", message);
+src/test/SDL_test_assert.c:55:    SDL_vsnprintf(logMessage, SDLTEST_MAX_LOGMESSAGE_LENGTH - 1, assertDescription, list);
+src/test/SDL_test_assert.c:73:    SDL_vsnprintf(logMessage, SDLTEST_MAX_LOGMESSAGE_LENGTH - 1, assertDescription, list);
+src/test/SDL_test_assert.c:102:    SDL_vsnprintf(logMessage, SDLTEST_MAX_LOGMESSAGE_LENGTH - 1, assertDescription, list);
+src/test/SDL_test_log.c:93:    SDL_vsnprintf(logMessage, SDLTEST_MAX_LOGMESSAGE_LENGTH - 1, fmt, list);
+src/test/SDL_test_log.c:97:    SDL_LogMessage(SDL_LOG_CATEGORY_TEST, SDL_LOG_PRIORITY_INFO, " %s: %s", SDLTest_TimestampToString(time(0)), logMessage);
+src/test/SDL_test_log.c:111:    SDL_vsnprintf(logMessage, SDLTEST_MAX_LOGMESSAGE_LENGTH - 1, fmt, list);
+src/test/SDL_test_log.c:115:    SDL_LogMessage(SDL_LOG_CATEGORY_TEST, SDL_LOG_PRIORITY_ERROR, "%s: %s", SDLTest_TimestampToString(time(0)), logMessage);
+src/test/SDL_test_compare.c:107:      SDL_snprintf(imageFilename, 127, "CompareSurfaces%04d_TestOutput.bmp", _CompareSurfaceCount);
+src/test/SDL_test_compare.c:109:      SDL_snprintf(referenceFilename, 127, "CompareSurfaces%04d_Reference.bmp", _CompareSurfaceCount);
+src/hidapi/testgui/mac_support.cpp:68:	//printf("What: %d message %x\n", event->what, event->message);
+src/hidapi/windows/hid.c:445:		//wprintf(L"HandleName: %s\n", device_interface_detail_data->DevicePath);
+src/hidapi/windows/hid.c:461:		//wprintf(L"Product/Vendor: %x %x\n", attrib.ProductID, attrib.VendorID);
+src/hidapi/windows/hid.c:1028:		printf("unable to open device\n");
+src/hidapi/windows/hid.c:1035:		printf("Unable to write()\n");
+src/hidapi/windows/hid.c:1041:		printf("Unable to write() (2)\n");
+src/hidapi/windows/hid.c:1046:		printf("Unable to read()\n");
+src/hidapi/windows/hid.c:1050:		printf("buf[%d]: %d\n", i, buf[i]);
+src/hidapi/hidtest/hidtest.cpp:52:		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
+src/hidapi/hidtest/hidtest.cpp:53:		printf("\n");
+src/hidapi/hidtest/hidtest.cpp:54:		printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
+src/hidapi/hidtest/hidtest.cpp:55:		printf("  Product:      %ls\n", cur_dev->product_string);
+src/hidapi/hidtest/hidtest.cpp:56:		printf("  Release:      %hx\n", cur_dev->release_number);
+src/hidapi/hidtest/hidtest.cpp:57:		printf("  Interface:    %d\n",  cur_dev->interface_number);
+src/hidapi/hidtest/hidtest.cpp:58:		printf("\n");
+src/hidapi/hidtest/hidtest.cpp:74:		printf("unable to open device\n");
+src/hidapi/hidtest/hidtest.cpp:82:		printf("Unable to read manufacturer string\n");
+src/hidapi/hidtest/hidtest.cpp:83:	printf("Manufacturer String: %ls\n", wstr);
+src/hidapi/hidtest/hidtest.cpp:89:		printf("Unable to read product string\n");
+src/hidapi/hidtest/hidtest.cpp:90:	printf("Product String: %ls\n", wstr);
+src/hidapi/hidtest/hidtest.cpp:96:		printf("Unable to read serial number string\n");
+src/hidapi/hidtest/hidtest.cpp:97:	printf("Serial Number String: (%d) %ls", wstr[0], wstr);
+src/hidapi/hidtest/hidtest.cpp:98:	printf("\n");
+src/hidapi/hidtest/hidtest.cpp:104:		printf("Unable to read indexed string 1\n");
+src/hidapi/hidtest/hidtest.cpp:105:	printf("Indexed String 1: %ls\n", wstr);
+src/hidapi/hidtest/hidtest.cpp:122:		printf("Unable to send a feature report.\n");
+src/hidapi/hidtest/hidtest.cpp:131:		printf("Unable to get a feature report.\n");
+src/hidapi/hidtest/hidtest.cpp:132:		printf("%ls", hid_error(handle));
+src/hidapi/hidtest/hidtest.cpp:136:		printf("Feature Report\n   ");
+src/hidapi/hidtest/hidtest.cpp:138:			printf("%02hhx ", buf[i]);
+src/hidapi/hidtest/hidtest.cpp:139:		printf("\n");
+src/hidapi/hidtest/hidtest.cpp:149:		printf("Unable to write()\n");
+src/hidapi/hidtest/hidtest.cpp:150:		printf("Error: %ls\n", hid_error(handle));
+src/hidapi/hidtest/hidtest.cpp:159:		printf("Unable to write() (2)\n");
+src/hidapi/hidtest/hidtest.cpp:168:			printf("waiting...\n");
+src/hidapi/hidtest/hidtest.cpp:170:			printf("Unable to read()\n");
+src/hidapi/hidtest/hidtest.cpp:178:	printf("Data read:\n   ");
+src/hidapi/hidtest/hidtest.cpp:181:		printf("%02hhx ", buf[i]);
+src/hidapi/hidtest/hidtest.cpp:182:	printf("\n");
+src/hidapi/libusb/hid.c:108:#define LOG(...) fprintf(stderr, __VA_ARGS__)
+src/hidapi/libusb/hid.c:246:		//printf("key: %02hhx\n", key);
+src/hidapi/libusb/hid.c:286:			//printf("Usage Page: %x\n", (uint32_t)*usage_page);
+src/hidapi/libusb/hid.c:291:			//printf("Usage: %x\n", (uint32_t)*usage);
+src/hidapi/libusb/hid.c:444:	snprintf(str, sizeof(str), "%04x:%04x:%02x",
+src/hidapi/mac/hid.c:366:	res = snprintf(buf, len, "%s_%04hx_%04hx_%p",
+src/hidapi/mac/hid.c:757:				sprintf(str, "HIDAPI_%p", os_dev);
+src/hidapi/mac/hid.c:833:			/*printf("kIOReturnUnsupported\n");*/
+src/hidapi/mac/hid.c:837:			/*printf("0x%x\n", res);*/
+src/hidapi/mac/hid.c:1156:		printf("Device: %p\n", dev);
+src/hidapi/mac/hid.c:1157:		printf("  %04hx %04hx\n", get_vendor_id(dev), get_product_id(dev));
+src/hidapi/mac/hid.c:1164:		printf("  Serial: %ls\n", serial);
+src/hidapi/mac/hid.c:1165:		printf("  Loc: %ld\n", get_location_id(dev));
+src/hidapi/mac/hid.c:1167:		printf("  Trans: %ls\n", buf);
+src/hidapi/mac/hid.c:1169:		printf("  Path: %s\n", cbuf);
+src/hidapi/linux/hid.cpp:87://printf("%s USB device VID/PID 0x%.4x/0x%.4x, %ls %ls\n", bFound ? "Found matching" : "Added new", usb_dev->vendor_id, usb_dev->product_id, usb_dev->manufacturer_string, usb_dev->product_string );
+src/hidapi/linux/hid.c:112:	printf("Couldn't determine kernel version from version string \"%s\"\n", name.release);
+src/hidapi/linux/hid.c:170:		//printf("key: %02hhx\n", key);
+src/hidapi/linux/hid.c:282:		printf("Can't create udev\n");
+src/hidapi/linux/hid.c:344:		printf("Can't create udev\n");
+src/hidapi/linux/hid.c:479:		printf("Can't create udev\n");
+src/sensor/windows/SDL_windowssensor.c:140:            SDL_Log("Sensor %s state changed to %d\n", SDL_sensors[i].name, state);
+src/sensor/windows/SDL_windowssensor.c:160:                SDL_Log("Sensor %s data updated\n", SDL_sensors[i].name);
+src/sensor/windows/SDL_windowssensor.c:213:            SDL_Log("Sensor %s event occurred\n", SDL_sensors[i].name);
+src/sensor/windows/SDL_windowssensor.c:229:            SDL_Log("Sensor %s disconnected\n", SDL_sensors[i].name);
+src/file/SDL_rwops.c:552:            SDL_snprintf(path, PATH_MAX, "%s/%s",
+src/joystick/psl1ght/SDL_sysjoystick.c:35:#define pdprintf(x) printf(x)
+src/joystick/psl1ght/SDL_sysjoystick.c:65:	pdprintf("SDL_SYS_JoystickInit\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:72:		pdprintf("\tPad initialized\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:96:	pdprintf("\tGot info\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:111:				sprintf( joy_data[i].name, "PAD%02X", i);
+src/joystick/emscripten/SDL_sysjoystick.c:102:    SDL_Log("Number of joysticks is %d", numjoysticks);
+src/joystick/emscripten/SDL_sysjoystick.c:106:    SDL_Log("Added joystick with index %d", item->index);
+src/joystick/emscripten/SDL_sysjoystick.c:150:    SDL_Log("Removed joystick with id %d", item->device_instance);
+src/joystick/SDL_joystick.c:349:/*printf("JOYSTICK '%s' VID/PID 0x%.4x/0x%.4x AXES: %d\n", joystick->name, vendor, product, joystick->naxes);*/
+src/joystick/SDL_joystick.c:1540:        SDL_snprintf(name, len, "%s %s", vendor_name, product_name);
+src/joystick/SDL_joystick.c:1549:        SDL_snprintf(name, len, "0x%.4x/0x%.4x", vendor, product);
+src/joystick/bsd/SDL_sysjoystick.c:226:        SDL_snprintf(s, SDL_arraysize(s), "/dev/uhid%d", i);
+src/joystick/bsd/SDL_sysjoystick.c:239:        SDL_snprintf(s, SDL_arraysize(s), "/dev/joy%d", i);
+src/joystick/bsd/SDL_sysjoystick.c:426:        asprintf(&new_name, "%s @ %s", str, path);
+src/joystick/bsd/SDL_sysjoystick.c:471:                    SDL_snprintf(sp, SDL_strlen(s) + 5, "%s (%d)",
+src/joystick/bsd/SDL_sysjoystick.c:602:            /*fprintf(stderr, "%s: Cannot start HID parser\n", joy->hwdata->path);*/
+src/joystick/windows/SDL_rawinputjoystick.c:179:        SDL_Log("Found some supported and some unsupported XInput devices, disabling RawInput\n");
+src/joystick/windows/SDL_rawinputjoystick.c:376:    SDL_Log("Adding RAWINPUT device '%s' VID 0x%.4x, PID 0x%.4x, version %d, handle 0x%.8x\n", device->name, device->vendor_id, device->product_id, device->version, device->hDevice);
+src/joystick/windows/SDL_rawinputjoystick.c:423:            SDL_Log("Removing RAWINPUT device '%s' VID 0x%.4x, PID 0x%.4x, version %d, handle 0x%.8x\n", device->name, device->vendor_id, device->product_id, device->version, device->hDevice);
+src/joystick/windows/SDL_rawinputjoystick.c:716:        SDL_Log("Couldn't un-register RAWINPUT");
+src/joystick/windows/SDL_mmjoystick.c:88:    SDL_snprintf(regkey, SDL_arraysize(regkey),
+src/joystick/windows/SDL_mmjoystick.c:107:    SDL_snprintf(regvalue, SDL_arraysize(regvalue), "Joystick%d%s", index + 1,
+src/joystick/windows/SDL_mmjoystick.c:118:    SDL_snprintf(regkey, SDL_arraysize(regkey),
+src/joystick/windows/SDL_mmjoystick.c:437:        SDL_snprintf(errbuf, SDL_arraysize(errbuf),
+src/joystick/windows/SDL_mmjoystick.c:444:        SDL_snprintf(errbuf, SDL_arraysize(errbuf), "%s: %s", function,
+src/joystick/windows/SDL_xinputjoystick.c:80:        SDL_snprintf(name, sizeof(name), "X360 Controller #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:84:            SDL_snprintf(name, sizeof(name), "XInput Controller #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:87:            SDL_snprintf(name, sizeof(name), "XInput Wheel #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:90:            SDL_snprintf(name, sizeof(name), "XInput ArcadeStick #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:93:            SDL_snprintf(name, sizeof(name), "XInput FlightStick #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:96:            SDL_snprintf(name, sizeof(name), "XInput DancePad #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:101:            SDL_snprintf(name, sizeof(name), "XInput Guitar #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:104:            SDL_snprintf(name, sizeof(name), "XInput DrumKit #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:107:            SDL_snprintf(name, sizeof(name), "XInput ArcadePad #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:110:            SDL_snprintf(name, sizeof(name), "XInput Device #%u", 1 + userid);
+src/joystick/windows/SDL_xinputjoystick.c:176:            SDL_Log("Raw input device: VID = 0x%x, PID = 0x%x, %s\n", rdi.hid.dwVendorId, rdi.hid.dwProductId, devName);
+src/joystick/hidapi/SDL_hidapi_steam.c:172:#define DPRINTF(format, ...) printf(format, ##__VA_ARGS__)
+src/joystick/hidapi/SDL_hidapi_steam.c:217:        printf("%02x ", ptr[i]);
+src/joystick/hidapi/SDL_hidapi_steam.c:218:    printf("\n");
+src/joystick/hidapi/SDL_hidapi_steam.c:252:            printf( "Bad segment size! %d\n", (int)nSegmentLength );
+src/joystick/hidapi/SDL_hidapi_steam.c:392:        printf("Could not get a full ble packet after %d retries\n", nRetries );
+src/joystick/hidapi/SDL_hidapi_steam.c:432:            printf( "GET_ATTRIBUTES_VALUES failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:443:            printf( "Bad GET_ATTRIBUTES_VALUES response for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:451:            printf( "Bad GET_ATTRIBUTES_VALUES response for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:462:            printf( "CLEAR_DIGITAL_MAPPINGS failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:474:            printf( "LOAD_DEFAULT_SETTINGS failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:505:            printf( "SET_SETTINGS failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:522:            printf( "GET_DIGITAL_MAPPINGS failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:529:            printf( "Bad GET_DIGITAL_MAPPINGS response for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:544:        printf( "Warning: CLEAR_DIGITAL_MAPPINGS never completed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapi_steam.c:562:            printf( "SET_DIGITAL_MAPPINGS failed for controller %p\n", dev );
+src/joystick/hidapi/SDL_hidapijoystick.c:772:    SDL_Log("Added HIDAPI device '%s' VID 0x%.4x, PID 0x%.4x, version %d, interface %d, interface_class %d, interface_subclass %d, interface_protocol %d, usage page 0x%.4x, usage 0x%.4x, path = %s, driver = %s (%s)\n", device->name, device->vendor_id, device->product_id, device->version, device->interface_number, device->interface_class, device->interface_subclass, device->interface_protocol, device->usage_page, device->usage, device->path, device->driver ? device->driver->hint : "NONE", device->driver && device->driver->enabled ? "ENABLED" : "DISABLED");
+src/joystick/hidapi/SDL_hidapijoystick.c:897:    SDL_Log("HIDAPI_IsDevicePresent() returning %s for 0x%.4x / 0x%.4x\n", result ? "true" : "false", vendor_id, product_id);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:140:    SDL_snprintf(buffer, length, prefix, size);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:143:            SDL_snprintf(&buffer[SDL_strlen(buffer)], length - SDL_strlen(buffer), "\n%.2d:      ", i);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:145:        SDL_snprintf(&buffer[SDL_strlen(buffer)], length - SDL_strlen(buffer), " 0x%.2x", data[i]);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:148:    SDL_Log("%s", buffer);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:255:            SDL_Log("Init sequence %d got response after %u ms: %s\n", i, (SDL_GetTicks() - start), got_response ? "TRUE" : "FALSE");
+src/joystick/hidapi/SDL_hidapi_xboxone.c:437:        SDL_Log(">>> Paddles: %d,%d,%d,%d mapped = %s\n",
+src/joystick/hidapi/SDL_hidapi_xboxone.c:751:                SDL_Log("Unknown Xbox One packet: 0x%.2x\n", data[0]);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:761:                    SDL_Log("Delay after init: %ums\n", SDL_GetTicks() - ctx->start_time);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:779:                        SDL_Log("Spurious input at %ums\n", SDL_GetTicks() - ctx->initialized_time);
+src/joystick/hidapi/SDL_hidapi_xboxone.c:792:                SDL_Log("Unknown Xbox One packet: 0x%.2x\n", data[0]);
+src/joystick/hidapi/SDL_hidapi_switch.c:469:        SDL_Log("Freq: %.2X %.2X  %.2X, Amp: %.2X  %.2X %.2X\n",
+src/joystick/hidapi/SDL_hidapi_switch.c:868:        SDL_Log("Sent pending rumble %d/%d\n", low_frequency_rumble, high_frequency_rumble);
+src/joystick/hidapi/SDL_hidapi_switch.c:880:        SDL_Log("Sent pending zero rumble\n");
+src/joystick/hidapi/SDL_hidapi_switch.c:917:    SDL_Log("Sent rumble %d/%d\n", low_frequency_rumble, high_frequency_rumble);
+src/joystick/hidapi/SDL_hidapi_switch.c:1221:        SDL_Log("Sent continuing rumble\n");
+src/joystick/hidapi/SDL_hidapi_xbox360w.c:225:            SDL_Log("Connected = %s\n", connected ? "TRUE" : "FALSE");
+src/joystick/hidapi/SDL_hidapi_xbox360w.c:242:            SDL_Log("Battery status (initial): %d\n", data[17]);
+src/joystick/hidapi/SDL_hidapi_xbox360w.c:249:            SDL_Log("Battery status: %d\n", data[4]);
+src/joystick/hidapi/SDL_hidapi_xbox360.c:1048:                SDL_Log("UN-Correlated joystick %d to WindowsGamingInput device #%d\n", joystick->instance_id, ctx->wgi_slot);
+src/joystick/hidapi/SDL_hidapi_xbox360.c:1080:                            SDL_Log("Correlated joystick %d to WindowsGamingInput device #%d\n", joystick->instance_id, slot_idx);
+src/joystick/hidapi/SDL_hidapi_xbox360.c:1143:                    SDL_Log("UN-Correlated joystick %d to XInput device #%d\n", joystick->instance_id, ctx->xinput_slot);
+src/joystick/hidapi/SDL_hidapi_xbox360.c:1175:                                SDL_Log("Correlated joystick %d to XInput device #%d\n", joystick->instance_id, slot_idx);
+src/joystick/hidapi/SDL_hidapi_ps4.c:271:    SDL_Log("PS4 dongle = %s, bluetooth = %s\n", ctx->is_dongle ? "TRUE" : "FALSE", ctx->is_bluetooth ? "TRUE" : "FALSE");
+src/joystick/hidapi/SDL_hidapi_ps4.c:499:            SDL_Log("Unknown PS4 packet: 0x%.2x\n", data[0]);
+src/joystick/android/SDL_sysjoystick.c:353:    SDL_Log("Joystick: %s, descriptor %s, vendor = 0x%.4x, product = 0x%.4x, %d axes, %d hats\n", name, desc, vendor_id, product_id, naxes, nhats);
+src/joystick/android/SDL_sysjoystick.c:445:    SDL_Log("Added joystick %s with device_id %d", item->name, device_id);
+src/joystick/android/SDL_sysjoystick.c:490:    SDL_Log("Removed joystick with device_id %d", device_id);
+src/joystick/linux/SDL_sysjoystick.c:195:    printf("Joystick: %s, bustype = %d, vendor = 0x%.4x, product = 0x%.4x, version = %d\n", name, inpid.bustype, inpid.vendor, inpid.product, inpid.version);
+src/joystick/linux/SDL_sysjoystick.c:281:    printf("Checking %s\n", path);
+src/joystick/linux/SDL_sysjoystick.c:504:                        SDL_snprintf(path, SDL_arraysize(path), "/dev/input/%s", dent->d_name);
+src/joystick/linux/SDL_sysjoystick.c:680:                printf("Joystick has button: 0x%x\n", i);
+src/joystick/linux/SDL_sysjoystick.c:690:                printf("Joystick has button: 0x%x\n", i);
+src/joystick/linux/SDL_sysjoystick.c:710:                printf("Joystick has absolute axis: 0x%.2x\n", i);
+src/joystick/linux/SDL_sysjoystick.c:711:                printf("Values = { %d, %d, %d, %d, %d }\n",
+src/joystick/linux/SDL_sysjoystick.c:745:                printf("Joystick has hat %d\n", hat_index);
+src/joystick/linux/SDL_sysjoystick.c:746:                printf("Values = { %d, %d, %d, %d, %d }\n",
+src/joystick/linux/SDL_sysjoystick.c:966:                printf("Joystick : Re-read Axis %d (%d) val= %d\n",
+src/joystick/linux/SDL_sysjoystick.c:1038:                    printf("Event SYN_DROPPED detected\n");
+src/joystick/SDL_gamecontroller.c:961:    SDL_snprintf(mapping_string, sizeof(mapping_string), "none,%s,", name_string);
+src/joystick/SDL_gamecontroller.c:1106:            SDL_snprintf(buffer, sizeof(buffer), "b%i", mapping->target);
+src/joystick/SDL_gamecontroller.c:1109:            SDL_snprintf(buffer, sizeof(buffer), "a%i", mapping->target);
+src/joystick/SDL_gamecontroller.c:1112:            SDL_snprintf(buffer, sizeof(buffer), "h%i.%i", mapping->target >> 4, mapping->target & 0x0F);
+src/joystick/SDL_gamecontroller.c:1140:    SDL_snprintf(mapping, sizeof(mapping), "none,%s,", name_string);
+src/joystick/SDL_gamecontroller.c:1443:            SDL_snprintf(pMappingString, needed, "%s,%s,%s", pchGUID, mapping->name, mapping->mapping);
+src/joystick/SDL_gamecontroller.c:1470:        SDL_snprintf(pMappingString, needed, "%s,%s,%s", pchGUID, mapping->name, mapping->mapping);
+src/joystick/SDL_gamecontroller.c:1530:    return SDL_snprintf(path, size, "%s/controller_map.txt", SDL_AndroidGetInternalStoragePath()) < size;
+src/joystick/SDL_gamecontroller.c:1645:        SDL_snprintf(pMappingString, needed, "%s,%s,%s", pchGUID, mapping->name, mapping->mapping);
+src/haptic/windows/SDL_xinputhaptic.c:93:        SDL_snprintf(buf, sizeof(buf), "XInput Controller #%u", (unsigned int)(userid + 1));
+src/haptic/windows/SDL_xinputhaptic.c:207:    SDL_snprintf(threadName, sizeof(threadName), "SDLXInputDev%d", (int)userid);
+src/haptic/android/SDL_syshaptic.c:91:            /*SDL_Log("=+=+=+=+=+= HapticByDevId id [%d]", device_id);*/
+src/haptic/linux/SDL_syshaptic.c:171:        snprintf(path, PATH_MAX, joydev_pattern, i++);
+src/haptic/linux/SDL_syshaptic.c:271:    printf("Checking %s\n", path);
+src/render/SDL_render.c:125:    SDL_Log("Render commands to flush:");
+src/render/SDL_render.c:129:                SDL_Log(" %u. no-op", i++);
+src/render/SDL_render.c:133:                SDL_Log(" %u. set viewport (first=%u, rect={(%d, %d), %dx%d})", i++,
+src/render/SDL_render.c:140:                SDL_Log(" %u. set cliprect (enabled=%s, rect={(%d, %d), %dx%d})", i++,
+src/render/SDL_render.c:147:                SDL_Log(" %u. set draw color (first=%u, r=%d, g=%d, b=%d, a=%d)", i++,
+src/render/SDL_render.c:154:                SDL_Log(" %u. clear (first=%u, r=%d, g=%d, b=%d, a=%d)", i++,
+src/render/SDL_render.c:161:                SDL_Log(" %u. draw points (first=%u, count=%u, r=%d, g=%d, b=%d, a=%d, blend=%d)", i++,
+src/render/SDL_render.c:170:                SDL_Log(" %u. draw lines (first=%u, count=%u, r=%d, g=%d, b=%d, a=%d, blend=%d)", i++,
+src/render/SDL_render.c:179:                SDL_Log(" %u. fill rects (first=%u, count=%u, r=%d, g=%d, b=%d, a=%d, blend=%d)", i++,
+src/render/SDL_render.c:188:                SDL_Log(" %u. copy (first=%u, count=%u, r=%d, g=%d, b=%d, a=%d, blend=%d, tex=%p)", i++,
+src/render/SDL_render.c:198:                SDL_Log(" %u. copyex (first=%u, count=%u, r=%d, g=%d, b=%d, a=%d, blend=%d, tex=%p)", i++,
+src/render/SDL_render.c:895:    SDL_LogInfo(SDL_LOG_CATEGORY_RENDER,
+src/render/direct3d/SDL_render_d3d.c:1274:        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "SDL failed to get a vertex buffer for this Direct3D 9 rendering batch!");
+src/render/direct3d/SDL_render_d3d.c:1275:        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Dropping back to a slower method.");
+src/render/direct3d/SDL_render_d3d.c:1276:        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "This might be a brief hiccup, but if performance is bad, this is probably why.");
+src/render/direct3d/SDL_render_d3d.c:1277:        SDL_LogError(SDL_LOG_CATEGORY_RENDER, "This error will not be logged again for this renderer.");
+src/render/opengl/SDL_render_gl.c:289:            SDL_LogError(SDL_LOG_CATEGORY_RENDER, "%s", message);
+src/render/opengl/SDL_render_gl.c:291:            SDL_LogDebug(SDL_LOG_CATEGORY_RENDER, "%s", message);
+src/render/opengl/SDL_render_gl.c:1705:    SDL_LogInfo(SDL_LOG_CATEGORY_RENDER, "OpenGL shaders: %s",
+src/render/opengl/SDL_shaders_gl.c:366:        SDL_LogError(SDL_LOG_CATEGORY_RENDER,
+src/render/opengl/SDL_shaders_gl.c:369:        fprintf(stderr,
+src/render/opengl/SDL_shaders_gl.c:430:        SDL_snprintf(tex_name, SDL_arraysize(tex_name), "tex%d", i);
+src/render/direct3d11/SDL_render_d3d11.c:893:    /* SDL_Log("%s: windowSize={%d,%d}, orientation=%d\n", __FUNCTION__, w, h, (int)data->rotation); */
+src/render/direct3d11/SDL_render_d3d11.c:1924:        /* SDL_Log("%s, no viewport was set!\n", __FUNCTION__); */
+src/render/direct3d11/SDL_render_d3d11.c:1992:    /* SDL_Log("%s: D3D viewport = {%f,%f,%f,%f}\n", __FUNCTION__, d3dviewport.TopLeftX, d3dviewport.TopLeftY, d3dviewport.Width, d3dviewport.Height); */
+src/render/direct3d11/SDL_render_d3d11.c:2414:        SDL_snprintf(errorMessage, sizeof(errorMessage), "%s, Convert Pixels failed: %s", __FUNCTION__, SDL_GetError());
+src/thread/stdcpp/SDL_systhread.cpp:109:        SDL_LogWarn(SDL_LOG_CATEGORY_SYSTEM, "TIME_CRITICAL unsupported, falling back to HIGHEST");
+src/thread/pthread/SDL_systhread.c:156:            SDL_snprintf(namebuf, sizeof (namebuf), "%s", name);
+test/testshader.c:141:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to compile shader:\n%s\n%s", source, info);
+test/testshader.c:182:        SDL_snprintf(tex_name, SDL_arraysize(tex_name), "tex%d", i);
+test/testshader.c:247:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to compile shader!\n");
+test/testshader.c:429:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to initialize SDL: %s\n", SDL_GetError());
+test/testshader.c:436:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create OpenGL window: %s\n", SDL_GetError());
+test/testshader.c:442:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create OpenGL context: %s\n", SDL_GetError());
+test/testshader.c:449:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to load icon.bmp: %s\n", SDL_GetError());
+test/testshader.c:459:        SDL_Log("Shaders supported, press SPACE to cycle them.\n");
+test/testshader.c:461:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Shaders not supported!\n");
+test/testshader.c:494:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No OpenGL support on this system\n");
+test/testrendercopyex.c:56:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testrendercopyex.c:87:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testrendercopyex.c:216:        SDL_Log("%2.2f frames per second\n", fps);
+test/testatomic.c:45:    SDL_Log("\nspin lock---------------------------------------\n\n");
+test/testatomic.c:48:    SDL_Log("AtomicLock                   lock=%d\n", lock);
+test/testatomic.c:50:    SDL_Log("AtomicUnlock                 lock=%d\n", lock);
+test/testatomic.c:52:    SDL_Log("\natomic -----------------------------------------\n\n");
+test/testatomic.c:56:    SDL_Log("AtomicSet(10)        tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:58:    SDL_Log("AtomicAdd(10)        tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:63:    SDL_Log("AtomicIncRef()       tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:66:    SDL_Log("AtomicIncRef()       tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:68:    SDL_Log("AtomicDecRef()       tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:70:    SDL_Log("AtomicDecRef()       tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:74:    SDL_Log("AtomicCAS()          tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:77:    SDL_Log("AtomicCAS()          tfret=%s val=%d\n", tf(tfret), SDL_AtomicGet(&v));
+test/testatomic.c:123:    SDL_Log("Thread subtracting %d %lu times\n",CountInc,N);
+test/testatomic.c:155:    SDL_Log("Finished in %f sec\n", (end - start) / 1000.f);
+test/testatomic.c:164:    SDL_Log("\nepic test---------------------------------------\n\n");
+test/testatomic.c:166:    SDL_Log("Size asserted to be >= 32-bit\n");
+test/testatomic.c:169:    SDL_Log("Check static initializer\n");
+test/testatomic.c:175:    SDL_Log("Test negative values\n");
+test/testatomic.c:180:    SDL_Log("Verify maximum value\n");
+test/testatomic.c:185:    SDL_Log("Test compare and exchange\n");
+test/testatomic.c:197:    SDL_Log("Test Add\n");
+test/testatomic.c:209:    SDL_Log("Test Add (Negative values)\n");
+test/testatomic.c:226:    SDL_Log("Reset before count down test\n");
+test/testatomic.c:234:    SDL_Log("Counting down from %d, Expect %d remaining\n",CountTo,Expect);
+test/testatomic.c:238:    SDL_Log("Atomic %d Non-Atomic %d\n",v,bad);
+test/testatomic.c:433:        SDL_Log("ERROR: mutex failed!\n");
+test/testatomic.c:466:        SDL_Log("ERROR: mutex failed!\n");
+test/testatomic.c:605:    SDL_Log("\nFIFO test---------------------------------------\n\n");
+test/testatomic.c:606:    SDL_Log("Mode: %s\n", lock_free ? "LockFree" : "Mutex");
+test/testatomic.c:628:    SDL_Log("Starting %d readers\n", NUM_READERS);
+test/testatomic.c:633:        SDL_snprintf(name, sizeof (name), "FIFOReader%d", i);
+test/testatomic.c:640:    SDL_Log("Starting %d writers\n", NUM_WRITERS);
+test/testatomic.c:645:        SDL_snprintf(name, sizeof (name), "FIFOWriter%d", i);
+test/testatomic.c:674:    SDL_Log("Finished in %f sec\n", (end - start) / 1000.f);
+test/testatomic.c:676:    SDL_Log("\n");
+test/testatomic.c:678:        SDL_Log("Writer %d wrote %d events, had %d waits\n", i, EVENTS_PER_WRITER, writerData[i].waits);
+test/testatomic.c:680:    SDL_Log("Writers wrote %d total events\n", NUM_WRITERS*EVENTS_PER_WRITER);
+test/testatomic.c:683:    SDL_Log("\n");
+test/testatomic.c:691:        SDL_Log("Reader %d read %d events, had %d waits\n", i, total, readerData[i].waits);
+test/testatomic.c:692:        SDL_snprintf(textBuffer, sizeof(textBuffer), "  { ");
+test/testatomic.c:696:                SDL_snprintf(textBuffer + len, sizeof(textBuffer) - len, ", ");
+test/testatomic.c:699:            SDL_snprintf(textBuffer + len, sizeof(textBuffer) - len, "%d", readerData[i].counters[j]);
+test/testatomic.c:702:        SDL_snprintf(textBuffer + len, sizeof(textBuffer) - len, " }\n");
+test/testatomic.c:703:        SDL_Log("%s", textBuffer);
+test/testatomic.c:705:    SDL_Log("Readers read %d total events\n", grand_total);
+test/testalpha.c:32:        fprintf(stderr, "Couldn't lock the display surface: %s\n",
+test/testalpha.c:111:        fprintf(stderr, "Couldn't create light: %s\n", SDL_GetError());
+test/testalpha.c:212:        fprintf(stderr, "Couldn't load %s: %s", file, SDL_GetError());
+test/testalpha.c:225:        fprintf(stderr, "Couldn't convert background: %s\n", SDL_GetError());
+test/testalpha.c:234:        fprintf(stderr, "Couldn't create background: %s\n", SDL_GetError());
+test/testalpha.c:243:        fprintf(stderr, "Couldn't convert background: %s\n", SDL_GetError());
+test/testalpha.c:347:        fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testalpha.c:353:	 printf("Nombres de joysticks attachés: %d\n\n", nbjoysticks);
+test/testalpha.c:358:		 printf("Joystick s\n", i, SDL_JoystickName(i));
+test/testalpha.c:359:		 printf("Axes: %d\n", SDL_JoystickNumAxes(joy));
+test/testalpha.c:360:		 printf("Boutons: %d\n", SDL_JoystickNumButtons(joy));
+test/testalpha.c:361:		 printf("Trackballs: %d\n", SDL_JoystickNumBalls(joy));
+test/testalpha.c:362:		 printf("Chapeaux: %d\n\n", SDL_JoystickNumHats(joy));
+test/testalpha.c:376:        fprintf(stderr, "forced %d bpp mode\n", video_bpp);
+test/testalpha.c:379:        fprintf(stderr, "forced 16 bpp mode\n");
+test/testalpha.c:387:                fprintf(stderr, "forced 16 bpp mode\n");
+test/testalpha.c:404:            fprintf(stderr,
+test/testalpha.c:413:        fprintf(stderr, "Couldn't set %dx%dx%d video mode: %s\n",
+test/testalpha.c:432:    printf("Screen is at %d bits per pixel\n", screen->format->BitsPerPixel);
+test/testalpha.c:434:        printf("Screen is in video memory\n");
+test/testalpha.c:436:        printf("Screen is in system memory\n");
+test/testalpha.c:439:        printf("Screen has double-buffering enabled\n");
+test/testalpha.c:442:        printf("Sprite is in video memory\n");
+test/testalpha.c:444:        printf("Sprite is in system memory\n");
+test/testalpha.c:450:        printf("Sprite blit uses hardware alpha acceleration\n");
+test/testalpha.c:452:        printf("Sprite blit dosn't uses hardware alpha acceleration\n");
+test/testalpha.c:482:            fprintf(stderr, "Sleeping %d ticks\n",
+test/testalpha.c:487:            fprintf(stderr, "Slept %d ticks\n", (SDL_GetTicks() - ticks));
+test/testalpha.c:550:        printf("%d alpha blits, ~%4.4f ms per blit\n",
+test/testviewport.c:53:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", file, SDL_GetError());
+test/testviewport.c:84:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testviewport.c:170:    SDL_Log("Current Viewport x=%i y=%i w=%i h=%i", viewport.x, viewport.y, viewport.w, viewport.h);
+test/testviewport.c:273:        SDL_Log("%2.2f frames per second\n", fps);
+test/testyuv.c:83:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory");
+test/testyuv.c:99:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Pixel at %d,%d was 0x%.2x,0x%.2x,0x%.2x, expected 0x%.2x,0x%.2x,0x%.2x, distance = %d\n", x, y, actual[0], actual[1], actual[2], expected[0], expected[1], expected[2], distance);
+test/testyuv.c:107:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(format), SDL_GetPixelFormatName(surface->format->format), SDL_GetError());
+test/testyuv.c:134:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't allocate test surfaces");
+test/testyuv.c:141:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "ConvertRGBtoYUV() doesn't support converting to %s\n", SDL_GetPixelFormatName(formats[i]));
+test/testyuv.c:146:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed conversion from %s to RGB\n", SDL_GetPixelFormatName(formats[i]));
+test/testyuv.c:155:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(pattern->format->format), SDL_GetPixelFormatName(formats[i]), SDL_GetError());
+test/testyuv.c:159:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed conversion from RGB to %s\n", SDL_GetPixelFormatName(formats[i]));
+test/testyuv.c:170:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(pattern->format->format), SDL_GetPixelFormatName(formats[i]), SDL_GetError());
+test/testyuv.c:174:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(formats[i]), SDL_GetPixelFormatName(formats[j]), SDL_GetError());
+test/testyuv.c:178:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed conversion from %s to %s\n", SDL_GetPixelFormatName(formats[i]), SDL_GetPixelFormatName(formats[j]));
+test/testyuv.c:195:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(pattern->format->format), SDL_GetPixelFormatName(formats[i]), SDL_GetError());
+test/testyuv.c:199:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't convert %s to %s: %s\n", SDL_GetPixelFormatName(formats[i]), SDL_GetPixelFormatName(formats[j]), SDL_GetError());
+test/testyuv.c:203:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed conversion from %s to %s\n", SDL_GetPixelFormatName(formats[i]), SDL_GetPixelFormatName(formats[j]));
+test/testyuv.c:309:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Usage: %s [--jpeg|--bt601|-bt709|--auto] [--yv12|--iyuv|--yuy2|--uyvy|--yvyu|--nv12|--nv21] [--rgb555|--rgb565|--rgb24|--argb|--abgr|--rgba|--bgra] [image_filename]\n", argv[0]);
+test/testyuv.c:318:            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Running automated test, pattern size %d, extra pitch %d, intrinsics %s\n",
+test/testyuv.c:336:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", filename, SDL_GetError());
+test/testyuv.c:348:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create converted surface: %s\n", SDL_GetError());
+test/testyuv.c:357:    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%d iterations in %d ms, %.2fms each\n", iterations, (now - then), (float)(now - then)/iterations);
+test/testyuv.c:365:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s\n", SDL_GetError());
+test/testyuv.c:371:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s\n", SDL_GetError());
+test/testyuv.c:379:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create texture: %s\n", SDL_GetError());
+test/testyuv.c:444:                SDL_snprintf(title, sizeof(title), "%s %s %s", titles[current], yuv_name, yuv_mode);
+test/testwm2.c:63:                        SDL_Log("Window %d resized to %dx%d\n",
+test/testwm2.c:72:                        SDL_Log("Window %d moved to %d,%d (display %s)\n",
+test/testwm2.c:97:                    SDL_Log("Changing cursor to \"%s\"", cursorNames[system_cursor]);
+test/teststreaming.c:80:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't lock texture: %s\n", SDL_GetError());
+test/teststreaming.c:136:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/teststreaming.c:143:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Can't find the file moose.dat !\n");
+test/teststreaming.c:157:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create window: %s\n", SDL_GetError());
+test/teststreaming.c:163:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create renderer: %s\n", SDL_GetError());
+test/teststreaming.c:169:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create texture: %s\n", SDL_GetError());
+test/testmessage.c:62:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:72:    SDL_Log("Pressed button: %d, %s\n", button, button == -1 ? "[closed]" : button == 1 ? "Cancel" : "OK");
+test/testmessage.c:96:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:105:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:115:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:125:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:135:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testmessage.c:148:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL video subsystem: %s\n", SDL_GetError());
+test/testmessage.c:166:        SDL_Log("Message box thread return %i\n", status);
+test/testmessage.c:179:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error Presenting MessageBox: %s\n", SDL_GetError());
+test/testaudiohotplug.c:99:                SDL_Log("New %s audio device at index %u: %s\n", devtypestr(iscapture), (unsigned int) index, name);
+test/testaudiohotplug.c:101:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Got new %s device at index %u, but failed to get the name: %s\n",
+test/testaudiohotplug.c:111:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open '%s': %s\n", name, SDL_GetError());
+test/testaudiohotplug.c:113:                    SDL_Log("Opened '%s' as %u\n", name, (unsigned int) dev);
+test/testaudiohotplug.c:119:            SDL_Log("%s device %u removed.\n", devtypestr(e.adevice.iscapture), (unsigned int) dev);
+test/testaudiohotplug.c:147:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testaudiohotplug.c:161:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", filename, SDL_GetError());
+test/testaudiohotplug.c:178:    SDL_Log("Available audio drivers:");
+test/testaudiohotplug.c:180:        SDL_Log("%i: %s", i, SDL_GetAudioDriver(i));
+test/testaudiohotplug.c:183:    SDL_Log("Select a driver with the SDL_AUDIODRIVER environment variable.\n");
+test/testaudiohotplug.c:184:    SDL_Log("Using audio driver: %s\n", SDL_GetCurrentAudioDriver());
+test/testrendertarget.c:57:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testrendertarget.c:88:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testrendertarget.c:125:        SDL_Log("Blended pixel: 0x%8.8X\n", P);
+test/testrendertarget.c:191:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create render target texture: %s\n", SDL_GetError());
+test/testrendertarget.c:326:        SDL_Log("%2.2f frames per second\n", fps);
+test/testcustomcursor.c:228:        SDL_Log("Error, couldn't create cursor\n");
+test/testcustomcursor.c:234:            SDL_Log("Error, couldn't create system cursor %d\n", i);
+test/testaudioinfo.c:21:    SDL_Log("Found %d %s device%s:\n", n, typestr, n != 1 ? "s" : "");
+test/testaudioinfo.c:24:        SDL_Log("  Driver can't detect specific %s devices.\n\n", typestr);
+test/testaudioinfo.c:26:        SDL_Log("  No %s devices found.\n\n", typestr);
+test/testaudioinfo.c:32:                SDL_Log("  %d: %s\n", i, name);
+test/testaudioinfo.c:34:                SDL_Log("  %d Error: %s\n", i, SDL_GetError());
+test/testaudioinfo.c:36:        SDL_Log("\n");
+test/testaudioinfo.c:50:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testaudioinfo.c:57:        SDL_Log("No built-in audio drivers\n\n");
+test/testaudioinfo.c:60:        SDL_Log("Built-in audio drivers:\n");
+test/testaudioinfo.c:62:            SDL_Log("  %d: %s\n", i, SDL_GetAudioDriver(i));
+test/testaudioinfo.c:64:        SDL_Log("Select a driver with the SDL_AUDIODRIVER environment variable.\n");
+test/testaudioinfo.c:67:    SDL_Log("Using audio driver: %s\n\n", SDL_GetCurrentAudioDriver());
+test/testdropfile.c:79:                SDL_Log("Drop beginning on window %u", (unsigned int) event.drop.windowID);
+test/testdropfile.c:81:                SDL_Log("Drop complete on window %u", (unsigned int) event.drop.windowID);
+test/testdropfile.c:85:                SDL_Log("%s dropped on window %u: %s", typestr, (unsigned int) event.drop.windowID, dropped_filedir);
+test/testvulkan.c:23:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No Vulkan support on this system\n");
+test/testvulkan.c:223:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:234:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,                                     \
+test/testvulkan.c:260:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:274:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:286:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:301:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,                               \
+test/testvulkan.c:318:        SDL_LogError(
+test/testvulkan.c:338:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:345:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:360:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:418:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:441:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:469:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:492:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Vulkan: no viable physical devices found");
+test/testvulkan.c:523:        SDL_LogError(
+test/testvulkan.c:535:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,                           \
+test/testvulkan.c:574:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:593:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:602:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:617:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:642:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:660:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:680:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:749:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:799:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:823:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:857:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:922:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:932:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:959:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:1051:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:1060:        SDL_LogError(
+test/testvulkan.c:1067:        SDL_LogError(
+test/testvulkan.c:1089:        SDL_LogError(
+test/testvulkan.c:1106:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testvulkan.c:1153:    SDL_Log("Screen BPP    : %d\n", SDL_BITSPERPIXEL(mode.format));
+test/testvulkan.c:1155:    SDL_Log("Window Size   : %d,%d\n", dw, dh);
+test/testvulkan.c:1157:    SDL_Log("Draw Size     : %d,%d\n", dw, dh);
+test/testvulkan.c:1158:    SDL_Log("\n");
+test/testvulkan.c:1183:        SDL_Log("%2.2f frames per second\n", ((double)frames * 1000) / (now - then));
+test/testfile.c:53:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "testfile.c(%d): failed\n", line);
+test/testfile.c:93:    SDL_Log("test1 OK\n");
+test/testfile.c:126:    SDL_Log("test2 OK\n");
+test/testfile.c:204:    SDL_Log("test3 OK\n");
+test/testfile.c:239:    SDL_Log("test4 OK\n");
+test/testfile.c:280:    SDL_Log("test5 OK\n");
+test/testaudiocapture.c:62:        SDL_Log("Shutting down.\n");
+test/testaudiocapture.c:103:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testaudiocapture.c:113:    SDL_Log("Using audio driver: %s\n", SDL_GetCurrentAudioDriver());
+test/testaudiocapture.c:117:        SDL_Log(" Capture device #%d: '%s'\n", i, SDL_GetAudioDeviceName(i, SDL_TRUE));
+test/testaudiocapture.c:135:    SDL_Log("Opening default playback device...\n");
+test/testaudiocapture.c:138:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open an audio device for playback: %s!\n", SDL_GetError());
+test/testaudiocapture.c:143:    SDL_Log("Opening capture device %s%s%s...\n",
+test/testaudiocapture.c:150:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open an audio device for capture: %s!\n", SDL_GetError());
+test/testaudiocapture.c:155:    SDL_Log("Ready! Hold down mouse or finger to record!\n");
+test/testqsort.c:29:    SDL_Log("test: %s arraylen=%d", desc, arraylen);
+test/testqsort.c:37:            SDL_Log("sort is broken!");
+test/testqsort.c:61:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Invalid seed. Use a decimal or hexadecimal number.\n");
+test/testqsort.c:65:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Seed must be equal or greater than 0x100000000.\n");
+test/testqsort.c:74:    SDL_Log("Using random seed 0x%08x%08x\n", rndctx.x, rndctx.c);
+test/testmultiaudio.c:81:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Too many devices (%d), clamping to 64...\n",
+test/testmultiaudio.c:90:        SDL_Log("playing on device #%d: ('%s')...", i, devname);
+test/testmultiaudio.c:97:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Open device failed: %s\n", SDL_GetError());
+test/testmultiaudio.c:112:            SDL_Log("done.\n");
+test/testmultiaudio.c:119:    SDL_Log("playing on all devices...\n");
+test/testmultiaudio.c:125:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Open device %d failed: %s\n", i, SDL_GetError());
+test/testmultiaudio.c:158:    SDL_Log("All done!\n");
+test/testmultiaudio.c:173:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testmultiaudio.c:177:    SDL_Log("Using audio driver: %s\n", SDL_GetCurrentAudioDriver());
+test/testmultiaudio.c:181:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Don't see any specific audio devices!\n");
+test/testmultiaudio.c:189:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", argv[1],
+test/testsprite2.c:69:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testsprite2.c:100:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testsprite2.c:105:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set blend mode: %s\n", SDL_GetError());
+test/testsprite2.c:274:        SDL_Log("%2.2f frames per second\n", fps);
+test/testsprite2.c:357:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory!\n");
+test/testsprite2.c:373:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory!\n");
+test/testdrawchessboard.c:109:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init fail : %s\n", SDL_GetError());
+test/testdrawchessboard.c:118:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Window creation fail : %s\n",SDL_GetError());
+test/testdrawchessboard.c:125:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Render creation for surface fail : %s\n",SDL_GetError());
+test/testerror.c:37:        SDL_Log("Thread '%s' is alive!\n", (char *) data);
+test/testerror.c:40:    SDL_Log("Child thread error string: %s\n", SDL_GetError());
+test/testerror.c:54:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testerror.c:64:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create thread: %s\n", SDL_GetError());
+test/testerror.c:68:    SDL_Log("Waiting for thread #1\n");
+test/testerror.c:72:    SDL_Log("Main thread error string: %s\n", SDL_GetError());
+test/testsensor.c:32:        SDL_snprintf(unknown_type, sizeof(unknown_type), "UNKNOWN (%d)", type);
+test/testsensor.c:41:        SDL_Log("Couldn't get sensor for sensor event\n");
+test/testsensor.c:47:        SDL_Log("Accelerometer update: %.2f, %.2f, %.2f\n", event->data[0], event->data[1], event->data[2]);
+test/testsensor.c:50:        SDL_Log("Gyro update: %.2f, %.2f, %.2f\n", event->data[0], event->data[1], event->data[2]);
+test/testsensor.c:53:        SDL_Log("Sensor update for sensor type %s\n", GetSensorTypeString(SDL_SensorGetType(sensor)));
+test/testsensor.c:66:        SDL_Log("Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testsensor.c:73:    SDL_Log("There are %d sensors available\n", num_sensors);
+test/testsensor.c:75:        SDL_Log("Sensor %d: %s, type %s, platform type %d\n",
+test/testsensor.c:84:                SDL_Log("Couldn't open sensor %d: %s\n", SDL_SensorGetDeviceInstanceID(i), SDL_GetError());
+test/testsensor.c:90:    SDL_Log("Opened %d sensors\n", num_opened);
+test/testintersections.c:94:    SDL_Log("adding line (%d, %d), (%d, %d)\n", x1, y1, x2, y2);
+test/testintersections.c:143:    SDL_Log("adding rect (%d, %d), (%d, %d) [%dx%d]\n", x1, y1, x2, y2,
+test/testintersections.c:358:        SDL_Log("%2.2f frames per second\n", fps);
+test/testoffscreen.c:69:    SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+test/testoffscreen.c:110:        SDL_Log("Couldn't initialize the offscreen video driver: %s\n",
+test/testoffscreen.c:121:        SDL_Log("Couldn't create window: %s\n",
+test/testoffscreen.c:129:        SDL_Log("Couldn't create renderer: %s\n",
+test/testoffscreen.c:143:    SDL_Log("Rendering %i frames offscreen\n", max_frames);
+test/testoffscreen.c:157:                SDL_Log("Frames remaining: %i rendering at %2.2f frames per second\n", max_frames - frames, fps);
+test/testpower.c:24:    SDL_Log("SDL-reported power info...\n");
+test/testpower.c:46:    SDL_Log("State: %s\n", statestr);
+test/testpower.c:49:        SDL_Log("Percent left: unknown\n");
+test/testpower.c:51:        SDL_Log("Percent left: %d%%\n", percent);
+test/testpower.c:55:        SDL_Log("Time left: unknown\n");
+test/testpower.c:57:        SDL_Log("Time left: %d minutes, %d seconds\n", (int) (seconds / 60),
+test/testpower.c:70:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init() failed: %s\n", SDL_GetError());
+test/testgamecontroller.c:79:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testgamecontroller.c:90:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testgamecontroller.c:111:        SDL_snprintf(title, titlelen, "%s%s", basetitle, name);
+test/testgamecontroller.c:131:            SDL_Log("Game controller device %d added.\n", (int) event.cdevice.which);
+test/testgamecontroller.c:137:                    SDL_Log("Couldn't open controller: %s\n", SDL_GetError());
+test/testgamecontroller.c:143:            SDL_Log("Game controller device %d removed.\n", (int) event.cdevice.which);
+test/testgamecontroller.c:154:            SDL_Log("Controller axis %s changed to %d\n", SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis)event.caxis.axis), event.caxis.value);
+test/testgamecontroller.c:158:            SDL_Log("Controller button %s %s\n", SDL_GameControllerGetStringForButton((SDL_GameControllerButton)event.cbutton.button), event.cbutton.state ? "pressed" : "released");
+test/testgamecontroller.c:225:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testgamecontroller.c:233:        SDL_Log("Supported mappings:\n");
+test/testgamecontroller.c:237:                SDL_Log("\t%s\n", mapping);
+test/testgamecontroller.c:241:        SDL_Log("\n");
+test/testgamecontroller.c:282:        SDL_Log("%s %d: %s (guid %s, VID 0x%.4x, PID 0x%.4x, player index = %d)\n",
+test/testgamecontroller.c:286:    SDL_Log("There are %d game controller(s) attached (%d joystick(s))\n", nController, SDL_NumJoysticks());
+test/testgamecontroller.c:293:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s\n", SDL_GetError());
+test/testgamecontroller.c:299:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s\n", SDL_GetError());
+test/testgamecontroller.c:351:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Joystick support.\n");
+test/testresample.c:33:        SDL_Log("USAGE: %s in.wav out.wav newfreq newchans\n", argv[0]);
+test/testresample.c:41:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init() failed: %s\n", SDL_GetError());
+test/testresample.c:46:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to load %s: %s\n", argv[1], SDL_GetError());
+test/testresample.c:53:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "failed to build CVT: %s\n", SDL_GetError());
+test/testresample.c:62:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory.\n");
+test/testresample.c:70:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Conversion failed: %s\n", SDL_GetError());
+test/testresample.c:80:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "fopen('%s') failed: %s\n", argv[2], SDL_GetError());
+test/testresample.c:107:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "fclose('%s') failed: %s\n", argv[2], SDL_GetError());
+test/loopwave.c:62:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open audio: %s\n", SDL_GetError());
+test/loopwave.c:124:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/loopwave.c:135:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", filename, SDL_GetError());
+test/loopwave.c:142:    SDL_Log("Available audio drivers:");
+test/loopwave.c:144:        SDL_Log("%i: %s", i, SDL_GetAudioDriver(i));
+test/loopwave.c:147:    SDL_Log("Using audio driver: %s\n", SDL_GetCurrentAudioDriver());
+test/testshape.c:62:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Shape requires at least one bitmap file as argument.");
+test/testshape.c:67:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize SDL video.");
+test/testshape.c:74:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not allocate memory.");
+test/testshape.c:87:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load surface from named bitmap file: %s", argv[i+1]);
+test/testshape.c:112:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create shaped window for SDL_Shape.");
+test/testshape.c:122:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create rendering context for SDL_Shape window.");
+test/testshape.c:140:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create texture for SDL_shape.");
+test/testshape.c:152:    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Changing to shaped bmp: %s", pictures[current_picture].name);
+test/testshape.c:170:                SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Changing to shaped bmp: %s", pictures[current_picture].name);
+test/checkkeys.c:45:    len = SDL_vsnprintf(*text, *maxlen, fmt, ap);
+test/checkkeys.c:102:    SDL_Log("Initial state:%s\n", message);
+test/checkkeys.c:134:    SDL_Log("%s\n", message);
+test/checkkeys.c:146:        SDL_snprintf(expanded + length, sizeof(expanded) - length, "\\x%.2x", (unsigned char)*spot);
+test/checkkeys.c:148:    SDL_Log("%s Text (%s): \"%s%s\"\n", eventtype, expanded, *text == '"' ? "\\" : "", text);
+test/checkkeys.c:176:                    SDL_Log("Stopping text input\n");
+test/checkkeys.c:179:                    SDL_Log("Starting text input\n");
+test/checkkeys.c:208:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/checkkeys.c:217:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create 640x480 window: %s\n",
+test/testhotplug.c:51:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testhotplug.c:59:    SDL_Log("There are %d joysticks at startup\n", SDL_NumJoysticks());
+test/testhotplug.c:61:        SDL_Log("There are %d haptic devices at startup\n", SDL_NumHaptics());
+test/testhotplug.c:76:                        SDL_Log("Only one joystick supported by this test\n");
+test/testhotplug.c:82:                        SDL_Log("Joy Added  : %d : %s\n", event.jdevice.which, SDL_JoystickName(joystick));
+test/testhotplug.c:90:                                    SDL_Log("Joy Haptic Opened\n");
+test/testhotplug.c:93:                                        SDL_Log("Could not init Rumble!: %s\n", SDL_GetError());
+test/testhotplug.c:98:                                    SDL_Log("Joy haptic open FAILED!: %s\n", SDL_GetError());
+test/testhotplug.c:103:                                SDL_Log("No haptic found\n");
+test/testhotplug.c:111:                        SDL_Log("Joy Removed: %d\n", event.jdevice.which);
+test/testhotplug.c:121:                        SDL_Log("Unknown joystick diconnected\n");
+test/testhotplug.c:126://                    SDL_Log("Axis Move: %d\n", event.jaxis.axis);
+test/testhotplug.c:132:                    SDL_Log("Button Press: %d\n", event.jbutton.button);
+test/testhotplug.c:138:                        SDL_Log("Exiting due to button press of button 0\n");
+test/testhotplug.c:143:                    SDL_Log("Button Release: %d\n", event.jbutton.button);
+test/testhotplug.c:158:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Joystick and haptic support.\n");
+test/testthread.c:53:    SDL_Log("Started thread %s: My thread id is %lu, thread data = %s\n",
+test/testthread.c:56:        SDL_Log("Thread '%s' is alive!\n", (char *) data);
+test/testthread.c:59:            SDL_Log("SDL_SetThreadPriority(%s):%d\n", getprioritystr(prio), SDL_SetThreadPriority(prio));
+test/testthread.c:66:    SDL_Log("Thread '%s' exiting!\n", (char *) data);
+test/testthread.c:73:    SDL_Log("Killed with SIGTERM, waiting 5 seconds to exit\n");
+test/testthread.c:90:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testthread.c:104:    SDL_Log("Main thread data initially: %s\n", (const char *)SDL_TLSGet(tls));
+test/testthread.c:109:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create thread: %s\n", SDL_GetError());
+test/testthread.c:113:    SDL_Log("Waiting for thread #1\n");
+test/testthread.c:117:    SDL_Log("Main thread data finally: %s\n", (const char *)SDL_TLSGet(tls));
+test/testthread.c:123:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create thread: %s\n", SDL_GetError());
+test/testime.c:116:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Failed to allocate %d KiB for glyph data.\n", (int)(unifontGlyphSize + 1023) / 1024);
+test/testime.c:125:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Failed to allocate %d KiB for texture pointer data.\n", (int)(unifontTextureSize + 1023) / 1024);
+test/testime.c:133:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Failed to open font file: %s\n", fontname);
+test/testime.c:149:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Unexpected end of hex file.\n");
+test/testime.c:164:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Could not find codepoint and glyph data separator symbol in hex file on line %d.\n", lineNumber);
+test/testime.c:170:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Malformed hexadecimal number in hex file on line %d.\n", lineNumber);
+test/testime.c:174:            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "unifont: Codepoint on line %d exceeded limit of 0x%x.\n", lineNumber, UNIFONT_MAX_CODEPOINT);
+test/testime.c:183:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Unexpected end of hex file.\n");
+test/testime.c:194:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Unexpected end of hex file.\n");
+test/testime.c:201:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Malformed hexadecimal glyph data in hex file on line %d.\n", lineNumber);
+test/testime.c:208:                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "unifont: Ignoring duplicate codepoint 0x%08x in hex file on line %d.\n", codepoint, lineNumber);
+test/testime.c:223:    SDL_Log("unifont: Loaded %u glyphs.\n", numGlyphs);
+test/testime.c:270:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Tried to load out of range texture %u.\n", textureID);
+test/testime.c:277:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Failed to allocate %d MiB for a texture.\n", UNIFONT_TEXTURE_SIZE / 1024 / 1024);
+test/testime.c:304:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "unifont: Failed to create texture %u for renderer %d.\n", textureID, i);
+test/testime.c:311:            SDL_Log("unifont error: Failed to update texture %u data for renderer %d.\n", textureID, i);
+test/testime.c:438:    SDL_Log("usage: testime [--font fontfile]\n");
+test/testime.c:682:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to find font: %s\n", TTF_GetError());
+test/testime.c:691:    SDL_Log("Using font: %s\n", fontname);
+test/testime.c:757:                    SDL_Log("Keyboard: scancode 0x%08X = %s, keycode 0x%08X = %s\n",
+test/testime.c:768:                    SDL_Log("Keyboard: text input \"%s\"\n", event.text.text);
+test/testime.c:773:                    SDL_Log("text inputed: %s\n", text);
+test/testime.c:782:                    SDL_Log("text editing \"%s\", selected range (%d, %d)\n",
+test/testlocale.c:21:        SDL_Log("Couldn't determine locales: %s", SDL_GetError());
+test/testlocale.c:25:        SDL_Log("Locales, in order of preference:");
+test/testlocale.c:28:            SDL_Log(" - %s%s%s", l->language, c ? "_" : "", c ? c : "");
+test/testlocale.c:31:        SDL_Log("%u locales seen.", total);
+test/testlocale.c:53:                        SDL_Log("Saw SDL_LOCALECHANGED event!");
+test/testnative.c:61:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testnative.c:73:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testnative.c:138:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL video: %s\n",
+test/testnative.c:152:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't find native window code for %s driver\n",
+test/testnative.c:156:    SDL_Log("Creating native window for %s driver\n", driver);
+test/testnative.c:159:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create native window\n");
+test/testnative.c:164:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create SDL window: %s\n", SDL_GetError());
+test/testnative.c:172:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s\n", SDL_GetError());
+test/testnative.c:191:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory!\n");
+test/testrumble.c:60:            SDL_Log("USAGE: %s [device]\n"
+test/testrumble.c:77:    SDL_Log("%d Haptic devices detected.\n", SDL_NumHaptics());
+test/testrumble.c:91:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find device matching '%s', aborting.\n",
+test/testrumble.c:99:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create the haptic device: %s\n",
+test/testrumble.c:103:        SDL_Log("Device: %s\n", SDL_HapticName(i));
+test/testrumble.c:105:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No Haptic devices found!\n");
+test/testrumble.c:113:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Rumble not supported!\n");
+test/testrumble.c:117:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to initialize rumble: %s\n", SDL_GetError());
+test/testrumble.c:120:    SDL_Log("Playing 2 second rumble at 0.5 magnitude.\n");
+test/testrumble.c:122:       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play rumble: %s\n", SDL_GetError() );
+test/testrumble.c:126:    SDL_Log("Stopping rumble.\n");
+test/testrumble.c:129:    SDL_Log("Playing 2 second rumble at 0.3 magnitude.\n");
+test/testrumble.c:131:       SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play rumble: %s\n", SDL_GetError() );
+test/testrumble.c:149:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Haptic support.\n");
+test/torturethread.c:51:    SDL_Log("Creating Thread %d\n", tid);
+test/torturethread.c:55:        SDL_snprintf(name, sizeof (name), "Child%d_%d", tid, i);
+test/torturethread.c:60:    SDL_Log("Thread '%d' waiting for signal\n", tid);
+test/torturethread.c:65:    SDL_Log("Thread '%d' sending signals to subthreads\n", tid);
+test/torturethread.c:71:    SDL_Log("Thread '%d' exiting!\n", tid);
+test/torturethread.c:87:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/torturethread.c:94:        SDL_snprintf(name, sizeof (name), "Parent%d", i);
+test/torturethread.c:99:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create thread: %s\n", SDL_GetError());
+test/testspriteminimal.c:52:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", file, SDL_GetError());
+test/testspriteminimal.c:83:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testkeys.c:31:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testkeys.c:35:        SDL_Log("Scancode #%d, \"%s\"\n", scancode,
+test/testhaptic.c:59:            SDL_Log("USAGE: %s [device]\n"
+test/testhaptic.c:76:    SDL_Log("%d Haptic devices detected.\n", SDL_NumHaptics());
+test/testhaptic.c:90:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find device matching '%s', aborting.\n",
+test/testhaptic.c:98:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create the haptic device: %s\n",
+test/testhaptic.c:102:        SDL_Log("Device: %s\n", SDL_HapticName(i));
+test/testhaptic.c:105:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No Haptic devices found!\n");
+test/testhaptic.c:117:    SDL_Log("\nUploading effects\n");
+test/testhaptic.c:120:        SDL_Log("   effect %d: Sine Wave\n", nefx);
+test/testhaptic.c:130:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:137:        SDL_Log("   effect %d: Sawtooth Up\n", nefx);
+test/testhaptic.c:146:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:154:        SDL_Log("   effect %d: Constant Force\n", nefx);
+test/testhaptic.c:164:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:172:        SDL_Log("   effect %d: Condition Spring\n", nefx);
+test/testhaptic.c:184:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:191:        SDL_Log("   effect %d: Condition Damper\n", nefx);
+test/testhaptic.c:202:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:209:        SDL_Log("   effect %d: Condition Inertia\n", nefx);
+test/testhaptic.c:221:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:228:        SDL_Log("   effect %d: Condition Friction\n", nefx);
+test/testhaptic.c:239:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:247:        SDL_Log("   effect %d: Ramp\n", nefx);
+test/testhaptic.c:259:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:267:        SDL_Log("   effect %d: Left/Right\n", nefx);
+test/testhaptic.c:274:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "UPLOADING EFFECT ERROR: %s\n", SDL_GetError());
+test/testhaptic.c:284:        SDL_Log("   Playing effect %d\n", i);
+test/testhaptic.c:304:    SDL_Log("\nAborting program execution.\n");
+test/testhaptic.c:322:    SDL_Log("   Supported effects [%d effects, %d playing]:\n",
+test/testhaptic.c:325:        SDL_Log("      constant\n");
+test/testhaptic.c:327:        SDL_Log("      sine\n");
+test/testhaptic.c:330:        SDL_Log("      square\n"); */
+test/testhaptic.c:332:        SDL_Log("      triangle\n");
+test/testhaptic.c:334:        SDL_Log("      sawtoothup\n");
+test/testhaptic.c:336:        SDL_Log("      sawtoothdown\n");
+test/testhaptic.c:338:        SDL_Log("      ramp\n");
+test/testhaptic.c:340:        SDL_Log("      friction\n");
+test/testhaptic.c:342:        SDL_Log("      spring\n");
+test/testhaptic.c:344:        SDL_Log("      damper\n");
+test/testhaptic.c:346:        SDL_Log("      inertia\n");
+test/testhaptic.c:348:        SDL_Log("      custom\n");
+test/testhaptic.c:350:        SDL_Log("      left/right\n");
+test/testhaptic.c:351:    SDL_Log("   Supported capabilities:\n");
+test/testhaptic.c:353:        SDL_Log("      gain\n");
+test/testhaptic.c:355:        SDL_Log("      autocenter\n");
+test/testhaptic.c:357:        SDL_Log("      status\n");
+test/testhaptic.c:365:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Haptic support.\n");
+test/testdraw2.c:300:        SDL_Log("%2.2f frames per second\n", fps);
+test/loopwavequeue.c:63:        SDL_Log("Device has %u bytes queued.\n", (unsigned int) queued);
+test/loopwavequeue.c:66:                SDL_Log("Device queued %u more bytes.\n", (unsigned int) wave.soundlen);
+test/loopwavequeue.c:68:                SDL_Log("Device FAILED to queue %u more bytes: %s\n", (unsigned int) wave.soundlen, SDL_GetError());
+test/loopwavequeue.c:84:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/loopwavequeue.c:95:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s\n", filename, SDL_GetError());
+test/loopwavequeue.c:115:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't open audio: %s\n", SDL_GetError());
+test/testgesture.c:191:                            SDL_Log("Fingers Down on device %"SDL_PRIs64": %d", id, SDL_GetNumTouchFingers(id));
+test/testgesture.c:202:                        SDL_Log("Wrote %i templates", SDL_SaveAllDollarTemplates(stream));
+test/testgesture.c:208:                        SDL_Log("Loaded: %i", SDL_LoadDollarTemplates(-1, stream));
+test/testgesture.c:216:                SDL_Log("Finger: %"SDL_PRIs64",x: %f, y: %f",event.tfinger.fingerId,
+test/testgesture.c:221:                SDL_Log("Finger: %"SDL_PRIs64" down - x: %f, y: %f",
+test/testgesture.c:226:                SDL_Log("Finger: %"SDL_PRIs64" up - x: %f, y: %f",
+test/testgesture.c:233:                SDL_Log("Multi Gesture: x = %f, y = %f, dAng = %f, dR = %f",
+test/testgesture.c:236:                SDL_Log("MG: numDownTouch = %i",event.mgesture.numFingers);
+test/testgesture.c:246:                SDL_Log("Gesture %"SDL_PRIs64" performed, error: %f",
+test/testgesture.c:251:                SDL_Log("Recorded gesture: %"SDL_PRIs64"",event.dgesture.gestureId);
+test/testfilesystem.c:27:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init() failed: %s\n", SDL_GetError());
+test/testfilesystem.c:33:      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't find base path: %s\n",
+test/testfilesystem.c:36:        SDL_Log("base path: '%s'\n", base_path);
+test/testfilesystem.c:42:      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't find pref path: %s\n",
+test/testfilesystem.c:45:        SDL_Log("pref path: '%s'\n", pref_path);
+test/testfilesystem.c:51:      SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't find pref path without organization: %s\n",
+test/testfilesystem.c:54:        SDL_Log("pref path: '%s'\n", pref_path);
+test/testver.c:33:    SDL_Log("Compiled with SDL 2.0 or newer\n");
+test/testver.c:35:    SDL_Log("Compiled with SDL older than 2.0\n");
+test/testver.c:38:    SDL_Log("Compiled version: %d.%d.%d.%d (%s)\n",
+test/testver.c:42:    SDL_Log("Linked version: %d.%d.%d.%d (%s)\n",
+test/testloadso.c:36:        SDL_Log("USAGE: %s <library> <functionname>\n", app);
+test/testloadso.c:37:        SDL_Log("       %s --hello <lib with puts()>\n", app);
+test/testloadso.c:43:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testloadso.c:58:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_LoadObject('%s') failed: %s\n",
+test/testloadso.c:64:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_LoadFunction('%s') failed: %s\n",
+test/testloadso.c:68:            SDL_Log("Found %s in %s at %p\n", symname, libname, fn);
+test/testloadso.c:70:                SDL_Log("Calling function...\n");
+test/testloadso.c:73:                SDL_Log("...apparently, we survived.  :)\n");
+test/testloadso.c:74:                SDL_Log("Unloading library...\n");
+test/testlock.c:41:    SDL_Log("Process %lu:  exiting\n", SDL_ThreadID());
+test/testlock.c:56:    SDL_Log("Process %lu:  Cleaning up...\n", id == mainthread ? 0 : id);
+test/testlock.c:70:        SDL_Log("Process %lu ready to work\n", SDL_ThreadID());
+test/testlock.c:72:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't lock mutex: %s", SDL_GetError());
+test/testlock.c:75:        SDL_Log("Process %lu, working!\n", SDL_ThreadID());
+test/testlock.c:77:        SDL_Log("Process %lu, done!\n", SDL_ThreadID());
+test/testlock.c:79:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't unlock mutex: %s", SDL_GetError());
+test/testlock.c:86:        SDL_Log("Process %lu:  raising SIGTERM\n", SDL_ThreadID());
+test/testlock.c:103:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s\n", SDL_GetError());
+test/testlock.c:111:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create mutex: %s\n", SDL_GetError());
+test/testlock.c:116:    SDL_Log("Main thread: %lu\n", mainthread);
+test/testlock.c:120:        SDL_snprintf(name, sizeof (name), "Worker%d", i);
+test/testlock.c:122:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create thread!\n");
+test/controllermap.c:170:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/controllermap.c:184:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/controllermap.c:296:            SDL_Log("Configuring button binding for button %d\n", pBinding->value.button);
+test/controllermap.c:299:            SDL_Log("Configuring axis binding for axis %d %d/%d committed = %s\n", pBinding->value.axis.axis, pBinding->value.axis.axis_min, pBinding->value.axis.axis_max, pBinding->committed ? "true" : "false");
+test/controllermap.c:302:            SDL_Log("Configuring hat binding for hat %d %d\n", pBinding->value.hat.hat, pBinding->value.hat.hat_mask);
+test/controllermap.c:374:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s\n", SDL_GetError());
+test/controllermap.c:388:    SDL_Log("Watching joystick %d: (%s)\n", SDL_JoystickInstanceID(joystick),
+test/controllermap.c:390:    SDL_Log("Joystick has %d axes, %d hats, %d balls, and %d buttons\n",
+test/controllermap.c:394:    SDL_Log("\n\n\
+test/controllermap.c:483:                    SDL_Log("AXIS %d nValue %d nCurrentDistance %d nFarthestDistance %d\n", event.jaxis.axis, nValue, nCurrentDistance, nFarthestDistance);
+test/controllermap.c:505:                        SDL_Log("HAT %d %d\n", event.jhat.hat, event.jhat.value);
+test/controllermap.c:523:                    SDL_Log("BUTTON %d\n", event.jbutton.button);
+test/controllermap.c:662:                SDL_snprintf(pszElement, sizeof(pszElement), "b%d", pBinding->value.button);
+test/controllermap.c:667:                    SDL_snprintf(pszElement, sizeof(pszElement), "-a%d", pBinding->value.axis.axis);
+test/controllermap.c:670:                    SDL_snprintf(pszElement, sizeof(pszElement), "+a%d", pBinding->value.axis.axis);
+test/controllermap.c:672:                    SDL_snprintf(pszElement, sizeof(pszElement), "a%d", pBinding->value.axis.axis);
+test/controllermap.c:680:                SDL_snprintf(pszElement, sizeof(pszElement), "h%d.%d", pBinding->value.hat.hat, pBinding->value.hat.hat_mask);
+test/controllermap.c:690:        SDL_Log("Mapping:\n\n%s\n\n", mapping);
+test/controllermap.c:692:        printf("%s\n", mapping);
+test/controllermap.c:713:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/controllermap.c:722:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s\n", SDL_GetError());
+test/controllermap.c:746:    SDL_Log("There are %d joysticks attached\n", SDL_NumJoysticks());
+test/controllermap.c:749:        SDL_Log("Joystick %d: %s\n", i, name ? name : "Unknown Joystick");
+test/controllermap.c:752:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_JoystickOpen(%d) failed: %s\n", i,
+test/controllermap.c:758:            SDL_Log("       axes: %d\n", SDL_JoystickNumAxes(joystick));
+test/controllermap.c:759:            SDL_Log("      balls: %d\n", SDL_JoystickNumBalls(joystick));
+test/controllermap.c:760:            SDL_Log("       hats: %d\n", SDL_JoystickNumHats(joystick));
+test/controllermap.c:761:            SDL_Log("    buttons: %d\n", SDL_JoystickNumButtons(joystick));
+test/controllermap.c:762:            SDL_Log("instance id: %d\n", SDL_JoystickInstanceID(joystick));
+test/controllermap.c:763:            SDL_Log("       guid: %s\n", guid);
+test/controllermap.c:764:            SDL_Log("    VID/PID: 0x%.4x/0x%.4x\n", SDL_JoystickGetVendor(joystick), SDL_JoystickGetProduct(joystick));
+test/controllermap.c:771:        SDL_Log("Couldn't open joystick 0: %s\n", SDL_GetError());
+test/controllermap.c:789:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Joystick support.\n");
+test/testautomation_stdlib.c:44:stdlib_snprintf(void *arg)
+test/testautomation_stdlib.c:50:  result = SDL_snprintf(text, sizeof(text), "%s", "foo");
+test/testautomation_stdlib.c:52:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%s\", \"foo\")");
+test/testautomation_stdlib.c:56:  result = SDL_snprintf(text, 2, "%s", "foo");
+test/testautomation_stdlib.c:58:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%s\", \"foo\") with buffer size 2");
+test/testautomation_stdlib.c:62:  result = SDL_snprintf(NULL, 0, "%s", "foo");
+test/testautomation_stdlib.c:65:  result = SDL_snprintf(text, sizeof(text), "%f", 1.0);
+test/testautomation_stdlib.c:67:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%f\", 1.0)");
+test/testautomation_stdlib.c:71:  result = SDL_snprintf(text, sizeof(text), "%.f", 1.0);
+test/testautomation_stdlib.c:73:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%.f\", 1.0)");
+test/testautomation_stdlib.c:77:  result = SDL_snprintf(text, sizeof(text), "%#.f", 1.0);
+test/testautomation_stdlib.c:79:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%#.f\", 1.0)");
+test/testautomation_stdlib.c:83:  result = SDL_snprintf(text, sizeof(text), "%f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:85:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%f\", 1.0 + 1.0 / 3.0)");
+test/testautomation_stdlib.c:89:  result = SDL_snprintf(text, sizeof(text), "%+f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:91:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%+f\", 1.0 + 1.0 / 3.0)");
+test/testautomation_stdlib.c:95:  result = SDL_snprintf(text, sizeof(text), "%.2f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:97:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%.2f\", 1.0 + 1.0 / 3.0)");
+test/testautomation_stdlib.c:101:  result = SDL_snprintf(text, sizeof(text), "%6.2f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:103:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%6.2f\", 1.0 + 1.0 / 3.0)");
+test/testautomation_stdlib.c:107:  result = SDL_snprintf(text, sizeof(text), "%06.2f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:109:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%06.2f\", 1.0 + 1.0 / 3.0)");
+test/testautomation_stdlib.c:113:  result = SDL_snprintf(text, 5, "%06.2f", 1.0 + 1.0 / 3.0);
+test/testautomation_stdlib.c:115:  SDLTest_AssertPass("Call to SDL_snprintf(\"%%06.2f\", 1.0 + 1.0 / 3.0) with buffer size 5");
+test/testgles.c:178:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Out of memory!\n");
+test/testgles.c:186:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_GL_CreateContext(): %s\n", SDL_GetError());
+test/testgles.c:198:    SDL_Log("Screen bpp: %d\n", SDL_BITSPERPIXEL(mode.format));
+test/testgles.c:199:    SDL_Log("\n");
+test/testgles.c:200:    SDL_Log("Vendor     : %s\n", glGetString(GL_VENDOR));
+test/testgles.c:201:    SDL_Log("Renderer   : %s\n", glGetString(GL_RENDERER));
+test/testgles.c:202:    SDL_Log("Version    : %s\n", glGetString(GL_VERSION));
+test/testgles.c:203:    SDL_Log("Extensions : %s\n", glGetString(GL_EXTENSIONS));
+test/testgles.c:204:    SDL_Log("\n");
+test/testgles.c:208:        SDL_Log("SDL_GL_RED_SIZE: requested %d, got %d\n", 5, value);
+test/testgles.c:210:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_RED_SIZE: %s\n",
+test/testgles.c:215:        SDL_Log("SDL_GL_GREEN_SIZE: requested %d, got %d\n", 5, value);
+test/testgles.c:217:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_GREEN_SIZE: %s\n",
+test/testgles.c:222:        SDL_Log("SDL_GL_BLUE_SIZE: requested %d, got %d\n", 5, value);
+test/testgles.c:224:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_BLUE_SIZE: %s\n",
+test/testgles.c:229:        SDL_Log("SDL_GL_DEPTH_SIZE: requested %d, got %d\n", depth, value);
+test/testgles.c:231:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_DEPTH_SIZE: %s\n",
+test/testgles.c:237:            SDL_Log("SDL_GL_MULTISAMPLEBUFFERS: requested 1, got %d\n", value);
+test/testgles.c:239:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLEBUFFERS: %s\n",
+test/testgles.c:244:            SDL_Log("SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa,
+test/testgles.c:247:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLESAMPLES: %s\n",
+test/testgles.c:254:            SDL_Log("SDL_GL_ACCELERATED_VISUAL: requested 1, got %d\n", value);
+test/testgles.c:256:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_ACCELERATED_VISUAL: %s\n",
+test/testgles.c:267:            SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles.c:301:                                    SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles.c:322:                SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles.c:335:        SDL_Log("%2.2f frames per second\n",
+test/testgles.c:349:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No OpenGL ES support on this system\n");
+test/testjoystick.c:80:    SDL_Log("Joystick\n");
+test/testjoystick.c:81:    SDL_Log("       name: %s\n", SDL_JoystickName(joystick));
+test/testjoystick.c:82:    SDL_Log("       type: %s\n", type);
+test/testjoystick.c:83:    SDL_Log("       axes: %d\n", SDL_JoystickNumAxes(joystick));
+test/testjoystick.c:84:    SDL_Log("      balls: %d\n", SDL_JoystickNumBalls(joystick));
+test/testjoystick.c:85:    SDL_Log("       hats: %d\n", SDL_JoystickNumHats(joystick));
+test/testjoystick.c:86:    SDL_Log("    buttons: %d\n", SDL_JoystickNumButtons(joystick));
+test/testjoystick.c:87:    SDL_Log("instance id: %d\n", SDL_JoystickInstanceID(joystick));
+test/testjoystick.c:88:    SDL_Log("       guid: %s\n", guid);
+test/testjoystick.c:89:    SDL_Log("    VID/PID: 0x%.4x/0x%.4x\n", SDL_JoystickGetVendor(joystick), SDL_JoystickGetProduct(joystick));
+test/testjoystick.c:113:            SDL_Log("Joystick device %d added.\n", (int) event.jdevice.which);
+test/testjoystick.c:119:                    SDL_Log("Couldn't open joystick: %s\n", SDL_GetError());
+test/testjoystick.c:125:            SDL_Log("Joystick device %d removed.\n", (int) event.jdevice.which);
+test/testjoystick.c:133:            SDL_Log("Joystick %d axis %d value: %d\n",
+test/testjoystick.c:138:            SDL_Log("Joystick %d hat %d value:",
+test/testjoystick.c:141:                SDL_Log(" centered");
+test/testjoystick.c:143:                SDL_Log(" up");
+test/testjoystick.c:145:                SDL_Log(" right");
+test/testjoystick.c:147:                SDL_Log(" down");
+test/testjoystick.c:149:                SDL_Log(" left");
+test/testjoystick.c:150:            SDL_Log("\n");
+test/testjoystick.c:153:            SDL_Log("Joystick %d ball %d delta: (%d,%d)\n",
+test/testjoystick.c:158:            SDL_Log("Joystick %d button %d down\n",
+test/testjoystick.c:166:            SDL_Log("Joystick %d button %d up\n",
+test/testjoystick.c:266:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testjoystick.c:275:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window: %s\n", SDL_GetError());
+test/testjoystick.c:281:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create renderer: %s\n", SDL_GetError());
+test/testjoystick.c:312:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL compiled without Joystick support.\n");
+test/testtimer.c:36:    SDL_Log("Timer %d : param = %d\n", interval, (int) (uintptr_t) param);
+test/testtimer.c:52:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testtimer.c:67:    SDL_Log("Waiting 10 seconds\n");
+test/testtimer.c:75:        SDL_Log("Timer resolution: desired = %d ms, actual = %f ms\n",
+test/testtimer.c:80:    SDL_Log("Testing multiple timers...\n");
+test/testtimer.c:83:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create timer 1: %s\n", SDL_GetError());
+test/testtimer.c:86:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create timer 2: %s\n", SDL_GetError());
+test/testtimer.c:89:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,"Could not create timer 3: %s\n", SDL_GetError());
+test/testtimer.c:92:    SDL_Log("Waiting 10 seconds\n");
+test/testtimer.c:95:    SDL_Log("Removing timer 1 and waiting 5 more seconds\n");
+test/testtimer.c:108:    SDL_Log("1 million iterations of ticktock took %f ms\n", (double)((now - start)*1000) / SDL_GetPerformanceFrequency());
+test/testtimer.c:110:    SDL_Log("Performance counter frequency: %"SDL_PRIu64"\n", SDL_GetPerformanceFrequency());
+test/testtimer.c:116:    SDL_Log("Delay 1 second = %d ms in ticks, %f ms according to performance counter\n", (now32-start32), (double)((now - start)*1000) / SDL_GetPerformanceFrequency());
+test/testiconv.c:60:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to open %s\n", argv[1]);
+test/testiconv.c:75:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "FAIL: %s\n", formats[i]);
+test/testgles2.c:97:            SDL_Log("glGetError() = %i (0x%.8x) at line %i\n", glError, glError, __LINE__); \
+test/testgles2.c:224:        SDL_Log("Shader compilation failed: %s", buffer);fflush(stderr);
+test/testgles2.c:438:                                SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles2.c:461:              SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles2.c:552:        SDL_Log("Out of memory!\n");
+test/testgles2.c:560:            SDL_Log("SDL_GL_CreateContext(): %s\n", SDL_GetError());
+test/testgles2.c:567:        SDL_Log("Could not load GLES2 functions\n");
+test/testgles2.c:581:    SDL_Log("Screen bpp: %d\n", SDL_BITSPERPIXEL(mode.format));
+test/testgles2.c:582:    SDL_Log("\n");
+test/testgles2.c:583:    SDL_Log("Vendor     : %s\n", ctx.glGetString(GL_VENDOR));
+test/testgles2.c:584:    SDL_Log("Renderer   : %s\n", ctx.glGetString(GL_RENDERER));
+test/testgles2.c:585:    SDL_Log("Version    : %s\n", ctx.glGetString(GL_VERSION));
+test/testgles2.c:586:    SDL_Log("Extensions : %s\n", ctx.glGetString(GL_EXTENSIONS));
+test/testgles2.c:587:    SDL_Log("\n");
+test/testgles2.c:591:        SDL_Log("SDL_GL_RED_SIZE: requested %d, got %d\n", 5, value);
+test/testgles2.c:593:        SDL_Log( "Failed to get SDL_GL_RED_SIZE: %s\n",
+test/testgles2.c:598:        SDL_Log("SDL_GL_GREEN_SIZE: requested %d, got %d\n", 5, value);
+test/testgles2.c:600:        SDL_Log( "Failed to get SDL_GL_GREEN_SIZE: %s\n",
+test/testgles2.c:605:        SDL_Log("SDL_GL_BLUE_SIZE: requested %d, got %d\n", 5, value);
+test/testgles2.c:607:        SDL_Log( "Failed to get SDL_GL_BLUE_SIZE: %s\n",
+test/testgles2.c:612:        SDL_Log("SDL_GL_DEPTH_SIZE: requested %d, got %d\n", depth, value);
+test/testgles2.c:614:        SDL_Log( "Failed to get SDL_GL_DEPTH_SIZE: %s\n",
+test/testgles2.c:620:            SDL_Log("SDL_GL_MULTISAMPLEBUFFERS: requested 1, got %d\n", value);
+test/testgles2.c:622:            SDL_Log( "Failed to get SDL_GL_MULTISAMPLEBUFFERS: %s\n",
+test/testgles2.c:627:            SDL_Log("SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa,
+test/testgles2.c:630:            SDL_Log( "Failed to get SDL_GL_MULTISAMPLESAMPLES: %s\n",
+test/testgles2.c:637:            SDL_Log("SDL_GL_ACCELERATED_VISUAL: requested 1, got %d\n", value);
+test/testgles2.c:639:            SDL_Log( "Failed to get SDL_GL_ACCELERATED_VISUAL: %s\n",
+test/testgles2.c:652:            SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
+test/testgles2.c:712:        SDL_Log("%2.2f frames per second\n",
+test/testgles2.c:726:    SDL_Log("No OpenGL ES support on this system\n");
+test/testplatform.c:55:            SDL_Log("sizeof(Uint8) != 1, instead = %u\n",
+test/testplatform.c:61:            SDL_Log("sizeof(Uint16) != 2, instead = %u\n",
+test/testplatform.c:67:            SDL_Log("sizeof(Uint32) != 4, instead = %u\n",
+test/testplatform.c:73:            SDL_Log("sizeof(Uint64) != 8, instead = %u\n",
+test/testplatform.c:78:        SDL_Log("All data types are the expected size.\n");
+test/testplatform.c:103:        SDL_Log("Detected a %s endian machine.\n",
+test/testplatform.c:113:            SDL_Log("Actually a %s endian machine!\n",
+test/testplatform.c:119:        SDL_Log("Value 16 = 0x%X, swapped = 0x%X\n", value16,
+test/testplatform.c:124:            SDL_Log("16 bit value swapped incorrectly!\n");
+test/testplatform.c:129:        SDL_Log("Value 32 = 0x%X, swapped = 0x%X\n", value32,
+test/testplatform.c:134:            SDL_Log("32 bit value swapped incorrectly!\n");
+test/testplatform.c:139:        SDL_Log("Value 64 = 0x%"SDL_PRIX64", swapped = 0x%"SDL_PRIX64"\n", value64,
+test/testplatform.c:144:            SDL_Log("64 bit value swapped incorrectly!\n");
+test/testplatform.c:356:                SDL_Log("%s(0x%08X%08X, 0x%08X%08X, %3d, produced: 0x%08X%08X, expected: 0x%08X%08X\n",
+test/testplatform.c:362:        SDL_Log("All 64bit instrinsic tests passed\n");
+test/testplatform.c:370:        SDL_Log("CPU count: %d\n", SDL_GetCPUCount());
+test/testplatform.c:371:        SDL_Log("CPU cache line size: %d\n", SDL_GetCPUCacheLineSize());
+test/testplatform.c:372:        SDL_Log("RDTSC %s\n", SDL_HasRDTSC()? "detected" : "not detected");
+test/testplatform.c:373:        SDL_Log("AltiVec %s\n", SDL_HasAltiVec()? "detected" : "not detected");
+test/testplatform.c:374:        SDL_Log("MMX %s\n", SDL_HasMMX()? "detected" : "not detected");
+test/testplatform.c:375:        SDL_Log("3DNow! %s\n", SDL_Has3DNow()? "detected" : "not detected");
+test/testplatform.c:376:        SDL_Log("SSE %s\n", SDL_HasSSE()? "detected" : "not detected");
+test/testplatform.c:377:        SDL_Log("SSE2 %s\n", SDL_HasSSE2()? "detected" : "not detected");
+test/testplatform.c:378:        SDL_Log("SSE3 %s\n", SDL_HasSSE3()? "detected" : "not detected");
+test/testplatform.c:379:        SDL_Log("SSE4.1 %s\n", SDL_HasSSE41()? "detected" : "not detected");
+test/testplatform.c:380:        SDL_Log("SSE4.2 %s\n", SDL_HasSSE42()? "detected" : "not detected");
+test/testplatform.c:381:        SDL_Log("AVX %s\n", SDL_HasAVX()? "detected" : "not detected");
+test/testplatform.c:382:        SDL_Log("AVX2 %s\n", SDL_HasAVX2()? "detected" : "not detected");
+test/testplatform.c:383:        SDL_Log("AVX-512F %s\n", SDL_HasAVX512F()? "detected" : "not detected");
+test/testplatform.c:384:        SDL_Log("NEON %s\n", SDL_HasNEON()? "detected" : "not detected");
+test/testplatform.c:385:        SDL_Log("System RAM %d MB\n", SDL_GetSystemRAM());
+test/testplatform.c:409:            SDL_Log("'%s', %s (%s:%d), triggered %u times, always ignore: %s.\n",
+test/testplatform.c:432:        SDL_Log("This system is running %s\n", SDL_GetPlatform());
+test/testdisplayinfo.c:26:    SDL_Log("%s: fmt=%s w=%d h=%d refresh=%d\n",
+test/testdisplayinfo.c:42:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testdisplayinfo.c:46:    SDL_Log("Using video target '%s'.\n", SDL_GetCurrentVideoDriver());
+test/testdisplayinfo.c:49:    SDL_Log("See %d displays.\n", num_displays);
+test/testdisplayinfo.c:58:        SDL_Log("%d: \"%s\" (%dx%d, (%d, %d)), %d modes.\n", dpy, SDL_GetDisplayName(dpy), rect.w, rect.h, rect.x, rect.y, num_modes);
+test/testdisplayinfo.c:61:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "    DPI: failed to query (%s)\n", SDL_GetError());
+test/testdisplayinfo.c:63:            SDL_Log("    DPI: ddpi=%f; hdpi=%f; vdpi=%f\n", ddpi, hdpi, vdpi);
+test/testdisplayinfo.c:67:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "    CURRENT: failed to query (%s)\n", SDL_GetError());
+test/testdisplayinfo.c:73:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "    DESKTOP: failed to query (%s)\n", SDL_GetError());
+test/testdisplayinfo.c:80:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "    MODE %d: failed to query (%s)\n", m, SDL_GetError());
+test/testdisplayinfo.c:83:                SDL_snprintf(prefix, sizeof (prefix), "    MODE %d", m);
+test/testdisplayinfo.c:88:        SDL_Log("\n");
+test/testoverlay2.c:165:    SDL_Log("Usage: %s [arg] [arg] [arg] ...\n", argv0);
+test/testoverlay2.c:166:    SDL_Log("\n");
+test/testoverlay2.c:167:    SDL_Log("Where 'arg' is any of the following options:\n");
+test/testoverlay2.c:168:    SDL_Log("\n");
+test/testoverlay2.c:169:    SDL_Log("    -fps <frames per second>\n");
+test/testoverlay2.c:170:    SDL_Log("    -nodelay\n");
+test/testoverlay2.c:171:    SDL_Log("    -format <fmt> (one of the: YV12, IYUV, YUY2, UYVY, YVYU)\n");
+test/testoverlay2.c:172:    SDL_Log("    -scale <scale factor> (initial scale of the overlay)\n");
+test/testoverlay2.c:173:    SDL_Log("    -help (shows this help)\n");
+test/testoverlay2.c:174:    SDL_Log("\n");
+test/testoverlay2.c:175:    SDL_Log("Press ESC to exit, or SPACE to freeze the movie while application running.\n");
+test/testoverlay2.c:176:    SDL_Log("\n");
+test/testoverlay2.c:252:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testoverlay2.c:261:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:266:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:273:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:285:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:290:                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:297:                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+test/testoverlay2.c:306:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unrecognized option: %s.\n", argv[1]);
+test/testoverlay2.c:314:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Can't allocate memory for movie !\n");
+test/testoverlay2.c:321:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Can't find the file moose.dat !\n");
+test/testoverlay2.c:339:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create window: %s\n", SDL_GetError());
+test/testoverlay2.c:346:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create renderer: %s\n", SDL_GetError());
+test/testoverlay2.c:353:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't set create texture: %s\n", SDL_GetError());
+test/testsem.c:32:        SDL_Log("Thread number %d has got the semaphore (value = %d)!\n",
+test/testsem.c:36:        SDL_Log("Thread number %d has released the semaphore (value = %d)!\n",
+test/testsem.c:40:    SDL_Log("Thread number %d exiting.\n", threadnum);
+test/testsem.c:59:    SDL_Log("Waiting 2 seconds on semaphore\n");
+test/testsem.c:69:        SDL_Log("Wait done.\n");
+test/testsem.c:71:        SDL_Log("Wait took %d milliseconds\n", duration);
+test/testsem.c:75:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_SemWaitTimeout returned: %d; expected: %d\n", retval, SDL_MUTEX_TIMEDOUT);
+test/testsem.c:89:        SDL_Log("Usage: %s init_value\n", argv[0]);
+test/testsem.c:95:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s\n", SDL_GetError());
+test/testsem.c:104:    SDL_Log("Running %d threads, semaphore value = %d\n", NUM_THREADS,
+test/testsem.c:109:        SDL_snprintf(name, sizeof (name), "Thread%u", (unsigned int) i);
+test/testsem.c:117:    SDL_Log("Waiting for threads to finish\n");
+test/testsem.c:122:    SDL_Log("Finished waiting for threads\n");
+test/testhittesting.c:25:            SDL_Log("HIT-TEST: DRAGGABLE\n");
+test/testhittesting.c:33:        SDL_Log("HIT-TEST: RESIZE_" #name "\n"); \
+test/testhittesting.c:55:    SDL_Log("HIT-TEST: NORMAL\n");
+test/testhittesting.c:72:        SDL_Log("Enabling hit-testing failed!\n");
+test/testhittesting.c:94:                    SDL_Log("button down!\n");
+test/testhittesting.c:98:                    SDL_Log("button up!\n");
+test/testhittesting.c:103:                        SDL_Log("Window event moved to (%d, %d)!\n", (int) e.window.data1, (int) e.window.data2);
+test/testscale.c:58:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't load %s: %s", file, SDL_GetError());
+test/testscale.c:89:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture: %s\n", SDL_GetError());
+test/testscale.c:207:        SDL_Log("%2.2f frames per second\n", fps);
+test/testbounds.c:20:        SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s", SDL_GetError());
+test/testbounds.c:29:        SDL_Log("Display #%d ('%s'): bounds={(%d,%d),%dx%d}, usable={(%d,%d),%dx%d}",
+test/testgl2.c:280:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL_GL_CreateContext(): %s\n", SDL_GetError());
+test/testgl2.c:286:        SDL_Log("Could not load GL functions\n");
+test/testgl2.c:305:    SDL_Log("Screen BPP    : %d\n", SDL_BITSPERPIXEL(mode.format));
+test/testgl2.c:306:    SDL_Log("Swap Interval : %d\n", SDL_GL_GetSwapInterval());
+test/testgl2.c:308:    SDL_Log("Window Size   : %d,%d\n", dw, dh);
+test/testgl2.c:310:    SDL_Log("Draw Size     : %d,%d\n", dw, dh);
+test/testgl2.c:311:    SDL_Log("\n");
+test/testgl2.c:312:    SDL_Log("Vendor        : %s\n", ctx.glGetString(GL_VENDOR));
+test/testgl2.c:313:    SDL_Log("Renderer      : %s\n", ctx.glGetString(GL_RENDERER));
+test/testgl2.c:314:    SDL_Log("Version       : %s\n", ctx.glGetString(GL_VERSION));
+test/testgl2.c:315:    SDL_Log("Extensions    : %s\n", ctx.glGetString(GL_EXTENSIONS));
+test/testgl2.c:316:    SDL_Log("\n");
+test/testgl2.c:320:        SDL_Log("SDL_GL_RED_SIZE: requested %d, got %d\n", 5, value);
+test/testgl2.c:322:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_RED_SIZE: %s\n", SDL_GetError());
+test/testgl2.c:326:        SDL_Log("SDL_GL_GREEN_SIZE: requested %d, got %d\n", 5, value);
+test/testgl2.c:328:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_GREEN_SIZE: %s\n", SDL_GetError());
+test/testgl2.c:332:        SDL_Log("SDL_GL_BLUE_SIZE: requested %d, got %d\n", 5, value);
+test/testgl2.c:334:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_BLUE_SIZE: %s\n", SDL_GetError());
+test/testgl2.c:338:        SDL_Log("SDL_GL_DEPTH_SIZE: requested %d, got %d\n", 16, value);
+test/testgl2.c:340:        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_DEPTH_SIZE: %s\n", SDL_GetError());
+test/testgl2.c:345:            SDL_Log("SDL_GL_MULTISAMPLEBUFFERS: requested 1, got %d\n", value);
+test/testgl2.c:347:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLEBUFFERS: %s\n",
+test/testgl2.c:352:            SDL_Log("SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa,
+test/testgl2.c:355:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLESAMPLES: %s\n",
+test/testgl2.c:362:            SDL_Log("SDL_GL_ACCELERATED_VISUAL: requested %d, got %d\n", accel,
+test/testgl2.c:365:            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_ACCELERATED_VISUAL: %s\n",
+test/testgl2.c:403:            SDL_Log("Swap interval to be set to %d\n", swap_interval);
+test/testgl2.c:424:        SDL_Log("%2.2f frames per second\n",
+test/testgl2.c:436:    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No OpenGL support on this system\n");

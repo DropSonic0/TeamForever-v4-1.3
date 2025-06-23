@@ -1,0 +1,48 @@
+src/video/psl1ght/SDL_PSL1GHTmodes.c:35:    deprintf(1, "+PSL1GHT_InitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:75:    deprintf(1, "-PSL1GHT_InitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:123:    deprintf(1, "+PSL1GHT_GetDisplayModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:134:        deprintf(2, "Adding resolution %u x %u\n", ps3fb_modedb[n].w, ps3fb_modedb[n].h);
+src/video/psl1ght/SDL_PSL1GHTmodes.c:137:    deprintf(1, "-PSL1GHT_GetDisplayModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:143:    deprintf(1, "+PSL1GHT_SetDisplayMode()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:148:    deprintf(2, "Setting PS3_MODE to %u\n", dispdata->vconfig.resolution);
+src/video/psl1ght/SDL_PSL1GHTmodes.c:151:        deprintf(2, "Could not set PS3FB_MODE\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:162:    deprintf(1, "-PSL1GHT_SetDisplayMode()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:169:    deprintf(1, "+PSL1GHT_QuitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTmodes.c:180:    deprintf(1, "-PSL1GHT_QuitModes()\n");
+src/video/psl1ght/SDL_PSL1GHTevents.c:51:	    deprintf(1, "Quit game requested\n");
+src/video/psl1ght/SDL_PSL1GHTevents.c:66:	    deprintf(1, "Unhandled event: %08llX\n", (unsigned long long int)status);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:40:#define deprintf(...) printf(__VA_ARGS__)
+src/audio/psl1ght/SDL_psl1ghtaudio.c:42:#define deprintf(...)
+src/audio/psl1ght/SDL_psl1ghtaudio.c:48:	deprintf( "PSL1GHT_AUD_OpenDevice(%08X.%08X, %s, %d)\n", SHW64(this), devname, iscapture);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:86:	deprintf("audioPortOpen: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:87:	deprintf("  portNum: %d\n",_portNum);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:90:	deprintf("audioGetPortConfig: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:91:	deprintf("  readIndex: 0x%8X\n",_config.readIndex);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:92:	deprintf("  status: %d\n",_config.status);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:93:	deprintf("  channelCount: %ld\n",_config.channelCount);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:94:	deprintf("  numBlocks: %ld\n",_config.numBlocks);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:95:	deprintf("  portSize: %d\n",_config.portSize);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:96:	deprintf("  audioDataStart: 0x%8X\n",_config.audioDataStart);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:100:	printf("audioCreateNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:104:	printf("audioSetNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:108:	printf("sysEentQueueDrain: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:111:	deprintf("audioPortStart: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:127:	deprintf( "PSL1GHT_AUD_PlayDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:132:		deprintf( "\tplaying too fast... waiting a ms\n");
+src/audio/psl1ght/SDL_psl1ghtaudio.c:147:	deprintf( "PSL1GHT_AUD_CloseDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:150:	deprintf("audioPortStop: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:152:	deprintf("audioRemoveNotifyEventQueue: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:154:	deprintf("audioPortClose: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:156:	deprintf("sysEventQueueDestroy: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:158:	deprintf("audioQuit: %d\n",ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:167:	//deprintf( "PSL1GHT_AUD_GetDeviceBuf(%08X.%08X) at %d ms\n", SHW64(this), SDL_GetTicks());
+src/audio/psl1ght/SDL_psl1ghtaudio.c:173:	//deprintf( "\tWriting to buffer %d \n", filling);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:174:	// deprintf( "\tbuffer address (%08X.%08X => %08X.%08X)\n", SHW64(_config.audioDataStart), SHW64(dma_buf));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:185:	//deprintf( "ALSA_WaitDevice(%08X.%08X)\n", SHW64(this));
+src/audio/psl1ght/SDL_psl1ghtaudio.c:190:	//deprintf( "sysEventQueueReceive: %08X\n", ret);
+src/audio/psl1ght/SDL_psl1ghtaudio.c:197:	deprintf( "PSL1GHT_AUD_Init(%08X.%08X)\n", SHW64(impl));
+src/joystick/psl1ght/SDL_sysjoystick.c:35:#define pdprintf(x) printf(x)
+src/joystick/psl1ght/SDL_sysjoystick.c:65:	pdprintf("SDL_SYS_JoystickInit\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:72:		pdprintf("\tPad initialized\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:96:	pdprintf("\tGot info\n");
+src/joystick/psl1ght/SDL_sysjoystick.c:111:				sprintf( joy_data[i].name, "PAD%02X", i);

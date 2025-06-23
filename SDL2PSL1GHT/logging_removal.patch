@@ -1,0 +1,1441 @@
+--- a/src/SDL_assert.c
++++ b/src/SDL_assert.c
+@@ -174,1 +174,1 @@
+-    SDL_snprintf(message, SDL_MAX_LOG_MESSAGE,
++//     SDL_snprintf(message, SDL_MAX_LOG_MESSAGE,
+--- a/src/SDL_assert.c
++++ b/src/SDL_assert.c
+@@ -273,1 +273,1 @@
+-            fprintf(stderr, "Abort/Break/Retry/Ignore/AlwaysIgnore? [abriA] : ");
++//             fprintf(stderr, "Abort/Break/Retry/Ignore/AlwaysIgnore? [abriA] : ");
+--- a/src/SDL_error.c
++++ b/src/SDL_error.c
+@@ -41,1 +41,1 @@
+-        SDL_vsnprintf(error->str, ERR_MAX_STRLEN, fmt, ap);
++//         SDL_vsnprintf(error->str, ERR_MAX_STRLEN, fmt, ap);
+--- a/src/SDL_error.c
++++ b/src/SDL_error.c
+@@ -46,1 +46,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_ERROR, "%s", error->str);
++//             SDL_LogDebug(SDL_LOG_CATEGORY_ERROR, "%s", error->str);
+--- a/src/SDL_error.c
++++ b/src/SDL_error.c
+@@ -94,1 +94,1 @@
+-    printf("Error 1: %s\n", SDL_GetError());
++//     printf("Error 1: %s\n", SDL_GetError());
+--- a/src/SDL_error.c
++++ b/src/SDL_error.c
+@@ -99,1 +99,1 @@
+-    printf("Error 2: %s\n", SDL_GetError());
++//     printf("Error 2: %s\n", SDL_GetError());
+--- a/src/filesystem/winrt/SDL_sysfilesystem.cpp
++++ b/src/filesystem/winrt/SDL_sysfilesystem.cpp
+@@ -134,1 +134,1 @@
+-    SDL_snprintf(destPath, destPathLen, "%s\\", srcPath);
++//     SDL_snprintf(destPath, destPathLen, "%s\\", srcPath);
+--- a/src/filesystem/emscripten/SDL_sysfilesystem.c
++++ b/src/filesystem/emscripten/SDL_sysfilesystem.c
+@@ -65,1 +65,1 @@
+-        SDL_snprintf(retval, len, "%s%s/%s/", append, org, app);
++//         SDL_snprintf(retval, len, "%s%s/%s/", append, org, app);
+--- a/src/filesystem/emscripten/SDL_sysfilesystem.c
++++ b/src/filesystem/emscripten/SDL_sysfilesystem.c
+@@ -67,1 +67,1 @@
+-        SDL_snprintf(retval, len, "%s%s/", append, app);
++//         SDL_snprintf(retval, len, "%s%s/", append, app);
+--- a/src/filesystem/unix/SDL_sysfilesystem.c
++++ b/src/filesystem/unix/SDL_sysfilesystem.c
+@@ -143,1 +143,1 @@
+-            const int rc = SDL_snprintf(path, sizeof(path),
++//             const int rc = SDL_snprintf(path, sizeof(path),
+--- a/src/filesystem/unix/SDL_sysfilesystem.c
++++ b/src/filesystem/unix/SDL_sysfilesystem.c
+@@ -225,1 +225,1 @@
+-        SDL_snprintf(retval, len, "%s%s%s/%s/", envr, append, org, app);
++//         SDL_snprintf(retval, len, "%s%s%s/%s/", envr, append, org, app);
+--- a/src/filesystem/unix/SDL_sysfilesystem.c
++++ b/src/filesystem/unix/SDL_sysfilesystem.c
+@@ -227,1 +227,1 @@
+-        SDL_snprintf(retval, len, "%s%s%s/", envr, append, app);
++//         SDL_snprintf(retval, len, "%s%s%s/", envr, append, app);
+--- a/src/filesystem/android/SDL_sysfilesystem.c
++++ b/src/filesystem/android/SDL_sysfilesystem.c
+@@ -54,1 +54,1 @@
+-        SDL_snprintf(fullpath, pathlen, "%s/", path);
++//         SDL_snprintf(fullpath, pathlen, "%s/", path);
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -275,1 +275,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display properties for device %u: %u",
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display properties for device %u: %u",
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -302,1 +302,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Display: %s Native resolution: %ux%u",
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Display: %s Native resolution: %ux%u",
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -316,1 +316,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display modes: %u", displayModePropertiesCount);
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display modes: %u", displayModePropertiesCount);
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -353,1 +353,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Matching mode %ux%u with refresh rate %u",
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Matching mode %ux%u with refresh rate %u",
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -369,1 +369,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display planes: %u", displayPlanePropertiesCount);
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of display planes: %u", displayPlanePropertiesCount);
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -404,1 +404,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of supported displays for plane %u: %u", i, planeSupportedDisplaysCount);
++//             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Number of supported displays for plane %u: %u", i, planeSupportedDisplaysCount);
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -449,1 +449,1 @@
+-                SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Choosing plane %d, minimum extent %dx%d maximum extent %dx%d", i,
++//                 SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Choosing plane %d, minimum extent %dx%d maximum extent %dx%d", i,
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -477,1 +477,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Chose alpha mode 0x%x", createInfo.alphaMode);
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Chose alpha mode 0x%x", createInfo.alphaMode);
+--- a/src/video/SDL_vulkan_utils.c
++++ b/src/video/SDL_vulkan_utils.c
+@@ -505,1 +505,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Created surface");
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vulkandisplay: Created surface");
+--- a/src/video/offscreen/SDL_offscreenframebuffer.c
++++ b/src/video/offscreen/SDL_offscreenframebuffer.c
+@@ -73,1 +73,1 @@
+-        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
++//         SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -396,1 +396,1 @@
+-    printf("window %p: Dispatching FocusIn\n", data);
++//     printf("window %p: Dispatching FocusIn\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -414,1 +414,1 @@
+-    printf("window %p: Dispatching FocusOut\n", data);
++//     printf("window %p: Dispatching FocusOut\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -550,1 +550,1 @@
+-        printf("window %p: updating _NET_WM_USER_TIME to %lu\n", data, latest);
++//         printf("window %p: updating _NET_WM_USER_TIME to %lu\n", data, latest);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -576,1 +576,1 @@
+-            printf("window CLIPBOARD: SelectionRequest (requestor = %ld, target = %ld)\n",
++//             printf("window CLIPBOARD: SelectionRequest (requestor = %ld, target = %ld)\n",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -620,1 +620,1 @@
+-            printf("window CLIPBOARD: SelectionNotify (requestor = %ld, target = %ld)\n",
++//             printf("window CLIPBOARD: SelectionNotify (requestor = %ld, target = %ld)\n",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -632,1 +632,1 @@
+-            printf("window CLIPBOARD: SelectionClear (requestor = %ld, target = %ld)\n",
++//             printf("window CLIPBOARD: SelectionClear (requestor = %ld, target = %ld)\n",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -679,1 +679,1 @@
+-        printf("Filtered event type = %d display = %d window = %d\n",
++//         printf("Filtered event type = %d display = %d window = %d\n",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -719,1 +719,1 @@
+-    printf("type = %d display = %d window = %d\n",
++//     printf("type = %d display = %d window = %d\n",
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -750,1 +750,1 @@
+-            printf("window %p: MappingNotify!\n", data);
++//             printf("window %p: MappingNotify!\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -768,1 +768,1 @@
+-            printf("window %p: EnterNotify! (%d,%d,%d)\n", data,
++//             printf("window %p: EnterNotify! (%d,%d,%d)\n", data,
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -773,1 +773,1 @@
+-                printf("Mode: NotifyGrab\n");
++//                 printf("Mode: NotifyGrab\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -775,1 +775,1 @@
+-                printf("Mode: NotifyUngrab\n");
++//                 printf("Mode: NotifyUngrab\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -790,1 +790,1 @@
+-            printf("window %p: LeaveNotify! (%d,%d,%d)\n", data,
++//             printf("window %p: LeaveNotify! (%d,%d,%d)\n", data,
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -795,1 +795,1 @@
+-                printf("Mode: NotifyGrab\n");
++//                 printf("Mode: NotifyGrab\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -797,1 +797,1 @@
+-                printf("Mode: NotifyUngrab\n");
++//                 printf("Mode: NotifyUngrab\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -816,1 +816,1 @@
+-                printf("window %p: FocusIn (NotifyGrab/NotifyUngrab, ignoring)\n", data);
++//                 printf("window %p: FocusIn (NotifyGrab/NotifyUngrab, ignoring)\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -823,1 +823,1 @@
+-                printf("window %p: FocusIn (NotifierInferior, ignoring)\n", data);
++//                 printf("window %p: FocusIn (NotifierInferior, ignoring)\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -828,1 +828,1 @@
+-            printf("window %p: FocusIn!\n", data);
++//             printf("window %p: FocusIn!\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -850,1 +850,1 @@
+-                printf("window %p: FocusOut (NotifyGrab/NotifyUngrab, ignoring)\n", data);
++//                 printf("window %p: FocusOut (NotifyGrab/NotifyUngrab, ignoring)\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -857,1 +857,1 @@
+-                printf("window %p: FocusOut (NotifierInferior, ignoring)\n", data);
++//                 printf("window %p: FocusOut (NotifierInferior, ignoring)\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -862,1 +862,1 @@
+-            printf("window %p: FocusOut!\n", data);
++//             printf("window %p: FocusOut!\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -887,1 +887,1 @@
+-            printf("window %p: KeyPress (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
++//             printf("window %p: KeyPress (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -894,1 +894,1 @@
+-                fprintf(stderr,
++//                 fprintf(stderr,
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -937,1 +937,1 @@
+-            printf("window %p: KeyRelease (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
++//             printf("window %p: KeyRelease (X11 keycode = 0x%X)\n", data, xevent.xkey.keycode);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -950,1 +950,1 @@
+-            printf("window %p: UnmapNotify!\n", data);
++//             printf("window %p: UnmapNotify!\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -959,1 +959,1 @@
+-            printf("window %p: MapNotify!\n", data);
++//             printf("window %p: MapNotify!\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -968,1 +968,1 @@
+-            printf("window %p: ConfigureNotify! (position: %d,%d, size: %dx%d)\n", data,
++//             printf("window %p: ConfigureNotify! (position: %d,%d, size: %dx%d)\n", data,
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1018,1 +1018,1 @@
+-                printf("XID of source window : %ld\n", data->xdnd_source);
++//                 printf("XID of source window : %ld\n", data->xdnd_source);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1019,1 +1019,1 @@
+-                printf("Protocol version to use : %d\n", xdnd_version);
++//                 printf("Protocol version to use : %d\n", xdnd_version);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1020,1 +1020,1 @@
+-                printf("More then 3 data types : %d\n", (int) use_list);
++//                 printf("More then 3 data types : %d\n", (int) use_list);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1042,1 +1042,1 @@
+-                printf("Action requested by user is : %s\n", X11_XGetAtomName(display , act));
++//                 printf("Action requested by user is : %s\n", X11_XGetAtomName(display , act));
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1090,1 +1090,1 @@
+-                printf("window %p: _NET_WM_PING\n", data);
++//                 printf("window %p: _NET_WM_PING\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1102,1 +1102,1 @@
+-                printf("window %p: WM_DELETE_WINDOW\n", data);
++//                 printf("window %p: WM_DELETE_WINDOW\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1112,1 +1112,1 @@
+-                printf("window %p: WM_TAKE_FOCUS\n", data);
++//                 printf("window %p: WM_TAKE_FOCUS\n", data);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1123,1 +1123,1 @@
+-            printf("window %p: Expose (count = %d)\n", data, xevent.xexpose.count);
++//             printf("window %p: Expose (count = %d)\n", data, xevent.xexpose.count);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1133,1 +1133,1 @@
+-                printf("window %p: X11 motion: %d,%d\n", data, xevent.xmotion.x, xevent.xmotion.y);
++//                 printf("window %p: X11 motion: %d,%d\n", data, xevent.xmotion.x, xevent.xmotion.y);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1144,1 +1144,1 @@
+-            printf("window %p: ButtonPress (X11 button = %d)\n", data, xevent.xbutton.button);
++//             printf("window %p: ButtonPress (X11 button = %d)\n", data, xevent.xbutton.button);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1182,1 +1182,1 @@
+-            printf("window %p: ButtonRelease (X11 button = %d)\n", data, xevent.xbutton.button);
++//             printf("window %p: ButtonRelease (X11 button = %d)\n", data, xevent.xbutton.button);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1203,1 +1203,1 @@
+-                printf("window %p: PropertyNotify: %s %s time=%lu\n", data, name, (xevent.xproperty.state == PropertyDelete) ? "deleted" : "changed", xevent.xproperty.time);
++//                 printf("window %p: PropertyNotify: %s %s time=%lu\n", data, name, (xevent.xproperty.state == PropertyDelete) ? "deleted" : "changed", xevent.xproperty.time);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1212,1 +1212,1 @@
+-                    printf("{");
++//                     printf("{");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1214,1 +1214,1 @@
+-                        printf(" %d", values[i]);
++//                         printf(" %d", values[i]);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1216,1 +1216,1 @@
+-                    printf(" }\n");
++//                     printf(" }\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1221,1 +1221,1 @@
+-                        printf("{");
++//                         printf("{");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1223,1 +1223,1 @@
+-                            printf(" %d", values[i]);
++//                             printf(" %d", values[i]);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1225,1 +1225,1 @@
+-                        printf(" }\n");
++//                         printf(" }\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1229,1 +1229,1 @@
+-                        printf("{");
++//                         printf("{");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1231,1 +1231,1 @@
+-                            printf(" %d", values[i]);
++//                             printf(" %d", values[i]);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1233,1 +1233,1 @@
+-                        printf(" }\n");
++//                         printf(" }\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1237,1 +1237,1 @@
+-                        printf("{");
++//                         printf("{");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1239,1 +1239,1 @@
+-                            printf(" %d", values[i]);
++//                             printf(" %d", values[i]);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1241,1 +1241,1 @@
+-                        printf(" }\n");
++//                         printf(" }\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1245,1 +1245,1 @@
+-                    printf("{ \"%s\" }\n", propdata);
++//                     printf("{ \"%s\" }\n", propdata);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1249,1 +1249,1 @@
+-                    printf("{");
++//                     printf("{");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1253,1 +1253,1 @@
+-                            printf(" %s", atomname);
++//                             printf(" %s", atomname);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1257,1 +1257,1 @@
+-                    printf(" }\n");
++//                     printf(" }\n");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1260,1 +1260,1 @@
+-                    printf("Unknown type: %ld (%s)\n", real_type, atomname ? atomname : "UNKNOWN");
++//                     printf("Unknown type: %ld (%s)\n", real_type, atomname ? atomname : "UNKNOWN");
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1330,1 +1330,1 @@
+-                    printf("New _NET_FRAME_EXTENTS: left=%d right=%d, top=%d, bottom=%d\n", data->border_left, data->border_right, data->border_top, data->border_bottom);
++//                     printf("New _NET_FRAME_EXTENTS: left=%d right=%d, top=%d, bottom=%d\n", data->border_left, data->border_right, data->border_top, data->border_bottom);
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1340,1 +1340,1 @@
+-            printf("window %p: SelectionNotify (requestor = %ld, target = %ld)\n", data,
++//             printf("window %p: SelectionNotify (requestor = %ld, target = %ld)\n", data,
+--- a/src/video/x11/SDL_x11events.c
++++ b/src/video/x11/SDL_x11events.c
+@@ -1386,1 +1386,1 @@
+-            printf("window %p: Unhandled event %d\n", data, xevent.type);
++//             printf("window %p: Unhandled event %d\n", data, xevent.type);
+--- a/src/video/x11/SDL_x11window.c
++++ b/src/video/x11/SDL_x11window.c
+@@ -1164,1 +1164,1 @@
+-        /*printf("SDL Window %p: sending _NET_ACTIVE_WINDOW with timestamp %lu\n", window, data->user_time);*/
++//         /*printf("SDL Window %p: sending _NET_ACTIVE_WINDOW with timestamp %lu\n", window, data->user_time);*/
+--- a/src/video/x11/SDL_x11window.c
++++ b/src/video/x11/SDL_x11window.c
+@@ -1596,1 +1596,1 @@
+-                SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "The X server refused to let us grab the mouse. You might experience input bugs.");
++//                 SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "The X server refused to let us grab the mouse. You might experience input bugs.");
+--- a/src/video/x11/SDL_x11dyn.c
++++ b/src/video/x11/SDL_x11dyn.c
+@@ -92,1 +92,1 @@
+-        printf("X11: Found '%s' in %s (%p)\n", fnname, x11libs[i].libname, fn);
++//         printf("X11: Found '%s' in %s (%p)\n", fnname, x11libs[i].libname, fn);
+--- a/src/video/x11/SDL_x11dyn.c
++++ b/src/video/x11/SDL_x11dyn.c
+@@ -94,1 +94,1 @@
+-        printf("X11: Symbol '%s' NOT FOUND!\n", fnname);
++//         printf("X11: Symbol '%s' NOT FOUND!\n", fnname);
+--- a/src/video/x11/SDL_x11video.c
++++ b/src/video/x11/SDL_x11video.c
+@@ -70,1 +70,1 @@
+-    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
++//     SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
+--- a/src/video/x11/SDL_x11video.c
++++ b/src/video/x11/SDL_x11video.c
+@@ -72,1 +72,1 @@
+-    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
++//     SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
+--- a/src/video/x11/SDL_x11video.c
++++ b/src/video/x11/SDL_x11video.c
+@@ -382,1 +382,1 @@
+-        printf("Couldn't get _NET_SUPPORTING_WM_CHECK property\n");
++//         printf("Couldn't get _NET_SUPPORTING_WM_CHECK property\n");
+--- a/src/video/x11/SDL_x11video.c
++++ b/src/video/x11/SDL_x11video.c
+@@ -390,1 +390,1 @@
+-    printf("Window manager: %s\n", wm_name);
++//     printf("Window manager: %s\n", wm_name);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -164,1 +164,1 @@
+-        printf("Xinerama disabled due to hint\n");
++//         printf("Xinerama disabled due to hint\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -171,1 +171,1 @@
+-        printf("Xinerama support not available\n");
++//         printf("Xinerama support not available\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -181,1 +181,1 @@
+-        printf("Xinerama not active on the display\n");
++//         printf("Xinerama not active on the display\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -186,1 +186,1 @@
+-    printf("Xinerama available at version %d.%d!\n", *major, *minor);
++//     printf("Xinerama available at version %d.%d!\n", *major, *minor);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -199,1 +199,1 @@
+-    fprintf(stderr, "XINERAMA X ERROR: type=%d serial=%lu err=%u req=%u minor=%u\n",
++//     fprintf(stderr, "XINERAMA X ERROR: type=%d serial=%lu err=%u req=%u minor=%u\n",
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -218,1 +218,1 @@
+-        printf("XRandR disabled by default due to window manager issues\n");
++//         printf("XRandR disabled by default due to window manager issues\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -225,1 +225,1 @@
+-        printf("XRandR disabled due to hint\n");
++//         printf("XRandR disabled due to hint\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -233,1 +233,1 @@
+-        printf("XRandR support not available\n");
++//         printf("XRandR support not available\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -242,1 +242,1 @@
+-        printf("XRandR not active on the display\n");
++//         printf("XRandR not active on the display\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -248,1 +248,1 @@
+-    printf("XRandR available at version %d.%d!\n", *major, *minor);
++//     printf("XRandR available at version %d.%d!\n", *major, *minor);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -290,1 +290,1 @@
+-            printf("XRandR mode %d: %dx%d@%dHz\n", (int) modeID, mode->w, mode->h, mode->refresh_rate);
++//             printf("XRandR mode %d: %dx%d@%dHz\n", (int) modeID, mode->w, mode->h, mode->refresh_rate);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -321,1 +321,1 @@
+-                    printf("Found EDID data for %s\n", name);
++//                     printf("Found EDID data for %s\n", name);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -340,1 +340,1 @@
+-        SDL_snprintf(&name[len], namelen-len, " %d\"", inches);
++//         SDL_snprintf(&name[len], namelen-len, " %d\"", inches);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -344,1 +344,1 @@
+-    printf("Display name: %s\n", name);
++//     printf("Display name: %s\n", name);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -516,1 +516,1 @@
+-        printf("XVidMode disabled due to hint\n");
++//         printf("XVidMode disabled due to hint\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -523,1 +523,1 @@
+-        printf("XVidMode support not available\n");
++//         printf("XVidMode support not available\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -532,1 +532,1 @@
+-        printf("XVidMode not active on the display\n");
++//         printf("XVidMode not active on the display\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -537,1 +537,1 @@
+-    printf("XVidMode available at version %d.%d!\n", *major, *minor);
++//     printf("XVidMode available at version %d.%d!\n", *major, *minor);
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -928,1 +928,1 @@
+-        printf("VidMode modes: (unsorted)\n");
++//         printf("VidMode modes: (unsorted)\n");
+--- a/src/video/x11/SDL_x11modes.c
++++ b/src/video/x11/SDL_x11modes.c
+@@ -930,1 +930,1 @@
+-            printf("Mode %d: %d x %d @ %d, flags: 0x%x\n", i,
++//             printf("Mode %d: %d x %d @ %d, flags: 0x%x\n", i,
+--- a/src/video/x11/SDL_x11keyboard.c
++++ b/src/video/x11/SDL_x11keyboard.c
+@@ -372,1 +372,1 @@
+-        printf("Using scancode set %d, min_keycode = %d, max_keycode = %d, table_size = %d\n", best_index, min_keycode, max_keycode, scancode_set[best_index].table_size);
++//         printf("Using scancode set %d, min_keycode = %d, max_keycode = %d, table_size = %d\n", best_index, min_keycode, max_keycode, scancode_set[best_index].table_size);
+--- a/src/video/x11/SDL_x11keyboard.c
++++ b/src/video/x11/SDL_x11keyboard.c
+@@ -389,1 +389,1 @@
+-                printf("code = %d, sym = 0x%X (%s) ", i - min_keycode,
++//                 printf("code = %d, sym = 0x%X (%s) ", i - min_keycode,
+--- a/src/video/x11/SDL_x11keyboard.c
++++ b/src/video/x11/SDL_x11keyboard.c
+@@ -394,1 +394,1 @@
+-                    printf("scancode not found\n");
++//                     printf("scancode not found\n");
+--- a/src/video/x11/SDL_x11keyboard.c
++++ b/src/video/x11/SDL_x11keyboard.c
+@@ -396,1 +396,1 @@
+-                    printf("scancode = %d (%s)\n", scancode, SDL_GetScancodeName(scancode));
++//                     printf("scancode = %d (%s)\n", scancode, SDL_GetScancodeName(scancode));
+--- a/src/video/raspberry/SDL_rpiopengles.c
++++ b/src/video/raspberry/SDL_rpiopengles.c
+@@ -50,1 +50,1 @@
+-        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
++//         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+--- a/src/video/winrt/SDL_winrtvideo.cpp
++++ b/src/video/winrt/SDL_winrtvideo.cpp
+@@ -609,1 +609,1 @@
+-            SDL_snprintf(buf, sizeof(buf), "SDL_EGL_ChooseConfig failed: %s", SDL_GetError());
++//             SDL_snprintf(buf, sizeof(buf), "SDL_EGL_ChooseConfig failed: %s", SDL_GetError());
+--- a/src/video/winrt/SDL_winrtkeyboard.cpp
++++ b/src/video/winrt/SDL_winrtkeyboard.cpp
+@@ -310,1 +310,1 @@
+-        SDL_Log("WinRT TranslateKeycode, unknown keycode=%d\n", (int)keycode);
++//         SDL_Log("WinRT TranslateKeycode, unknown keycode=%d\n", (int)keycode);
+--- a/src/video/winrt/SDL_winrtkeyboard.cpp
++++ b/src/video/winrt/SDL_winrtkeyboard.cpp
+@@ -322,1 +322,1 @@
+-    SDL_Log("key down, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
++//     SDL_Log("key down, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
+--- a/src/video/winrt/SDL_winrtkeyboard.cpp
++++ b/src/video/winrt/SDL_winrtkeyboard.cpp
+@@ -348,1 +348,1 @@
+-    SDL_Log("key up, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
++//     SDL_Log("key up, handled=%s, ext?=%s, released?=%s, menu key down?=%s, "
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -35,1 +35,1 @@
+-    deprintf(1, "+PSL1GHT_InitModes()\n");
++//     deprintf(1, "+PSL1GHT_InitModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -75,1 +75,1 @@
+-    deprintf(1, "-PSL1GHT_InitModes()\n");
++//     deprintf(1, "-PSL1GHT_InitModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -123,1 +123,1 @@
+-    deprintf(1, "+PSL1GHT_GetDisplayModes()\n");
++//     deprintf(1, "+PSL1GHT_GetDisplayModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -134,1 +134,1 @@
+-        deprintf(2, "Adding resolution %u x %u\n", ps3fb_modedb[n].w, ps3fb_modedb[n].h);
++//         deprintf(2, "Adding resolution %u x %u\n", ps3fb_modedb[n].w, ps3fb_modedb[n].h);
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -137,1 +137,1 @@
+-    deprintf(1, "-PSL1GHT_GetDisplayModes()\n");
++//     deprintf(1, "-PSL1GHT_GetDisplayModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -143,1 +143,1 @@
+-    deprintf(1, "+PSL1GHT_SetDisplayMode()\n");
++//     deprintf(1, "+PSL1GHT_SetDisplayMode()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -148,1 +148,1 @@
+-    deprintf(2, "Setting PS3_MODE to %u\n", dispdata->vconfig.resolution);
++//     deprintf(2, "Setting PS3_MODE to %u\n", dispdata->vconfig.resolution);
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -151,1 +151,1 @@
+-        deprintf(2, "Could not set PS3FB_MODE\n");
++//         deprintf(2, "Could not set PS3FB_MODE\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -162,1 +162,1 @@
+-    deprintf(1, "-PSL1GHT_SetDisplayMode()\n");
++//     deprintf(1, "-PSL1GHT_SetDisplayMode()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -169,1 +169,1 @@
+-    deprintf(1, "+PSL1GHT_QuitModes()\n");
++//     deprintf(1, "+PSL1GHT_QuitModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTmodes.c
++++ b/src/video/psl1ght/SDL_PSL1GHTmodes.c
+@@ -180,1 +180,1 @@
+-    deprintf(1, "-PSL1GHT_QuitModes()\n");
++//     deprintf(1, "-PSL1GHT_QuitModes()\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTevents.c
++++ b/src/video/psl1ght/SDL_PSL1GHTevents.c
+@@ -51,1 +51,1 @@
+-	    deprintf(1, "Quit game requested\n");
++// 	    deprintf(1, "Quit game requested\n");
+--- a/src/video/psl1ght/SDL_PSL1GHTevents.c
++++ b/src/video/psl1ght/SDL_PSL1GHTevents.c
+@@ -66,1 +66,1 @@
+-	    deprintf(1, "Unhandled event: %08llX\n", (unsigned long long int)status);
++// 	    deprintf(1, "Unhandled event: %08llX\n", (unsigned long long int)status);
+--- a/src/video/emscripten/SDL_emscriptenframebuffer.c
++++ b/src/video/emscripten/SDL_emscriptenframebuffer.c
+@@ -161,1 +161,1 @@
+-        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
++//         SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -141,1 +141,1 @@
+-        SDL_snprintf(altErrorText, SDL_arraysize(altErrorText), "0x%x", (unsigned int)eglErrorCode);
++//         SDL_snprintf(altErrorText, SDL_arraysize(altErrorText), "0x%x", (unsigned int)eglErrorCode);
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -162,1 +162,1 @@
+-        /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid EGL extension"); */
++//         /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid EGL extension"); */
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -196,1 +196,1 @@
+-        /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid extension type"); */
++//         /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "SDL_EGL_HasExtension: Invalid extension type"); */
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -462,1 +462,1 @@
+-                SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not parse EGL version string: %s", egl_version);
++//                 SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not parse EGL version string: %s", egl_version);
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -672,1 +672,1 @@
+-        SDL_Log("\t%-32s: %10d (0x%08x)\n", attributes[attr].name, value, value);
++//         SDL_Log("\t%-32s: %10d (0x%08x)\n", attributes[attr].name, value, value);
+--- a/src/video/dummy/SDL_nullframebuffer.c
++++ b/src/video/dummy/SDL_nullframebuffer.c
+@@ -72,1 +72,1 @@
+-        SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
++//         SDL_snprintf(file, sizeof(file), "SDL_window%d-%8.8d.bmp",
+--- a/src/video/vivante/SDL_vivantevulkan.c
++++ b/src/video/vivante/SDL_vivantevulkan.c
+@@ -70,1 +70,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vivante: Loaded vulkan driver %s", path);
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "vivante: Loaded vulkan driver %s", path);
+--- a/src/video/directfb/SDL_DirectFB_events.c
++++ b/src/video/directfb/SDL_DirectFB_events.c
+@@ -236,1 +236,1 @@
+-                /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
++//                 /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
+--- a/src/video/directfb/SDL_DirectFB_events.c
++++ b/src/video/directfb/SDL_DirectFB_events.c
+@@ -304,1 +304,1 @@
+-        printf("Event Clazz %d\n", evt->clazz);
++//         printf("Event Clazz %d\n", evt->clazz);
+--- a/src/video/directfb/SDL_DirectFB_events.c
++++ b/src/video/directfb/SDL_DirectFB_events.c
+@@ -372,1 +372,1 @@
+-            /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
++//             /* printf("Scancode %d  %d %d\n", keysym.scancode, evt->key_code, evt->key_id); */
+--- a/src/video/directfb/SDL_DirectFB_dyn.c
++++ b/src/video/directfb/SDL_DirectFB_dyn.c
+@@ -80,1 +80,1 @@
+-            fprintf(stderr,
++//             fprintf(stderr,
+--- a/src/video/windows/SDL_windowsmodes.c
++++ b/src/video/windows/SDL_windowsmodes.c
+@@ -151,1 +151,1 @@
+-    SDL_Log("Display: %s\n", WIN_StringToUTF8(info->szDevice));
++//     SDL_Log("Display: %s\n", WIN_StringToUTF8(info->szDevice));
+--- a/src/video/windows/SDL_windowsevents.c
++++ b/src/video/windows/SDL_windowsevents.c
+@@ -431,1 +431,1 @@
+-            SDL_snprintf(message, sizeof(message), "Received windows message: %p UNKNOWN (%d) -- 0x%X, 0x%X\n", hwnd, msg, wParam, lParam);
++//             SDL_snprintf(message, sizeof(message), "Received windows message: %p UNKNOWN (%d) -- 0x%X, 0x%X\n", hwnd, msg, wParam, lParam);
+--- a/src/video/windows/SDL_windowsevents.c
++++ b/src/video/windows/SDL_windowsevents.c
+@@ -433,1 +433,1 @@
+-            SDL_snprintf(message, sizeof(message), "Received windows message: %p %s -- 0x%X, 0x%X\n", hwnd, wmtab[msg], wParam, lParam);
++//             SDL_snprintf(message, sizeof(message), "Received windows message: %p %s -- 0x%X, 0x%X\n", hwnd, wmtab[msg], wParam, lParam);
+--- a/src/video/nacl/SDL_naclevents.c
++++ b/src/video/nacl/SDL_naclevents.c
+@@ -317,1 +317,1 @@
+-        SDL_Log("The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> NACL KeyCode %d", keycode);
++//         SDL_Log("The key you just pressed is not recognized by SDL. To help get this fixed, please report this to the SDL forums/mailing list <https://discourse.libsdl.org/> NACL KeyCode %d", keycode);
+--- a/src/video/pandora/SDL_pandora.c
++++ b/src/video/pandora/SDL_pandora.c
+@@ -623,1 +623,1 @@
+-        printf( "Error: Wiz framebuffer allocatation failed\n" );
++//         printf( "Error: Wiz framebuffer allocatation failed\n" );
+--- a/src/video/pandora/SDL_pandora.c
++++ b/src/video/pandora/SDL_pandora.c
+@@ -625,1 +625,1 @@
+-        printf( "SDL: Wiz framebuffer allocated: %X\n", hNativeWnd );
++//         printf( "SDL: Wiz framebuffer allocated: %X\n", hNativeWnd );
+--- a/src/video/pandora/SDL_pandora.c
++++ b/src/video/pandora/SDL_pandora.c
+@@ -628,1 +628,1 @@
+-        printf( "SDL: Wiz framebuffer already allocated: %X\n", hNativeWnd );
++//         printf( "SDL: Wiz framebuffer already allocated: %X\n", hNativeWnd );
+--- a/src/video/pandora/SDL_pandora.c
++++ b/src/video/pandora/SDL_pandora.c
+@@ -829,1 +829,1 @@
+-      printf( "SDL: Wiz framebuffer released\n" );
++//       printf( "SDL: Wiz framebuffer released\n" );
+--- a/src/video/wayland/SDL_waylandevents.c
++++ b/src/video/wayland/SDL_waylandevents.c
+@@ -611,1 +611,1 @@
+-        fprintf(stderr, "failed to compile keymap\n");
++//         fprintf(stderr, "failed to compile keymap\n");
+--- a/src/video/wayland/SDL_waylandevents.c
++++ b/src/video/wayland/SDL_waylandevents.c
+@@ -617,1 +617,1 @@
+-        fprintf(stderr, "failed to create XKB state\n");
++//         fprintf(stderr, "failed to create XKB state\n");
+--- a/src/video/wayland/SDL_waylanddyn.c
++++ b/src/video/wayland/SDL_waylanddyn.c
+@@ -73,1 +73,1 @@
+-        SDL_Log("WAYLAND: Found '%s' in %s (%p)\n", fnname, waylandlibs[i].libname, fn);
++//         SDL_Log("WAYLAND: Found '%s' in %s (%p)\n", fnname, waylandlibs[i].libname, fn);
+--- a/src/video/wayland/SDL_waylanddyn.c
++++ b/src/video/wayland/SDL_waylanddyn.c
+@@ -75,1 +75,1 @@
+-        SDL_Log("WAYLAND: Symbol '%s' NOT FOUND!\n", fnname);
++//         SDL_Log("WAYLAND: Symbol '%s' NOT FOUND!\n", fnname);
+--- a/src/video/wayland/SDL_waylandvideo.c
++++ b/src/video/wayland/SDL_waylandvideo.c
+@@ -100,1 +100,1 @@
+-    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
++//     SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/exe", getpid());
+--- a/src/video/wayland/SDL_waylandvideo.c
++++ b/src/video/wayland/SDL_waylandvideo.c
+@@ -102,1 +102,1 @@
+-    SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
++//     SDL_snprintf(procfile, SDL_arraysize(procfile), "/proc/%d/file",
+--- a/src/video/wayland/SDL_waylandvideo.c
++++ b/src/video/wayland/SDL_waylandvideo.c
+@@ -361,1 +361,1 @@
+-    /*printf("WAYLAND INTERFACE: %s\n", interface);*/
++//     /*printf("WAYLAND INTERFACE: %s\n", interface);*/
+--- a/src/video/wayland/SDL_waylandtouch.c
++++ b/src/video/wayland/SDL_waylandtouch.c
+@@ -96,1 +96,1 @@
+-         SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
++//          SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
+--- a/src/video/kmsdrm/SDL_kmsdrmdyn.c
++++ b/src/video/kmsdrm/SDL_kmsdrmdyn.c
+@@ -69,1 +69,1 @@
+-        SDL_Log("KMSDRM: Found '%s' in %s (%p)\n", fnname, kmsdrmlibs[i].libname, fn);
++//         SDL_Log("KMSDRM: Found '%s' in %s (%p)\n", fnname, kmsdrmlibs[i].libname, fn);
+--- a/src/video/kmsdrm/SDL_kmsdrmdyn.c
++++ b/src/video/kmsdrm/SDL_kmsdrmdyn.c
+@@ -71,1 +71,1 @@
+-        SDL_Log("KMSDRM: Symbol '%s' NOT FOUND!\n", fnname);
++//         SDL_Log("KMSDRM: Symbol '%s' NOT FOUND!\n", fnname);
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -101,1 +101,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -109,1 +109,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -112,1 +112,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
++//             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -127,1 +127,1 @@
+-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
++// 		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -136,1 +136,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -142,1 +142,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -150,1 +150,1 @@
+-            /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
++//             /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -173,1 +173,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Error waiting for pageflip event");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -180,1 +180,1 @@
+-            /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
++//             /* SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Released GBM surface buffer %p", (void *)windata->curr_bo); */
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -188,1 +188,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "eglSwapBuffers failed.");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -199,1 +199,1 @@
+-             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
++//              SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not lock GBM surface front buffer");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -202,1 +202,1 @@
+-             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
++//              SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Locked GBM surface %p", (void *)windata->next_bo); */
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -216,1 +216,1 @@
+-		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
++// 		SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not configure CRTC on video mode setting.");
+--- a/src/video/kmsdrm/SDL_kmsdrmopengles.c
++++ b/src/video/kmsdrm/SDL_kmsdrmopengles.c
+@@ -226,1 +226,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Could not issue pageflip");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -58,1 +58,1 @@
+-    SDL_snprintf(device, sizeof (device), "%scard%d", KMSDRM_DRI_PATH, devindex);
++//     SDL_snprintf(device, sizeof (device), "%scard%d", KMSDRM_DRI_PATH, devindex);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -65,1 +65,1 @@
+-                SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "%scard%d connector, encoder and CRTC counts are: %d %d %d",
++//                 SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "%scard%d connector, encoder and CRTC counts are: %d %d %d",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -91,1 +91,1 @@
+-        printf("The path %s cannot be opened or is not available\n",
++//         printf("The path %s cannot be opened or is not available\n",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -97,1 +97,1 @@
+-        printf("The path %s cannot be opened\n",
++//         printf("The path %s cannot be opened\n",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -250,1 +250,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Delete DRM FB %u", fb_info->fb_id);
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Delete DRM FB %u", fb_info->fb_id);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -294,1 +294,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "New DRM FB (%u): %ux%u, stride %u from BO %p",
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "New DRM FB (%u): %ux%u, stride %u from BO %p",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -331,1 +331,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll error");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll error");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -336,1 +336,1 @@
+-            SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll hup or error");
++//             SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "DRM poll hup or error");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -349,1 +349,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Dropping frame while waiting_for_flip");
++//             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Dropping frame while waiting_for_flip");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -408,1 +408,1 @@
+-        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "GBM surface format not supported. Trying anyway.");
++//         SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "GBM surface format not supported. Trying anyway.");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -456,1 +456,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoInit()");
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoInit()");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -459,1 +459,1 @@
+-    SDL_snprintf(devname, sizeof(devname), "/dev/dri/card%d", viddata->devindex);
++//     SDL_snprintf(devname, sizeof(devname), "/dev/dri/card%d", viddata->devindex);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -461,1 +461,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opening device %s", devname);
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opening device %s", devname);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -469,1 +469,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opened DRM FD (%d)", viddata->drm_fd);
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Opened DRM FD (%d)", viddata->drm_fd);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -492,1 +492,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found connector %d with %d modes.",
++//             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found connector %d with %d modes.",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -515,1 +515,1 @@
+-            SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
++//             SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -552,1 +552,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Found encoder %d.", encoder->encoder_id);
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -573,1 +573,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Saved crtc_id %u, fb_id %u, (%u,%u), %ux%u",
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Saved crtc_id %u, fb_id %u, (%u,%u), %ux%u",
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -586,1 +586,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO,
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO,
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -664,1 +664,1 @@
+-    SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoQuit()");
++//     SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "KMSDRM_VideoQuit()");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -685,1 +685,1 @@
+-            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not restore original CRTC mode");
++//             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Could not restore original CRTC mode");
+--- a/src/video/kmsdrm/SDL_kmsdrmvideo.c
++++ b/src/video/kmsdrm/SDL_kmsdrmvideo.c
+@@ -702,1 +702,1 @@
+-        SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Closed DRM FD %d", viddata->drm_fd);
++//         SDL_LogDebug(SDL_LOG_CATEGORY_VIDEO, "Closed DRM FD %d", viddata->drm_fd);
+--- a/src/video/android/SDL_androidtouch.c
++++ b/src/video/android/SDL_androidtouch.c
+@@ -63,1 +63,1 @@
+-        SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
++//         SDL_Log("error: can't add touch %s, %d", __FILE__, __LINE__);
+--- a/src/power/linux/SDL_syspower.c
++++ b/src/power/linux/SDL_syspower.c
+@@ -53,1 +53,1 @@
+-    snprintf(path, pathlen, "%s/%s/%s", base, node, key);
++//     snprintf(path, pathlen, "%s/%s/%s", base, node, key);
+--- a/src/stdlib/SDL_malloc.c
++++ b/src/stdlib/SDL_malloc.c
+@@ -3013,1 +3013,1 @@
+-        fprintf(stderr, "max system bytes = %10lu\n",
++//         fprintf(stderr, "max system bytes = %10lu\n",
+--- a/src/stdlib/SDL_malloc.c
++++ b/src/stdlib/SDL_malloc.c
+@@ -3015,1 +3015,1 @@
+-        fprintf(stderr, "system bytes     = %10lu\n", (unsigned long) (fp));
++//         fprintf(stderr, "system bytes     = %10lu\n", (unsigned long) (fp));
+--- a/src/stdlib/SDL_malloc.c
++++ b/src/stdlib/SDL_malloc.c
+@@ -3016,1 +3016,1 @@
+-        fprintf(stderr, "in use bytes     = %10lu\n", (unsigned long) (used));
++//         fprintf(stderr, "in use bytes     = %10lu\n", (unsigned long) (used));
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -104,1 +104,1 @@
+-    SDL_snprintf(new_variable, len, "%s=%s", name, value);
++//     SDL_snprintf(new_variable, len, "%s=%s", name, value);
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -134,1 +134,1 @@
+-    SDL_snprintf(new_variable, len, "%s=%s", name, value);
++//     SDL_snprintf(new_variable, len, "%s=%s", name, value);
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -252,1 +252,1 @@
+-    printf("Checking for non-existent variable... ");
++//     printf("Checking for non-existent variable... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -255,1 +255,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -257,1 +257,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -259,1 +259,1 @@
+-    printf("Setting FIRST=VALUE1 in the environment... ");
++//     printf("Setting FIRST=VALUE1 in the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -262,1 +262,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -264,1 +264,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -266,1 +266,1 @@
+-    printf("Getting FIRST from the environment... ");
++//     printf("Getting FIRST from the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -270,1 +270,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -272,1 +272,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -274,1 +274,1 @@
+-    printf("Setting SECOND=VALUE2 in the environment... ");
++//     printf("Setting SECOND=VALUE2 in the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -277,1 +277,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -279,1 +279,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -281,1 +281,1 @@
+-    printf("Getting SECOND from the environment... ");
++//     printf("Getting SECOND from the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -285,1 +285,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -287,1 +287,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -289,1 +289,1 @@
+-    printf("Setting FIRST=NOVALUE in the environment... ");
++//     printf("Setting FIRST=NOVALUE in the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -292,1 +292,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -294,1 +294,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -296,1 +296,1 @@
+-    printf("Getting FIRST from the environment... ");
++//     printf("Getting FIRST from the environment... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -300,1 +300,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -302,1 +302,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -304,1 +304,1 @@
+-    printf("Checking for non-existent variable... ");
++//     printf("Checking for non-existent variable... ");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -307,1 +307,1 @@
+-        printf("okay\n");
++//         printf("okay\n");
+--- a/src/stdlib/SDL_getenv.c
++++ b/src/stdlib/SDL_getenv.c
+@@ -309,1 +309,1 @@
+-        printf("failed\n");
++//         printf("failed\n");
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -373,1 +373,1 @@
+-fprintf(stderr, "pivot_big: first=%p last=%p size=%lu n=%lu\n", first, (unsigned long)last, size, (unsigned long)((last-first+1)/size));
++// fprintf(stderr, "pivot_big: first=%p last=%p size=%lu n=%lu\n", first, (unsigned long)last, size, (unsigned long)((last-first+1)/size));
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -378,1 +378,1 @@
+-fprintf(stderr,"< %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
++// fprintf(stderr,"< %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -386,1 +386,1 @@
+-fprintf(stderr,". %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
++// fprintf(stderr,". %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -394,1 +394,1 @@
+-fprintf(stderr,"> %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
++// fprintf(stderr,"> %d %d %d @ %p %p %p\n",*(int*)a,*(int*)b,*(int*)c, a,b,c);
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -401,1 +401,1 @@
+-fprintf(stderr,"-> %d %d %d @ %p %p %p\n",*(int*)m1,*(int*)m2,*(int*)m3, m1,m2,m3);
++// fprintf(stderr,"-> %d %d %d @ %p %p %p\n",*(int*)m1,*(int*)m2,*(int*)m3, m1,m2,m3);
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -487,1 +487,1 @@
+-fprintf(stderr,"Doing %d:%d: ",
++// fprintf(stderr,"Doing %d:%d: ",
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -496,1 +496,1 @@
+-fprintf(stderr,"pivot = %p = #%lu = %d\n", mid, (unsigned long)(((int*)mid)-((int*)base)), *(int*)mid);
++// fprintf(stderr,"pivot = %p = #%lu = %d\n", mid, (unsigned long)(((int*)mid)-((int*)base)), *(int*)mid);
+--- a/src/stdlib/SDL_qsort.c
++++ b/src/stdlib/SDL_qsort.c
+@@ -502,1 +502,1 @@
+-fprintf(stderr, "after partitioning first=#%lu last=#%lu\n", (first-(char*)base)/4lu, (last-(char*)base)/4lu);
++// fprintf(stderr, "after partitioning first=#%lu last=#%lu\n", (first-(char*)base)/4lu, (last-(char*)base)/4lu);
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1359,1 +1359,1 @@
+-SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
++// SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, ...)
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1365,1 +1365,1 @@
+-    retval = SDL_vsnprintf(text, maxlen, fmt, ap);
++//     retval = SDL_vsnprintf(text, maxlen, fmt, ap);
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1372,1 +1372,1 @@
+-/* _vsnprintf() doesn't ensure nul termination */
++// /* _vsnprintf() doesn't ensure nul termination */
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1373,1 +1373,1 @@
+-int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
++// int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1377,1 +1377,1 @@
+-    retval = _vsnprintf(text, maxlen, fmt, ap);
++//     retval = _vsnprintf(text, maxlen, fmt, ap);
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1383,1 +1383,1 @@
+-int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
++// int SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1388,1 +1388,1 @@
+-    return vsnprintf(text, maxlen, fmt, ap);
++//     return vsnprintf(text, maxlen, fmt, ap);
+--- a/src/stdlib/SDL_string.c
++++ b/src/stdlib/SDL_string.c
+@@ -1646,1 +1646,1 @@
+-SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
++// SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap)
+--- a/src/dynapi/SDL_dynapi.c
++++ b/src/dynapi/SDL_dynapi.c
+@@ -76,1 +76,1 @@
+-        jump_table.SDL_vsnprintf(buf, sizeof (buf), fmt, ap); \
++//         jump_table.SDL_vsnprintf(buf, sizeof (buf), fmt, ap); \
+--- a/src/dynapi/SDL_dynapi.c
++++ b/src/dynapi/SDL_dynapi.c
+@@ -88,1 +88,1 @@
+-        retval = jump_table.SDL_vsnprintf(buf, maxlen, fmt, ap); \
++//         retval = jump_table.SDL_vsnprintf(buf, maxlen, fmt, ap); \
+--- a/src/dynapi/SDL_dynapi.c
++++ b/src/dynapi/SDL_dynapi.c
+@@ -274,1 +274,1 @@
+-    fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
++//     fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
+--- a/src/audio/jack/SDL_jackaudio.c
++++ b/src/audio/jack/SDL_jackaudio.c
+@@ -368,1 +368,1 @@
+-        SDL_snprintf(portname, sizeof (portname), "sdl_jack_%s_%d", sdlportstr, i);
++//         SDL_snprintf(portname, sizeof (portname), "sdl_jack_%s_%d", sdlportstr, i);
+--- a/src/audio/arts/SDL_artsaudio.c
++++ b/src/audio/arts/SDL_artsaudio.c
+@@ -184,1 +184,1 @@
+-    fprintf(stderr, "Wrote %d bytes of audio data\n", written);
++//     fprintf(stderr, "Wrote %d bytes of audio data\n", written);
+--- a/src/audio/arts/SDL_artsaudio.c
++++ b/src/audio/arts/SDL_artsaudio.c
+@@ -237,1 +237,1 @@
+-        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
++//         fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+--- a/src/audio/qsa/SDL_qsa_audio.c
++++ b/src/audio/qsa/SDL_qsa_audio.c
+@@ -514,1 +514,1 @@
+-                    sprintf(qsa_playback_device[qsa_playback_devices].name +
++//                     sprintf(qsa_playback_device[qsa_playback_devices].name +
+--- a/src/audio/qsa/SDL_qsa_audio.c
++++ b/src/audio/qsa/SDL_qsa_audio.c
+@@ -572,1 +572,1 @@
+-                    sprintf(qsa_capture_device[qsa_capture_devices].name +
++//                     sprintf(qsa_capture_device[qsa_capture_devices].name +
+--- a/src/audio/esd/SDL_esdaudio.c
++++ b/src/audio/esd/SDL_esdaudio.c
+@@ -192,1 +192,1 @@
+-    SDL_snprintf(temp, SDL_arraysize(temp), "/proc/%d/cmdline", getpid());
++//     SDL_snprintf(temp, SDL_arraysize(temp), "/proc/%d/cmdline", getpid());
+--- a/src/audio/esd/SDL_esdaudio.c
++++ b/src/audio/esd/SDL_esdaudio.c
+@@ -231,1 +231,1 @@
+-        fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
++//         fprintf(stderr, "Trying format 0x%4.4x\n", test_format);
+--- a/src/audio/sun/SDL_sunaudio.c
++++ b/src/audio/sun/SDL_sunaudio.c
+@@ -75,1 +75,1 @@
+-        fprintf(stderr, "audio underflow!\n");
++//         fprintf(stderr, "audio underflow!\n");
+--- a/src/audio/sun/SDL_sunaudio.c
++++ b/src/audio/sun/SDL_sunaudio.c
+@@ -324,1 +324,1 @@
+-    fprintf(stderr, "Audio device %s U-Law only\n",
++//     fprintf(stderr, "Audio device %s U-Law only\n",
+--- a/src/audio/sun/SDL_sunaudio.c
++++ b/src/audio/sun/SDL_sunaudio.c
+@@ -326,1 +326,1 @@
+-    fprintf(stderr, "format=0x%x chan=%d freq=%d\n",
++//     fprintf(stderr, "format=0x%x chan=%d freq=%d\n",
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -40,1 +40,1 @@
+-#define deprintf(...) printf(__VA_ARGS__)
++// #define deprintf(...) printf(__VA_ARGS__)
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -42,1 +42,1 @@
+-#define deprintf(...)
++// #define deprintf(...)
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -48,1 +48,1 @@
+-	deprintf( "PSL1GHT_AUD_OpenDevice(%08X.%08X, %s, %d)\n", SHW64(this), devname, iscapture);
++// 	deprintf( "PSL1GHT_AUD_OpenDevice(%08X.%08X, %s, %d)\n", SHW64(this), devname, iscapture);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -86,1 +86,1 @@
+-	deprintf("audioPortOpen: %d\n",ret);
++// 	deprintf("audioPortOpen: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -87,1 +87,1 @@
+-	deprintf("  portNum: %d\n",_portNum);
++// 	deprintf("  portNum: %d\n",_portNum);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -90,1 +90,1 @@
+-	deprintf("audioGetPortConfig: %d\n",ret);
++// 	deprintf("audioGetPortConfig: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -91,1 +91,1 @@
+-	deprintf("  readIndex: 0x%8X\n",_config.readIndex);
++// 	deprintf("  readIndex: 0x%8X\n",_config.readIndex);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -92,1 +92,1 @@
+-	deprintf("  status: %d\n",_config.status);
++// 	deprintf("  status: %d\n",_config.status);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -93,1 +93,1 @@
+-	deprintf("  channelCount: %ld\n",_config.channelCount);
++// 	deprintf("  channelCount: %ld\n",_config.channelCount);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -94,1 +94,1 @@
+-	deprintf("  numBlocks: %ld\n",_config.numBlocks);
++// 	deprintf("  numBlocks: %ld\n",_config.numBlocks);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -95,1 +95,1 @@
+-	deprintf("  portSize: %d\n",_config.portSize);
++// 	deprintf("  portSize: %d\n",_config.portSize);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -96,1 +96,1 @@
+-	deprintf("  audioDataStart: 0x%8X\n",_config.audioDataStart);
++// 	deprintf("  audioDataStart: 0x%8X\n",_config.audioDataStart);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -100,1 +100,1 @@
+-	printf("audioCreateNotifyEventQueue: %d\n",ret);
++// 	printf("audioCreateNotifyEventQueue: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -104,1 +104,1 @@
+-	printf("audioSetNotifyEventQueue: %d\n",ret);
++// 	printf("audioSetNotifyEventQueue: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -108,1 +108,1 @@
+-	printf("sysEentQueueDrain: %d\n",ret);
++// 	printf("sysEentQueueDrain: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -111,1 +111,1 @@
+-	deprintf("audioPortStart: %d\n",ret);
++// 	deprintf("audioPortStart: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -127,1 +127,1 @@
+-	deprintf( "PSL1GHT_AUD_PlayDevice(%08X.%08X)\n", SHW64(this));
++// 	deprintf( "PSL1GHT_AUD_PlayDevice(%08X.%08X)\n", SHW64(this));
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -132,1 +132,1 @@
+-		deprintf( "\tplaying too fast... waiting a ms\n");
++// 		deprintf( "\tplaying too fast... waiting a ms\n");
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -147,1 +147,1 @@
+-	deprintf( "PSL1GHT_AUD_CloseDevice(%08X.%08X)\n", SHW64(this));
++// 	deprintf( "PSL1GHT_AUD_CloseDevice(%08X.%08X)\n", SHW64(this));
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -150,1 +150,1 @@
+-	deprintf("audioPortStop: %d\n",ret);
++// 	deprintf("audioPortStop: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -152,1 +152,1 @@
+-	deprintf("audioRemoveNotifyEventQueue: %d\n",ret);
++// 	deprintf("audioRemoveNotifyEventQueue: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -154,1 +154,1 @@
+-	deprintf("audioPortClose: %d\n",ret);
++// 	deprintf("audioPortClose: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -156,1 +156,1 @@
+-	deprintf("sysEventQueueDestroy: %d\n",ret);
++// 	deprintf("sysEventQueueDestroy: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -158,1 +158,1 @@
+-	deprintf("audioQuit: %d\n",ret);
++// 	deprintf("audioQuit: %d\n",ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -167,1 +167,1 @@
+-	//deprintf( "PSL1GHT_AUD_GetDeviceBuf(%08X.%08X) at %d ms\n", SHW64(this), SDL_GetTicks());
++// 	//deprintf( "PSL1GHT_AUD_GetDeviceBuf(%08X.%08X) at %d ms\n", SHW64(this), SDL_GetTicks());
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -173,1 +173,1 @@
+-	//deprintf( "\tWriting to buffer %d \n", filling);
++// 	//deprintf( "\tWriting to buffer %d \n", filling);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -174,1 +174,1 @@
+-	// deprintf( "\tbuffer address (%08X.%08X => %08X.%08X)\n", SHW64(_config.audioDataStart), SHW64(dma_buf));
++// 	// deprintf( "\tbuffer address (%08X.%08X => %08X.%08X)\n", SHW64(_config.audioDataStart), SHW64(dma_buf));
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -185,1 +185,1 @@
+-	//deprintf( "ALSA_WaitDevice(%08X.%08X)\n", SHW64(this));
++// 	//deprintf( "ALSA_WaitDevice(%08X.%08X)\n", SHW64(this));
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -190,1 +190,1 @@
+-	//deprintf( "sysEventQueueReceive: %08X\n", ret);
++// 	//deprintf( "sysEventQueueReceive: %08X\n", ret);
+--- a/src/audio/psl1ght/SDL_psl1ghtaudio.c
++++ b/src/audio/psl1ght/SDL_psl1ghtaudio.c
+@@ -197,1 +197,1 @@
+-	deprintf( "PSL1GHT_AUD_Init(%08X.%08X)\n", SHW64(impl));
++// 	deprintf( "PSL1GHT_AUD_Init(%08X.%08X)\n", SHW64(impl));
+... Truncated, too long for response ...
