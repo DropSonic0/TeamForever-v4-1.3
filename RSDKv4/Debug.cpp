@@ -1,5 +1,6 @@
 // Inicio de RSDKv4/Debug.cpp
 #include "RetroEngine.hpp" // Para BASE_PATH, gamePath, usingCWD, getResourcesPath(), engineDebugMode, endLine, etc.
+#include "Scene.hpp"
 #include "Userdata.hpp"    // Y para engineDebugMode, endLine si se definen ahí globalmente.
 #include "Debug.hpp"       // Para las declaraciones y extern FILE* gameLogFile
 #include <stdarg.h>      // Para va_list, etc.
@@ -184,8 +185,8 @@ void InitDevMenu()
     RemoveNativeObjectType(PauseMenu_Create, PauseMenu_Main);
 #endif
 #if RETRO_HARDWARE_RENDER
-    render3DEnabled = false;
-    UpdateHardwareTextures();
+    cameraEnabled = 0;
+//UpdateHardwareTextures();
 #endif
 }
 void InitErrorMessage()
@@ -217,8 +218,8 @@ void InitErrorMessage()
     RemoveNativeObjectType(PauseMenu_Create, PauseMenu_Main);
 #endif
 #if RETRO_HARDWARE_RENDER
-    render3DEnabled = false;
-    UpdateHardwareTextures();
+    cameraEnabled = 0;
+//UpdateHardwareTextures();
 #endif
 }
 void ProcessStageSelect()

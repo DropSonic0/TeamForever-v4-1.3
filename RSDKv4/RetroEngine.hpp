@@ -53,6 +53,7 @@ extern float lastPing;
 #define RETRO_UWP   (7)
 #define RETRO_LINUX (8)
 #define RETRO_SWITCH (9)
+// NOTA: RETRO_PS3 ya está definido como (3) más arriba.
 
 // Platform types (Game manages platform-specific code such as HUD position using this rather than the above)
 #define RETRO_STANDARD (0)
@@ -93,9 +94,12 @@ extern float lastPing;
 #elif defined(__linux__)
 #define RETRO_PLATFORM   (RETRO_LINUX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
+#elif defined(__PS3__) || defined(PS3) // Added PS3 check
+#define RETRO_PLATFORM   (RETRO_PS3)
+#define RETRO_DEVICETYPE (RETRO_STANDARD)
 #else
 //#error "No Platform was defined"
-#define RETRO_PLATFORM   (RETRO_WIN)
+#define RETRO_PLATFORM   (RETRO_WIN) // Default fallback
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
 
@@ -513,10 +517,11 @@ public:
     SDL_Window *window = nullptr;
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
+	SDL_Texture *videoBuffer = nullptr;
 #if RETRO_SOFTWARE_RENDER
     SDL_Texture *screenBuffer   = nullptr;
     SDL_Texture *screenBuffer2x = nullptr;
-    SDL_Texture *videoBuffer = nullptr;
+    //SDL_Texture *videoBuffer = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
 #endif
 

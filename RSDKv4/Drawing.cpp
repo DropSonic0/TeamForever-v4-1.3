@@ -951,9 +951,10 @@ void SetupViewport()
 #endif
 
     mixFiltersOnJekyll = Engine.useHighResAssets;
-
+#if RETRO_SOFTWARE_RENDER
     if (transfer && Engine.frameBuffer)
         TransferRetroBuffer();
+#endif
 }
 
 void SetFullScreen(bool fs)

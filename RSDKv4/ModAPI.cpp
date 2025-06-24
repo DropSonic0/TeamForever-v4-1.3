@@ -412,6 +412,11 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
 
         info->active = active;
 
+    // Store the full path to the mod's directory in info->path
+    // This path (modDir_str) is correctly /dev_hdd0/.../USRDIR/mods/ModFolder/
+    info->path = modDir_str;
+    PrintLog("LoadMod: Stored mod base path in info->path: %s", info->path.c_str());
+
         ScanModFolder(info);
 
         info->useScripts = false;
@@ -465,8 +470,9 @@ void ScanModFolder(ModInfo *info)
 
     // Check for Data/ replacements
 #ifdef PS3
-    std::string dataPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Data"); // Corrected path construction
-    PrintLog("ScanModFolder (PS3, Data): Scanning %s", dataPath_str.c_str()); 
+    // std::string dataPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Data"); // OLD LINE
+    std::string dataPath_str = ps3_join_path(info->path, "Data"); // NEW LINE - info->path should be the full path to the mod's root
+    PrintLog("ScanModFolder (PS3, Data): Scanning %s (using info->path: %s)", dataPath_str.c_str(), info->path.c_str());
     if (ps3_path_exists(dataPath_str) && ps3_is_directory(dataPath_str)) {
         std::vector<PS3DirEntry> data_entries = ps3_recursive_directory_iterator(dataPath_str);
         for (const auto& data_de : data_entries) {
@@ -504,13 +510,15 @@ void ScanModFolder(ModInfo *info)
                         StrCopy(buffer, relativePart);
                         for(char* p = buffer; *p; ++p) if (*p == '\\') *p = '/'; // Normalize to forward slashes
                         
-                        std::string path(buffer);
-                        std::string modPath(modBuf);
+                        std::string path_key_str(buffer); // This is the relative path, e.g., "Data/Music/Boss.ogg"
+                        // modBuf already contains the full absolute path to the mod file, e.g., "/dev_hdd0/.../mods/MyMod/Data/Music/Boss.ogg"
+                        
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower, path.c_str());
+                        StringLowerCase(pathLower, path_key_str.c_str()); // Lowercase the relative path for the key
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
+                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }
@@ -526,8 +534,9 @@ void ScanModFolder(ModInfo *info)
 
     // Check for Scripts/ replacements
 #ifdef PS3
-    std::string scriptPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Scripts");
-    PrintLog("ScanModFolder (PS3, Scripts): Scanning %s", scriptPath_str.c_str()); 
+    // std::string scriptPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Scripts"); // OLD LINE
+    std::string scriptPath_str = ps3_join_path(info->path, "Scripts"); // NEW LINE
+    PrintLog("ScanModFolder (PS3, Scripts): Scanning %s (using info->path: %s)", scriptPath_str.c_str(), info->path.c_str());
     if (ps3_path_exists(scriptPath_str) && ps3_is_directory(scriptPath_str)) {
         std::vector<PS3DirEntry> script_entries = ps3_recursive_directory_iterator(scriptPath_str);
         for (const auto& data_de : script_entries) {
@@ -568,9 +577,10 @@ void ScanModFolder(ModInfo *info)
                         std::string modPath(modBuf);
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower,path.c_str());
+                        StringLowerCase(pathLower,path.c_str()); // Lowercase the relative path for the key
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
+                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }
@@ -586,8 +596,9 @@ void ScanModFolder(ModInfo *info)
 
     // Check for Bytecode/ replacements
 #ifdef PS3
-    std::string bytecodePath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Bytecode");
-    PrintLog("ScanModFolder (PS3, Bytecode): Scanning %s", bytecodePath_str.c_str()); 
+    // std::string bytecodePath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Bytecode"); // OLD LINE
+    std::string bytecodePath_str = ps3_join_path(info->path, "Bytecode"); // NEW LINE
+    PrintLog("ScanModFolder (PS3, Bytecode): Scanning %s (using info->path: %s)", bytecodePath_str.c_str(), info->path.c_str());
     if (ps3_path_exists(bytecodePath_str) && ps3_is_directory(bytecodePath_str)) {
         std::vector<PS3DirEntry> bytecode_entries = ps3_recursive_directory_iterator(bytecodePath_str);
         for (const auto& data_de : bytecode_entries) {
@@ -628,9 +639,10 @@ void ScanModFolder(ModInfo *info)
                         std::string modPath(modBuf);
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower,path.c_str());
+                        StringLowerCase(pathLower,path.c_str()); // Lowercase the relative path for the key
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
+                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }

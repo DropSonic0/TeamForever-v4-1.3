@@ -44,7 +44,7 @@ extern int paletteMode;
 #define RGB888_TO_RGB5551(r, g, b) (2 * ((b) >> 3) | ((g) >> 3 << 6) | ((r) >> 3 << 11) | 0) // used in mobile vers
 #define RGB888_TO_RGB565(r, g, b)  ((b) >> 3) | (((g) >> 2) << 5) | (((r) >> 3) << 11) // used in pc vers
 
-#if RETRO_SOFTWARE_RENDER
+#if defined(PS3) || defined(__PS3__)
 #define PACK_RGB888(r, g, b) RGB888_TO_RGB565(r, g, b)
 #elif RETRO_USING_OPENGL
 #define PACK_RGB888(r, g, b) RGB888_TO_RGB5551(r, g, b)

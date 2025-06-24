@@ -1083,6 +1083,7 @@ void SetMeshVertexColors(MeshInfo *mesh, byte r, byte g, byte b, byte a)
 }
 
 // Rendering
+#if RETRO_SOFTWARE_RENDER
 void TransferRetroBuffer()
 {
 #ifdef PS3
@@ -1126,6 +1127,7 @@ void TransferRetroBuffer()
 #endif
 #endif
 }
+#endif
 void RenderRetroBuffer(int alpha, float z)
 {
     if (vertexListSize >= DRAWVERTEX_COUNT || !textureList[0].format) return;
