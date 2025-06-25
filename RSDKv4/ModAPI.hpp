@@ -26,7 +26,6 @@ struct ModInfo {
     std::string version;
     std::map<std::string, std::string> fileMap;
     std::string folder;
-	std::string path;
     bool useScripts;
     bool skipStartMenu;
     int disableFocusPause;

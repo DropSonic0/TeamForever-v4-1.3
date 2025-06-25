@@ -1,12 +1,4 @@
 #include "RetroEngine.hpp"
-static int texBufferMode = 0;
-#define TILE_SIZE_ACTUAL (0x10)
-#define TILEUV_SIZE_TEMP (2048 * 4)
-static float tileUVArray[TILEUV_SIZE_TEMP];
-static int gfxVertexSizeOpaque = 0;
-static int gfxIndexSize = 0;
-static int gfxVertexSize = 0;
-static int gfxIndexSizeOpaque = 0;
 
 int stageListCount[STAGELIST_MAX];
 char stageListNames[STAGELIST_MAX][0x20] = {
@@ -135,9 +127,6 @@ void ProcessStage(void)
 {
 #if !RETRO_USE_ORIGINAL_CODE
     debugHitboxCount = 0;
-bool allowProcess_2P = true;
-            #ifndef PS3_DISABLE_NETWORKING
-            allowProcess_2P = !waitForVerify;
 #endif
 
     switch (stageMode) {
@@ -192,19 +181,19 @@ bool allowProcess_2P = true;
                 texBufferMode = 0;
 
             if (texBufferMode) {
-                for (int i = 0; i < TILEUV_SIZE_TEMP; i += 4) {
+                for (int i = 0; i < TILEUV_SIZE; i += 4) {
                     tileUVArray[i + 0] = (i >> 2) % 28 * 18 + 1;
                     tileUVArray[i + 1] = (i >> 2) / 28 * 18 + 1;
                     tileUVArray[i + 2] = tileUVArray[i + 0] + 16;
                     tileUVArray[i + 3] = tileUVArray[i + 1] + 16;
                 }
-                tileUVArray[TILEUV_SIZE_TEMP - 4] = 487.0f;
-                tileUVArray[TILEUV_SIZE_TEMP - 3] = 487.0f;
-                tileUVArray[TILEUV_SIZE_TEMP - 2] = 503.0f;
-                tileUVArray[TILEUV_SIZE_TEMP - 1] = 503.0f;
+                tileUVArray[TILEUV_SIZE - 4] = 487.0f;
+                tileUVArray[TILEUV_SIZE - 3] = 487.0f;
+                tileUVArray[TILEUV_SIZE - 2] = 503.0f;
+                tileUVArray[TILEUV_SIZE - 1] = 503.0f;
             }
             else {
-                for (int i = 0; i < TILEUV_SIZE_TEMP; i += 4) {
+                for (int i = 0; i < TILEUV_SIZE; i += 4) {
                     tileUVArray[i + 0] = (i >> 2 & 31) * 16;
                     tileUVArray[i + 1] = (i >> 2 >> 5) * 16;
                     tileUVArray[i + 2] = tileUVArray[i + 0] + 16;
@@ -212,7 +201,7 @@ bool allowProcess_2P = true;
                 }
             }
 
-            //UpdateHardwareTextures();
+            UpdateHardwareTextures();
             gfxIndexSize        = 0;
             gfxVertexSize       = 0;
             gfxIndexSizeOpaque  = 0;
@@ -361,8 +350,8 @@ bool allowProcess_2P = true;
                 PauseSound();
             }
 			*/
-            #endif
-            if (allowProcess_2P) {
+
+            if (!waitForVerify) {
                 if (timeEnabled) {
                     if (++frameCounter == 60) {
                         frameCounter = 0;

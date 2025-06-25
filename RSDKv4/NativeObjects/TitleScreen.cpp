@@ -3,8 +3,6 @@
 void TitleScreen_Create(void *objPtr)
 {
     RSDK_THIS(TitleScreen);
-	PrintLog("TitleScreen_Create: Cargando SonicLogo.png");
-
     int heading  = 0;
     int labelTex = 0;
     int textTex  = 0;
@@ -12,8 +10,6 @@ void TitleScreen_Create(void *objPtr)
     self->state          = TITLESCREEN_STATE_SETUP;
     self->introRectAlpha = 320.0;
     self->logoTextureID  = LoadTexture("Data/Game/Menu/SonicLogo.png", TEXFMT_RGBA8888);
-
-	PrintLog("TitleScreen_Create: SonicLogo.png cargado ID: %d", self->logoTextureID);
 
     // code has been moved to SegaSplash_Create due to the possibility of opening the dev menu before this loads :(
 #if RETRO_USE_ORIGINAL_CODE
@@ -168,8 +164,7 @@ void TitleScreen_Main(void *objPtr)
     RSDK_THIS(TitleScreen);
 
     switch (self->state) {
-        case TITLESCREEN_STATE_SETUP: { 
-			PrintLog("TitleScreen_Main: Estado = SETUP");
+        case TITLESCREEN_STATE_SETUP: {
             PlayMusic(0, 0);
             self->state = TITLESCREEN_STATE_ENTERINTRO;
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
@@ -177,8 +172,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_ENTERINTRO: { 
-			PrintLog("TitleScreen_Main: Estado = ENTERINTRO");
+        case TITLESCREEN_STATE_ENTERINTRO: {
             SetRenderBlendMode(RENDER_BLEND_NONE);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 255, 255, 255, 255);
             self->meshAnimator.animationSpeed = 6.0 * Engine.deltaTime;
@@ -213,8 +207,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_INTRO: { 
-			PrintLog("TitleScreen_Main: Estado = INTRO");
+        case TITLESCREEN_STATE_INTRO: {
             CheckKeyDown(&inputDown);
             CheckKeyPress(&inputPress);
             SetRenderBlendMode(RENDER_BLEND_NONE);
@@ -244,8 +237,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_ENTERBOX: { 
-			PrintLog("TitleScreen_Main: Estado = ENTERBOX");
+        case TITLESCREEN_STATE_ENTERBOX: {
             SetRenderBlendMode(RENDER_BLEND_NONE);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 255, 255, 255, 255);
 
@@ -295,8 +287,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_TITLE: { 
-			PrintLog("TitleScreen_Main: Estado = TITLE");
+        case TITLESCREEN_STATE_TITLE: {
             SetRenderBlendMode(RENDER_BLEND_NONE);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 255, 255, 255, 255);
             RenderRect(-SCREEN_CENTERX_F, self->rectY + 240.0, 160.0, SCREEN_XSIZE_F, 256.0, 160, 192, 255, 255);
@@ -357,8 +348,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_EXITTITLE: { 
-			PrintLog("TitleScreen_Main: Estado = EXITTITLE");
+        case TITLESCREEN_STATE_EXITTITLE: {
             SetRenderBlendMode(RENDER_BLEND_NONE);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 255, 255, 255, 255);
             RenderRect(-SCREEN_CENTERX_F, self->rectY + 240.0, 160.0, SCREEN_XSIZE_F, 256.0, 160, 192, 255, 255);
@@ -396,8 +386,7 @@ void TitleScreen_Main(void *objPtr)
             break;
         }
 
-        case TITLESCREEN_STATE_EXIT: { 
-			PrintLog("TitleScreen_Main: Estado = EXIT");
+        case TITLESCREEN_STATE_EXIT: {
             SetRenderBlendMode(RENDER_BLEND_NONE);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 255, 255, 255, 255);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_CENTERY_F - self->rectY, 160, 192, 255, 255);

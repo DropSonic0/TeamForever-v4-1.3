@@ -1,7 +1,6 @@
 #include "RetroEngine.hpp"
 
 #if !RETRO_USE_ORIGINAL_CODE && RETRO_USE_NETWORKING
-#ifndef PS3_DISABLE_NETWORKING
 
 void MultiplayerScreen_Create(void *objPtr)
 {
@@ -959,5 +958,4 @@ void MultiplayerScreen_Main(void *objPtr)
     else
         RenderImage(128.0, -92.0, 160.0, 0.3, 0.3, 64.0, 64.0, 128.0, 128.0, 128.0, 0.0, self->arrowAlpha, self->textureArrows);
 }
-#endif
 #endif

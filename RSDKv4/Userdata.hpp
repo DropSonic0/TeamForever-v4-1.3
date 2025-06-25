@@ -95,7 +95,6 @@ extern int vsPlayerID;
 extern bool vsPlaying;
 
 extern int sendCounter;
-extern int touchFlags;
 
 #if !RETRO_USE_ORIGINAL_CODE
 extern bool forceUseScripts;

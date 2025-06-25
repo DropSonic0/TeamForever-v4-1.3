@@ -20,161 +20,8 @@ char modScriptPaths[OBJECT_COUNT][0x40];
 byte modScriptFlags[OBJECT_COUNT];
 byte modObjCount = 0;
 
-#ifndef PS3
 #include <filesystem>
 #include <locale>
-#else // PS3
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <unistd.h> // For getcwd
-#include <string.h> // For C string manipulation
-#include <stdio.h>  // For sprintf
-#include <vector>
-#include <string>
-
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
-// PS3 Helper Functions
-inline bool ps3_path_exists(const std::string& path_str) {
-    struct stat buffer;
-    return (stat(path_str.c_str(), &buffer) == 0);
-}
-
-inline bool ps3_is_directory(const std::string& path_str) {
-    struct stat buffer;
-    if (stat(path_str.c_str(), &buffer) != 0) {
-        return false;
-    }
-    return S_ISDIR(buffer.st_mode);
-}
-
-inline bool ps3_is_regular_file(const std::string& path_str) {
-    struct stat buffer;
-    if (stat(path_str.c_str(), &buffer) != 0) {
-        return false;
-    }
-    return S_ISREG(buffer.st_mode);
-}
-
-inline std::string ps3_get_filename(const std::string& path_str) {
-    size_t last_slash = path_str.find_last_of("/\\");
-    if (last_slash != std::string::npos) {
-        return path_str.substr(last_slash + 1);
-    }
-    return path_str;
-}
-
-inline std::string ps3_get_parent_path(const std::string& path_str) {
-    size_t last_slash = path_str.find_last_of("/\\");
-    if (last_slash != std::string::npos) {
-        return path_str.substr(0, last_slash);
-    }
-    return ""; // Or "." for current directory, depending on desired behavior
-}
-
-inline std::string ps3_join_path(const std::string& p1, const std::string& p2) {
-    if (p1.empty()) return p2;
-    if (p2.empty()) return p1;
-
-    std::string result = p1;
-    // Ensure there's a single separator
-    if (result.back() != '/' && result.back() != '\\') {
-        result += '/';
-    }
-    if (p2.front() == '/' || p2.front() == '\\') {
-        result += p2.substr(1);
-    } else {
-        result += p2;
-    }
-    return result;
-}
-
-struct PS3DirEntry {
-    std::string path_str;
-    std::string name;
-    bool is_dir;
-    bool is_file;
-};
-
-inline std::vector<PS3DirEntry> ps3_directory_iterator(const std::string& dir_path_str) {
-    std::vector<PS3DirEntry> entries;
-    DIR* dir = opendir(dir_path_str.c_str());
-    if (dir == NULL) {
-        // perror("opendir failed"); // Optional: error logging
-        return entries;
-    }
-
-    struct dirent* entry;
-    while ((entry = readdir(dir)) != NULL) {
-        std::string entry_name = entry->d_name;
-        if (entry_name == "." || entry_name == "..") {
-            continue;
-        }
-
-        PS3DirEntry de;
-        de.name = entry_name;
-        de.path_str = ps3_join_path(dir_path_str, entry_name);
-
-        struct stat entry_stat;
-        if (stat(de.path_str.c_str(), &entry_stat) == 0) {
-            de.is_dir = S_ISDIR(entry_stat.st_mode);
-            de.is_file = S_ISREG(entry_stat.st_mode);
-        } else {
-            #ifdef _DIRENT_HAVE_D_TYPE
-            de.is_dir = (entry->d_type == DT_DIR);
-            de.is_file = (entry->d_type == DT_REG);
-            #else
-            de.is_dir = false;
-            de.is_file = false;
-            #endif
-        }
-        entries.push_back(de);
-    }
-    closedir(dir);
-    return entries;
-}
-
-inline void ps3_recursive_directory_iterator_impl(const std::string& dir_path_str, std::vector<PS3DirEntry>& all_entries) {
-    std::vector<PS3DirEntry> current_level_entries = ps3_directory_iterator(dir_path_str);
-    for (const auto& de : current_level_entries) {
-        all_entries.push_back(de); // Add current entry
-        if (de.is_dir) {
-            ps3_recursive_directory_iterator_impl(de.path_str, all_entries); // Recurse
-        }
-    }
-}
-
-inline std::vector<PS3DirEntry> ps3_recursive_directory_iterator(const std::string& dir_path_str) {
-    std::vector<PS3DirEntry> all_entries;
-    ps3_recursive_directory_iterator_impl(dir_path_str, all_entries);
-    return all_entries;
-}
-
-// PS3 version of resolvePath (basic, case-sensitive)
-std::string resolvePath_ps3(const std::string& given_str) {
-    if (given_str.empty()) {
-        return "";
-    }
-    if (given_str[0] == '/') {
-        std::string temp = given_str;
-        while (temp.length() > 1 && temp.back() == '/') {
-            temp.pop_back();
-        }
-        return temp;
-    }
-
-    char cwd_buf[PATH_MAX];
-    if (getcwd(cwd_buf, sizeof(cwd_buf)) != NULL) {
-        std::string current_dir = cwd_buf;
-        return ps3_join_path(current_dir, given_str);
-    }
-    return given_str; 
-}
-
-#endif // !PS3
 
 int OpenModMenu()
 {
@@ -184,38 +31,34 @@ int OpenModMenu()
 }
 
 #if (RETRO_PLATFORM == RETRO_ANDROID)
-#ifndef PS3
-#if (RETRO_PLATFORM == RETRO_ANDROID)
-namespace fs = std::__fs::filesystem; 
+namespace fs = std::__fs::filesystem; // this is so we can avoid using c++17, which causes a ton of warnings w asio and looks ugly
 #else
 namespace fs = std::filesystem;
 #endif
 
 fs::path resolvePath(fs::path given)
 {
+	    // This crashes and I don't know why
+    // Maybe to do with pathconf somehow?
 #if RETRO_PLATFORM != RETRO_SWITCH
     if (given.is_relative())
-        given = fs::current_path() / given; 
+        given = fs::current_path() / given; // thanks for the weird syntax!
 #endif
-    if (given.has_parent_path() && given.parent_path() != given.root_path() && fs::exists(given.parent_path())) {
-        for (auto &p : fs::directory_iterator{ given.parent_path() }) {
-            char pbuf[0x100];
-            char gbuf[0x100];
-            auto pf   = p.path().filename();
-            auto pstr = pf.string();
-            StringLowerCase(pbuf, pstr.c_str());
-            auto gf   = given.filename();
-            auto gstr = gf.string();
-            StringLowerCase(gbuf, gstr.c_str());
-            if (StrComp(pbuf, gbuf)) {
-                return p.path();
-            }
+    for (auto &p : fs::directory_iterator{ given.parent_path() }) {
+        char pbuf[0x100];
+        char gbuf[0x100];
+        auto pf   = p.path().filename();
+        auto pstr = pf.string();
+        StringLowerCase(pbuf, pstr.c_str());
+        auto gf   = given.filename();
+        auto gstr = gf.string();
+        StringLowerCase(gbuf, gstr.c_str());
+        if (StrComp(pbuf, gbuf)) {
+            return p.path();
         }
     }
-    return given; 
+    return given; // might work might not!
 }
-#endif 
-#endif 
 
 void InitMods()
 {
@@ -227,111 +70,58 @@ void InitMods()
     Engine.forceSonic1 = false;
     sprintf(savePath, "");
 
-    PrintLog("InitMods: Mod loading sequence started."); 
-    char modConfigDirBuf[0x100];
-    sprintf(modConfigDirBuf, "%smods", modsPath);
-    PrintLog("InitMods: Mods directory should be: %s", modConfigDirBuf); 
+    char modBuf[0x100];
+    sprintf(modBuf, "%smods", modsPath);
 
-#ifdef PS3
-    std::string mods_base_dir_str = resolvePath_ps3(modConfigDirBuf);
-    PrintLog("InitMods (PS3): Resolved mods base directory to: %s", mods_base_dir_str.c_str()); 
-    if (ps3_path_exists(mods_base_dir_str) && ps3_is_directory(mods_base_dir_str)) {
-        PrintLog("InitMods (PS3): Mods base directory exists and is a directory."); 
-        std::string mod_config_path_str = ps3_join_path(mods_base_dir_str, "modconfig.ini");
-        PrintLog("InitMods (PS3): Looking for modconfig.ini at: %s", mod_config_path_str.c_str()); 
-        FileIO *configFile = fOpen(mod_config_path_str.c_str(), "r");
+    fs::path modPath = resolvePath(modBuf);
+
+    if (fs::exists(modPath) && fs::is_directory(modPath)) {
+        std::string mod_config = modPath.string() + "/modconfig.ini";
+        FileIO *configFile     = fOpen(mod_config.c_str(), "r");
         if (configFile) {
-            PrintLog("InitMods (PS3): Found modconfig.ini."); 
             fClose(configFile);
-            IniParser modConfig(mod_config_path_str.c_str(), false);
-            for (size_t m = 0; m < modConfig.items.size(); ++m) {
+            IniParser modConfig(mod_config.c_str(), false);
+
+            for (int m = 0; m < modConfig.items.size(); ++m) {
                 bool active = false;
                 ModInfo info;
                 modConfig.GetBool("mods", modConfig.items[m].key, &active);
-                if (LoadMod(&info, mods_base_dir_str, modConfig.items[m].key, active))
+                if (LoadMod(&info, modPath.string(), modConfig.items[m].key, active))
                     modList.push_back(info);
             }
-        } else { 
-            PrintLog("InitMods (PS3): modconfig.ini not found at: %s", mod_config_path_str.c_str()); 
         }
 
-        PrintLog("InitMods (PS3): Scanning for individual mod folders in: %s", mods_base_dir_str.c_str()); 
-        std::vector<PS3DirEntry> dir_entries = ps3_directory_iterator(mods_base_dir_str);
-        for (const auto& de : dir_entries) {
-            if (de.is_dir) {
-                PrintLog("InitMods (PS3): Found potential mod directory: %s", de.name.c_str()); 
-                ModInfo info;
-                std::string folder_name = de.name;
-                bool flag = true;
-                for (size_t m = 0; m < modList.size(); ++m) {
-                    if (modList[m].folder == folder_name) {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (flag) {
-                    if (LoadMod(&info, mods_base_dir_str, folder_name, false))
-                        modList.insert(modList.begin(), info);
-                }
-            }
-        }
-    }
-#else
-    fs::path mods_base_dir_fs = resolvePath(modConfigDirBuf);
-    std::string mods_base_dir_str = mods_base_dir_fs.string();
-    PrintLog("InitMods (non-PS3): Resolved mods base directory to: %s", mods_base_dir_str.c_str()); 
-
-    if (fs::exists(mods_base_dir_fs) && fs::is_directory(mods_base_dir_fs)) {
-        PrintLog("InitMods (non-PS3): Mods base directory exists and is a directory."); 
-        std::string mod_config_path_str = (mods_base_dir_fs / "modconfig.ini").string();
-        PrintLog("InitMods (non-PS3): Looking for modconfig.ini at: %s", mod_config_path_str.c_str()); 
-        FileIO *configFile     = fOpen(mod_config_path_str.c_str(), "r");
-        if (configFile) {
-            PrintLog("InitMods (non-PS3): Found modconfig.ini."); 
-            fClose(configFile);
-            IniParser modConfig(mod_config_path_str.c_str(), false);
-
-            for (size_t m = 0; m < modConfig.items.size(); ++m) {
-                bool active = false;
-                ModInfo info;
-                modConfig.GetBool("mods", modConfig.items[m].key, &active);
-                if (LoadMod(&info, mods_base_dir_str, modConfig.items[m].key, active))
-                    modList.push_back(info);
-            }
-        } else { 
-             PrintLog("InitMods (non-PS3): modconfig.ini not found at: %s", mod_config_path_str.c_str()); 
-        }
-
-        PrintLog("InitMods (non-PS3): Scanning for individual mod folders in: %s", mods_base_dir_str.c_str()); 
         try {
-            auto rdi = fs::directory_iterator(mods_base_dir_fs);
+            auto rdi = fs::directory_iterator(modPath);
             for (auto de : rdi) {
                 if (de.is_directory()) {
-                    fs::path modDirPath_fs = de.path();
-                    PrintLog("InitMods (non-PS3): Found potential mod directory: %s", modDirPath_fs.filename().string().c_str()); 
+                    fs::path modDirPath = de.path();
+
                     ModInfo info;
-                    std::string folder_name = modDirPath_fs.filename().string();
+
+                    std::string modDir            = modDirPath.string().c_str();
+                    const std::string mod_inifile = modDir + "/mod.ini";
+                    std::string folder            = modDirPath.filename().string();
 
                     bool flag = true;
-                    for (size_t m = 0; m < modList.size(); ++m) {
-                        if (modList[m].folder == folder_name) {
+                    for (int m = 0; m < modList.size(); ++m) {
+                        if (modList[m].folder == folder) {
                             flag = false;
                             break;
                         }
                     }
 
                     if (flag) {
-                        if (LoadMod(&info, mods_base_dir_str, folder_name, false))
+                        if (LoadMod(&info, modPath.string(), modDirPath.filename().string(), false))
                             modList.insert(modList.begin(), info);
                     }
                 }
             }
-        } catch (fs::filesystem_error const& fe) { 
+        } catch (fs::filesystem_error fe) {
             PrintLog("Mods Folder Scanning Error: ");
             PrintLog(fe.what());
         }
     }
-#endif
 
     forceUseScripts    = forceUseScripts_Config;
     skipStartMenu      = skipStartMenu_Config;
@@ -339,7 +129,7 @@ void InitMods()
     redirectSave       = false;
     Engine.forceSonic1 = false;
     sprintf(savePath, "");
-    for (size_t m = 0; m < modList.size(); ++m) { 
+    for (int m = 0; m < modList.size(); ++m) {
         if (!modList[m].active)
             continue;
         if (modList[m].useScripts)
@@ -364,8 +154,6 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
     if (!info)
         return false;
 
-    PrintLog("LoadMod: Attempting to load mod from folder: %s (Active: %s)", folder.c_str(), active ? "yes" : "no"); 
-
     info->fileMap.clear();
     info->name    = "";
     info->desc    = "";
@@ -374,13 +162,12 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
     info->folder  = "";
     info->active  = false;
 
-    const std::string modDir_str = ps3_join_path(modsPath, folder); 
+    const std::string modDir = modsPath + "/" + folder;
 
-    FileIO *f = fOpen(ps3_join_path(modDir_str, "mod.ini").c_str(), "r");
+    FileIO *f = fOpen((modDir + "/mod.ini").c_str(), "r");
     if (f) {
-        PrintLog("LoadMod: Found mod.ini in %s", modDir_str.c_str()); 
         fClose(f);
-        IniParser modSettings(ps3_join_path(modDir_str, "mod.ini").c_str(), false);
+        IniParser modSettings((modDir + "/mod.ini").c_str(), false);
 
         info->name    = "Unnamed Mod";
         info->desc    = "";
@@ -412,11 +199,6 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
 
         info->active = active;
 
-    // Store the full path to the mod's directory in info->path
-    // This path (modDir_str) is correctly /dev_hdd0/.../USRDIR/mods/ModFolder/
-    info->path = modDir_str;
-    PrintLog("LoadMod: Stored mod base path in info->path: %s", info->path.c_str());
-
         ScanModFolder(info);
 
         info->useScripts = false;
@@ -446,13 +228,9 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         modSettings.GetBool("", "ForceSonic1", &info->forceSonic1);
         if (info->forceSonic1 && info->active)
             Engine.forceSonic1 = true;
-        
-        PrintLog("LoadMod: Parsed mod.ini for %s. Name: %s, Author: %s, Version: %s, Scripts: %s", 
-            folder.c_str(), info->name.c_str(), info->author.c_str(), info->version.c_str(), info->useScripts ? "yes" : "no"); 
 
         return true;
     }
-    PrintLog("LoadMod: mod.ini not found in %s", modDir_str.c_str()); 
     return false;
 }
 
@@ -462,34 +240,24 @@ void ScanModFolder(ModInfo *info)
         return;
 
     char modBuf[0x100];
-    char modConfigPathBuf[0x100];
-    sprintf(modConfigPathBuf, "%smods", modsPath);
+    sprintf(modBuf, "%smods", modsPath);
+
+    fs::path modPath = resolvePath(modBuf);
+
+    const std::string modDir = modPath.string() + "/" + info->folder;
 
     info->fileMap.clear();
-    int initialMapSize = info->fileMap.size(); 
 
     // Check for Data/ replacements
-#ifdef PS3
-    // std::string dataPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Data"); // OLD LINE
-    std::string dataPath_str = ps3_join_path(info->path, "Data"); // NEW LINE - info->path should be the full path to the mod's root
-    PrintLog("ScanModFolder (PS3, Data): Scanning %s (using info->path: %s)", dataPath_str.c_str(), info->path.c_str());
-    if (ps3_path_exists(dataPath_str) && ps3_is_directory(dataPath_str)) {
-        std::vector<PS3DirEntry> data_entries = ps3_recursive_directory_iterator(dataPath_str);
-        for (const auto& data_de : data_entries) {
-            if (data_de.is_file) {
-                char modBuf[0x100];
-                StrCopy(modBuf, data_de.path_str.c_str());
-#else
-    fs::path dataPath_fs = resolvePath(ps3_join_path(ps3_join_path(modsPath, info->folder), "Data")); 
-    PrintLog("ScanModFolder (non-PS3, Data): Scanning %s", dataPath_fs.string().c_str());
-    if (fs::exists(dataPath_fs) && fs::is_directory(dataPath_fs)) {
+    fs::path dataPath = resolvePath(modDir + "/Data");
+
+    if (fs::exists(dataPath) && fs::is_directory(dataPath)) {
         try {
-            auto data_rdi = fs::recursive_directory_iterator(dataPath_fs);
+            auto data_rdi = fs::recursive_directory_iterator(dataPath);
             for (auto &data_de : data_rdi) {
                 if (data_de.is_regular_file()) {
                     char modBuf[0x100];
                     StrCopy(modBuf, data_de.path().string().c_str());
-#endif
                     char folderTest[4][0x10] = {
                         "Data/",
                         "Data\\",
@@ -505,55 +273,39 @@ void ScanModFolder(ModInfo *info)
 
                     if (tokenPos >= 0) {
                         char buffer[0x80];
-                        // Correctly extract the relative path part
-                        const char* relativePart = modBuf + tokenPos;
-                        StrCopy(buffer, relativePart);
-                        for(char* p = buffer; *p; ++p) if (*p == '\\') *p = '/'; // Normalize to forward slashes
-                        
-                        std::string path_key_str(buffer); // This is the relative path, e.g., "Data/Music/Boss.ogg"
-                        // modBuf already contains the full absolute path to the mod file, e.g., "/dev_hdd0/.../mods/MyMod/Data/Music/Boss.ogg"
-                        
+                        for (int i = StrLength(modBuf); i >= tokenPos; --i) {
+                            buffer[i - tokenPos] = modBuf[i] == '\\' ? '/' : modBuf[i];
+                        }
+
+                        // PrintLog(modBuf);
+                        std::string path(buffer);
+                        std::string modPath(modBuf);
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower, path_key_str.c_str()); // Lowercase the relative path for the key
+                        for (int c = 0; c < path.size(); ++c) {
+                            pathLower[c] = tolower(path.c_str()[c]);
+                        }
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
-                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }
-#ifndef PS3 
-        } catch (fs::filesystem_error const& fe) { 
-            PrintLog("Data Folder Scanning Error: %s", fe.what());
+        } catch (fs::filesystem_error fe) {
+            PrintLog("Data Folder Scanning Error: ");
+            PrintLog(fe.what());
         }
-#endif
     }
 
-    PrintLog("ScanModFolder (Data): Found %d file mappings.", (int)(info->fileMap.size() - initialMapSize)); 
-    initialMapSize = info->fileMap.size(); 
-
     // Check for Scripts/ replacements
-#ifdef PS3
-    // std::string scriptPath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Scripts"); // OLD LINE
-    std::string scriptPath_str = ps3_join_path(info->path, "Scripts"); // NEW LINE
-    PrintLog("ScanModFolder (PS3, Scripts): Scanning %s (using info->path: %s)", scriptPath_str.c_str(), info->path.c_str());
-    if (ps3_path_exists(scriptPath_str) && ps3_is_directory(scriptPath_str)) {
-        std::vector<PS3DirEntry> script_entries = ps3_recursive_directory_iterator(scriptPath_str);
-        for (const auto& data_de : script_entries) {
-            if (data_de.is_file) {
-                char modBuf[0x100];
-                StrCopy(modBuf, data_de.path_str.c_str());
-#else
-    fs::path scriptPath_fs = resolvePath(ps3_join_path(ps3_join_path(modsPath, info->folder), "Scripts"));
-    PrintLog("ScanModFolder (non-PS3, Scripts): Scanning %s", scriptPath_fs.string().c_str());
-    if (fs::exists(scriptPath_fs) && fs::is_directory(scriptPath_fs)) {
+    fs::path scriptPath = resolvePath(modDir + "/Scripts");
+
+    if (fs::exists(scriptPath) && fs::is_directory(scriptPath)) {
         try {
-            auto data_rdi = fs::recursive_directory_iterator(scriptPath_fs);
+            auto data_rdi = fs::recursive_directory_iterator(scriptPath);
             for (auto &data_de : data_rdi) {
                 if (data_de.is_regular_file()) {
                     char modBuf[0x100];
                     StrCopy(modBuf, data_de.path().string().c_str());
-#endif
                     char folderTest[4][0x10] = {
                         "Scripts/",
                         "Scripts\\",
@@ -569,53 +321,39 @@ void ScanModFolder(ModInfo *info)
 
                     if (tokenPos >= 0) {
                         char buffer[0x80];
-                        const char* relativePart = modBuf + tokenPos;
-                        StrCopy(buffer, relativePart);
-                        for(char* p = buffer; *p; ++p) if (*p == '\\') *p = '/';
-                        
+                        for (int i = StrLength(modBuf); i >= tokenPos; --i) {
+                            buffer[i - tokenPos] = modBuf[i] == '\\' ? '/' : modBuf[i];
+                        }
+
+                        // PrintLog(modBuf);
                         std::string path(buffer);
                         std::string modPath(modBuf);
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower,path.c_str()); // Lowercase the relative path for the key
+                        for (int c = 0; c < path.size(); ++c) {
+                            pathLower[c] = tolower(path.c_str()[c]);
+                        }
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
-                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }
-#ifndef PS3 
-        } catch (fs::filesystem_error const& fe) { 
-            PrintLog("Script Folder Scanning Error: %s", fe.what());
+        } catch (fs::filesystem_error fe) {
+            PrintLog("Script Folder Scanning Error: ");
+            PrintLog(fe.what());
         }
-#endif
     }
 
-    PrintLog("ScanModFolder (Scripts): Found %d file mappings.", (int)(info->fileMap.size() - initialMapSize)); 
-    initialMapSize = info->fileMap.size(); 
-
     // Check for Bytecode/ replacements
-#ifdef PS3
-    // std::string bytecodePath_str = ps3_join_path(ps3_join_path(modsPath, info->folder), "Bytecode"); // OLD LINE
-    std::string bytecodePath_str = ps3_join_path(info->path, "Bytecode"); // NEW LINE
-    PrintLog("ScanModFolder (PS3, Bytecode): Scanning %s (using info->path: %s)", bytecodePath_str.c_str(), info->path.c_str());
-    if (ps3_path_exists(bytecodePath_str) && ps3_is_directory(bytecodePath_str)) {
-        std::vector<PS3DirEntry> bytecode_entries = ps3_recursive_directory_iterator(bytecodePath_str);
-        for (const auto& data_de : bytecode_entries) {
-            if (data_de.is_file) {
-                char modBuf[0x100];
-                StrCopy(modBuf, data_de.path_str.c_str());
-#else
-    fs::path bytecodePath_fs = resolvePath(ps3_join_path(ps3_join_path(modsPath, info->folder), "Bytecode"));
-    PrintLog("ScanModFolder (non-PS3, Bytecode): Scanning %s", bytecodePath_fs.string().c_str());
-    if (fs::exists(bytecodePath_fs) && fs::is_directory(bytecodePath_fs)) {
+    fs::path bytecodePath = resolvePath(modDir + "/Bytecode");
+
+    if (fs::exists(bytecodePath) && fs::is_directory(bytecodePath)) {
         try {
-            auto data_rdi = fs::recursive_directory_iterator(bytecodePath_fs);
+            auto data_rdi = fs::recursive_directory_iterator(bytecodePath);
             for (auto &data_de : data_rdi) {
                 if (data_de.is_regular_file()) {
                     char modBuf[0x100];
                     StrCopy(modBuf, data_de.path().string().c_str());
-#endif
                     char folderTest[4][0x10] = {
                         "Bytecode/",
                         "Bytecode\\",
@@ -631,57 +369,53 @@ void ScanModFolder(ModInfo *info)
 
                     if (tokenPos >= 0) {
                         char buffer[0x80];
-                        const char* relativePart = modBuf + tokenPos;
-                        StrCopy(buffer, relativePart);
-                        for(char* p = buffer; *p; ++p) if (*p == '\\') *p = '/';
+                        for (int i = StrLength(modBuf); i >= tokenPos; --i) {
+                            buffer[i - tokenPos] = modBuf[i] == '\\' ? '/' : modBuf[i];
+                        }
 
+                        // PrintLog(modBuf);
                         std::string path(buffer);
                         std::string modPath(modBuf);
                         char pathLower[0x100];
                         memset(pathLower, 0, sizeof(char) * 0x100);
-                        StringLowerCase(pathLower,path.c_str()); // Lowercase the relative path for the key
+                        for (int c = 0; c < path.size(); ++c) {
+                            pathLower[c] = tolower(path.c_str()[c]);
+                        }
 
                         info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
-                        PrintLog("ScanModFolder: Added to fileMap: Key='%s', Value='%s'", pathLower, modBuf);
                     }
                 }
             }
-#ifndef PS3 
-        } catch (fs::filesystem_error const& fe) { 
-            PrintLog("Bytecode Folder Scanning Error: %s", fe.what());
+        } catch (fs::filesystem_error fe) {
+            PrintLog("Bytecode Folder Scanning Error: ");
+            PrintLog(fe.what());
         }
-#endif
     }
-    PrintLog("ScanModFolder (Bytecode): Found %d file mappings.", (int)(info->fileMap.size() - initialMapSize)); 
 }
 
 void SaveMods()
 {
-    char modConfigDirBuf[0x100];
-    sprintf(modConfigDirBuf, "%smods", modsPath);
+    char modBuf[0x100];
+    sprintf(modBuf, "%smods", modsPath);
+    fs::path modPath = resolvePath(modBuf);
 
-#ifdef PS3
-    std::string mods_base_dir_str = resolvePath_ps3(modConfigDirBuf);
-    if (ps3_path_exists(mods_base_dir_str) && ps3_is_directory(mods_base_dir_str)) {
-        std::string mod_config_path_str = ps3_join_path(mods_base_dir_str, "modconfig.ini");
+    if (fs::exists(modPath) && fs::is_directory(modPath)) {
+        std::string mod_config = modPath.string() + "/modconfig.ini";
         IniParser modConfig;
-        for (size_t m = 0; m < modList.size(); ++m) { 
-#else
-    fs::path mods_base_dir_fs = resolvePath(modConfigDirBuf);
-    if (fs::exists(mods_base_dir_fs) && fs::is_directory(mods_base_dir_fs)) {
-        std::string mod_config_path_str = (mods_base_dir_fs / "modconfig.ini").string();
-        IniParser modConfig;
-        for (size_t m = 0; m < modList.size(); ++m) { 
-#endif
+
+        for (int m = 0; m < modList.size(); ++m) {
             ModInfo *info = &modList[m];
+
             modConfig.SetBool("mods", info->folder.c_str(), info->active);
         }
-        modConfig.Write(mod_config_path_str.c_str(), false);
+
+        modConfig.Write(mod_config.c_str(), false);
     }
 }
 
 void RefreshEngine()
 {
+    // Reload entire engine
     Engine.LoadGameConfig("Data/Game/GameConfig.bin");
 #if RETRO_USING_SDL2
     if (Engine.window) {
@@ -726,7 +460,7 @@ void RefreshEngine()
     redirectSave       = false;
     Engine.forceSonic1 = false;
     sprintf(savePath, "");
-    for (size_t m = 0; m < modList.size(); ++m) { 
+    for (int m = 0; m < modList.size(); ++m) {
         if (!modList[m].active)
             continue;
         if (modList[m].useScripts)
@@ -860,7 +594,7 @@ void MoveMod(uint *id, int *up)
     modList[option]    = swap;
 }
 
-#endif // RETRO_USE_MOD_LOADER
+#endif
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE
 int GetSceneID(byte listID, const char *sceneName)

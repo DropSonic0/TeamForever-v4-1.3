@@ -7,7 +7,6 @@
 
 #define PACKET_SIZE 0x1000
 
-#ifndef PS3_DISABLE_NETWORKING
 extern char networkHost[64];
 extern char networkGame[7];
 extern int networkPort;
@@ -16,7 +15,6 @@ extern float lastPing;
 extern int dcError;
 extern bool waitingForPing;
 extern bool waitForVerify;
-#endif // PS3_DISABLE_NETWORKING
 
 struct MultiplayerData {
     int type;
@@ -65,9 +63,7 @@ enum ServerHeaders {
 
 class NetworkSession;
 
-#ifndef PS3_DISABLE_NETWORKING
 extern std::shared_ptr<NetworkSession> session;
-#endif // PS3_DISABLE_NETWORKING
 
 void InitNetwork();
 void RunNetwork();

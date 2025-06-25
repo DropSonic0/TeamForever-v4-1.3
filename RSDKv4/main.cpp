@@ -1,9 +1,8 @@
 #include "RetroEngine.hpp"
-#include "Debug.hpp"
 
 #if !RETRO_USE_ORIGINAL_CODE
 
-#ifdef PLATFORM_WINDOWS
+#if RETRO_PLATFORM == RETRO_WIN
 #include "Windows.h"
 #endif
 
@@ -33,7 +32,7 @@ void parseArguments(int argc, char *argv[])
             engineDebugMode       = true;
             Engine.devMenu        = true;
             Engine.consoleEnabled = true;
-#ifdef PLATFORM_WINDOWS
+#if RETRO_PLATFORM == RETRO_WIN
             AllocConsole();
             freopen_s((FILE **)stdin, "CONIN$", "w", stdin);
             freopen_s((FILE **)stdout, "CONOUT$", "w", stdout);
@@ -76,9 +75,6 @@ static void initNxLink()
 
 int main(int argc, char *argv[])
 {
-engineDebugMode = true;
-endLine = true;
-InitDebug();
 #ifdef NXLINK
     initNxLink();
 #endif
@@ -93,9 +89,9 @@ InitDebug();
 
 #if !RETRO_USE_ORIGINAL_CODE
     if (Engine.consoleEnabled) {
-#ifdef PLATFORM_WINDOWS
+#if RETRO_PLATFORM == RETRO_WIN
         FreeConsole();
-#endif // PLATFORM_WINDOWS
+#endif //! RETRO_PLATFORM == RETRO_WIN
     }
 #endif //! !RETRO_USE_ORIGINAL_CODE
 
@@ -103,7 +99,6 @@ InitDebug();
     socketExit();
 #endif //! NXLINK
 
-ReleaseDebug();
     return 0;
 }
 

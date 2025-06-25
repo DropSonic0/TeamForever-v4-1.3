@@ -1,11 +1,4 @@
 #include "RetroEngine.hpp"
-#include "Scene.hpp"
-static int gfxIndexSize = 0;
-static int gfxVertexSize = 0;
-static int gfxIndexSizeOpaque = 0;
-static int gfxVertexSizeOpaque = 0;
-static int vertexSize3D = 0;
-static int indexSize3D = 0;
 
 void InitPauseMenu()
 {
@@ -28,9 +21,7 @@ void RetroGameLoop_Main(void *objPtr)
 #endif
 
             ProcessStageSelect();
-#if RETRO_SOFTWARE_RENDER 
             TransferRetroBuffer();
-#endif
             RenderRetroBuffer(64, 160.0);
             break;
 
@@ -42,12 +33,10 @@ void RetroGameLoop_Main(void *objPtr)
             gfxVertexSizeOpaque = 0;
             vertexSize3D        = 0;
             indexSize3D         = 0;
-            cameraEnabled = 0;
+            render3DEnabled     = false;
 #endif
             ProcessStage();
-#if RETRO_SOFTWARE_RENDER 
             TransferRetroBuffer();
-#endif
             RenderRetroBuffer(64, 160.0);
             break;
 
@@ -73,16 +62,12 @@ void RetroGameLoop_Main(void *objPtr)
         case ENGINE_EXITPAUSE:
             Engine.gameMode = ENGINE_MAINGAME;
             ResumeSound();
-#if RETRO_SOFTWARE_RENDER
             TransferRetroBuffer();
-#endif
             break;
 
         case ENGINE_ENDGAME:
             ClearScreen(1);
-#if RETRO_SOFTWARE_RENDER
             TransferRetroBuffer();
-#endif
             RestoreNativeObjects();
             Engine.LoadGameConfig("Data/Game/GameConfig.bin");
             activeStageList   = 0;
@@ -91,9 +76,7 @@ void RetroGameLoop_Main(void *objPtr)
 
         case ENGINE_RESETGAME: // Also called when 2P VS disconnects
             ClearScreen(1);
-#if RETRO_SOFTWARE_RENDER
             TransferRetroBuffer();
-#endif
             RestoreNativeObjects();
             break;
 
@@ -103,7 +86,7 @@ void RetroGameLoop_Main(void *objPtr)
             }
             break;
 
-#ifndef PS3_DISABLE_NETWORKING
+#if !RETRO_USE_ORIGINAL_CODE && RETRO_USE_NETWORKING
         case ENGINE_CONNECT2PVS: {
             CREATE_ENTITY(MultiplayerScreen)->bg = CREATE_ENTITY(MenuBG);
             NativeEntity_FadeScreen *fade        = CREATE_ENTITY(FadeScreen);

@@ -24,9 +24,7 @@ THE SOFTWARE.
 
 #if !defined(_WIN32)
 #include <stdlib.h>
-#include <string.h> // For strsep, if available, and other string functions
-#include <strings.h> // For strcasecmp
-#include <alloca.h>  // For alloca
+#include <string.h>
 
 #include <dirent.h>
 #include <errno.h>

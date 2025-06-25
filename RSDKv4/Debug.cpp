@@ -1,160 +1,9 @@
-// Inicio de RSDKv4/Debug.cpp
-#include "RetroEngine.hpp" // Para BASE_PATH, gamePath, usingCWD, getResourcesPath(), engineDebugMode, endLine, etc.
-#include "Scene.hpp"
-#include "Userdata.hpp"    // Y para engineDebugMode, endLine si se definen ahí globalmente.
-#include "Debug.hpp"       // Para las declaraciones y extern FILE* gameLogFile
-#include <stdarg.h>      // Para va_list, etc.
-#include <stdio.h>       // Para FILE, fopen, fprintf, fclose, fflush, vsnprintf, sprintf
-#include <string.h>      // Para strlen (si no está en tus propias String.hpp)
+#include "RetroEngine.hpp"
 
-// --- Definición de las Variables Globales de Logging ---
-// Estas deben ser declaradas como 'extern' en Debug.hpp
-bool endLine = true; FILE* gameLogFile    = nullptr;
-// 'engineDebugMode' y 'endLine' se asume que están definidas en otro lugar
-// (ej. main.cpp o RetroEngine.cpp) y declaradas 'extern' en Debug.hpp o RetroEngine.hpp para ser globales.
-// Si decides definirlas aquí, asegúrate de que sean:
-// bool engineDebugMode = false;
-// bool endLine         = true;
-// Y que no haya otras definiciones en otros .cpp
+bool endLine   = true;
+int touchFlags = 0;
 
-// --- Implementación de InitDebug ---
-void InitDebug() {
-#ifndef RETRO_DISABLE_LOG
-    if (engineDebugMode) {
-        char logPath[0x200] = {0};
-        const char* basePathVar = BASE_PATH; // Asumimos BASE_PATH es una macro o const char* global
-
-    #if defined(PS3)
-        // En PS3, si BASE_PATH es "" o "./", se creará en USRDIR.
-        // Si no estás seguro de BASE_PATH para PS3, puedes usar directamente:
-        // sprintf(logPath, "log.txt");
-        if (strlen(basePathVar) > 0 && basePathVar[strlen(basePathVar) - 1] != '/') {
-            sprintf(logPath, "%s/log.txt", basePathVar);
-        } else {
-            sprintf(logPath, "%slog.txt", basePathVar);
-        }
-    #elif RETRO_PLATFORM == RETRO_UWP
-        if (!usingCWD) {
-            sprintf(logPath, "%s/log.txt", getResourcesPath());
-        } else {
-            sprintf(logPath, "log.txt");
-        }
-    #elif RETRO_PLATFORM == RETRO_ANDROID
-        sprintf(logPath, "%s/log.txt", gamePath);
-    #else
-        // Para Windows, Linux, OSX (no UWP, no Android, no PS3)
-        if (strlen(basePathVar) > 0 && basePathVar[strlen(basePathVar) - 1] != '/') {
-             sprintf(logPath, "%s/log.txt", basePathVar);
-        } else {
-            sprintf(logPath, "%slog.txt", basePathVar);
-        }
-    #endif
-
-        gameLogFile = fopen(logPath, "a");
-        if (gameLogFile) {
-            fprintf(gameLogFile, "\n=================================\n"); // Corregido: \n para nueva línea literal
-            fprintf(gameLogFile, "Log Started (InitDebug)\n");          // Corregido: \n
-            fflush(gameLogFile);
-            printf("Log file abierto en: %s\n", logPath);              // Corregido: \n
-        } else {
-            printf("ERROR: No se pudo abrir log.txt en: %s\n", logPath); // Corregido: \n
-        }
-    }
-#endif
-}
-
-// --- Implementación de ReleaseDebug ---
-void ReleaseDebug() {
-#ifndef RETRO_DISABLE_LOG
-    if (gameLogFile) {
-        printf("Cerrando log file.\n");                                  // Corregido: \n
-        fprintf(gameLogFile, "Log Ended (ReleaseDebug)\n");             // Corregido: \n
-        fprintf(gameLogFile, "=================================\n\n"); // Corregido: \n
-        fflush(gameLogFile);
-        fclose(gameLogFile);
-        gameLogFile = nullptr;
-    }
-#endif
-}
-
-// --- Implementación de PrintLog (para const char*) ---
-#if defined(PS3) && !defined(vsnprintf)
-    // Si vsnprintf no está disponible en PS3 (lo cual causó errores en tinyxml2)
-    // proveemos un wrapper simple. sprintf es inseguro para tamaño.
-    // vsprintf es la alternativa más cercana a vsnprintf sin tamaño.
-    int rsdk_vsnprintf_ps3(char *buffer, size_t size, const char *format, va_list args) {
-        (void)size; // El tamaño se ignora, vsprintf no lo usa.
-        return vsprintf(buffer, format, args);
-    }
-    #define vsnprintf rsdk_vsnprintf_ps3
-#endif
-
-void PrintLog(const char *msg, ...) {
-#ifndef RETRO_DISABLE_LOG
-    if (!engineDebugMode && !gameLogFile) {
-        return;
-    }
-
-    char buffer[1024];
-    va_list args;
-
-    va_start(args, msg);
-    vsnprintf(buffer, sizeof(buffer) - 1, msg, args);
-    va_end(args);
-    buffer[sizeof(buffer) - 1] = '\0';  // Corregido: \0 para terminador null literal
-
-    if (engineDebugMode) {
-        if (endLine) {
-            printf("%s\n", buffer); // Corregido: \n
-        } else {
-            printf("%s", buffer);
-        }
-    }
-
-    if (gameLogFile) {
-        if (endLine) {
-            fprintf(gameLogFile, "%s\n", buffer); // Corregido: \n
-        } else {
-            fprintf(gameLogFile, "%s", buffer);
-        }
-        fflush(gameLogFile);
-    }
-#endif
-}
-
-void PrintLog(const ushort *msg) {
-#ifndef RETRO_DISABLE_LOG
-    if (!engineDebugMode && !gameLogFile) return;
-
-    char narrowBuffer[1024];
-    int i = 0;
-    for (i = 0; i < (sizeof(narrowBuffer) - 1) && msg[i] != 0; ++i) {
-        if (msg[i] < 0x80) {
-            narrowBuffer[i] = (char)msg[i];
-        } else {
-            narrowBuffer[i] = '?';
-        }
-    }
-    narrowBuffer[i] = '\0'; // Corregido: \0
-
-    if (engineDebugMode) {
-        if (endLine) {
-            printf("%s [ushort_log]\n", narrowBuffer); // Corregido: \n
-        } else {
-            printf("%s [ushort_log]", narrowBuffer);
-        }
-    }
-
-    if (gameLogFile) {
-        if (endLine) {
-            fprintf(gameLogFile, "%s [ushort_log]\n", narrowBuffer); // Corregido: \n
-        } else {
-            fprintf(gameLogFile, "%s [ushort_log]", narrowBuffer);
-        }
-        fflush(gameLogFile);
-    }
-#endif
-}
+int taListStore = 0;
 
 void InitDevMenu()
 {
@@ -185,8 +34,8 @@ void InitDevMenu()
     RemoveNativeObjectType(PauseMenu_Create, PauseMenu_Main);
 #endif
 #if RETRO_HARDWARE_RENDER
-    cameraEnabled = 0;
-//UpdateHardwareTextures();
+    render3DEnabled = false;
+    UpdateHardwareTextures();
 #endif
 }
 void InitErrorMessage()
@@ -218,8 +67,8 @@ void InitErrorMessage()
     RemoveNativeObjectType(PauseMenu_Create, PauseMenu_Main);
 #endif
 #if RETRO_HARDWARE_RENDER
-    cameraEnabled = 0;
-//UpdateHardwareTextures();
+    render3DEnabled = false;
+    UpdateHardwareTextures();
 #endif
 }
 void ProcessStageSelect()

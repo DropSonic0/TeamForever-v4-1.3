@@ -27,20 +27,6 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 // typedef unsigned long long ulong;
 
-#ifdef PS3_DISABLE_NETWORKING
-// Dummy declarations for global network variables when networking is disabled for PS3
-extern char networkHost[64];
-extern char networkGame[7];
-extern int networkPort;
-extern int dcError;
-extern bool waitForVerify;
-extern bool waitingForPing;
-extern float lastPing;
-// Note: std::shared_ptr<NetworkSession> session; would also need a dummy if it were used directly
-// when PS3_DISABLE_NETWORKING is on, but its extern declaration is also guarded now.
-// If any code tries to use 'session' it would be an undeclared identifier, which is fine for now.
-#endif // PS3_DISABLE_NETWORKING
-
 // Platforms (RSDKv4 only defines these 7 (I assume), but feel free to add your own custom platform define for easier platform code changes)
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
@@ -53,7 +39,6 @@ extern float lastPing;
 #define RETRO_UWP   (7)
 #define RETRO_LINUX (8)
 #define RETRO_SWITCH (9)
-// NOTA: RETRO_PS3 ya está definido como (3) más arriba.
 
 // Platform types (Game manages platform-specific code such as HUD position using this rather than the above)
 #define RETRO_STANDARD (0)
@@ -94,12 +79,9 @@ extern float lastPing;
 #elif defined(__linux__)
 #define RETRO_PLATFORM   (RETRO_LINUX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
-#elif defined(__PS3__) || defined(PS3) // Added PS3 check
-#define RETRO_PLATFORM   (RETRO_PS3)
-#define RETRO_DEVICETYPE (RETRO_STANDARD)
 #else
 //#error "No Platform was defined"
-#define RETRO_PLATFORM   (RETRO_WIN) // Default fallback
+#define RETRO_PLATFORM   (RETRO_WIN)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
 
@@ -113,7 +95,7 @@ extern float lastPing;
 #endif
 
 #if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX || RETRO_PLATFORM == RETRO_UWP                       \
-    || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH || RETRO_PLATFORM == RETRO_PS3
+    || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH
 #define RETRO_USING_SDL1 (0)
 #define RETRO_USING_SDL2 (1)
 #else // Since its an else & not an elif these platforms probably aren't supported yet
@@ -125,20 +107,13 @@ extern float lastPing;
 #define RETRO_GAMEPLATFORM (RETRO_MOBILE)
 #elif RETRO_PLATFORM == RETRO_UWP
 #define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
-#elif RETRO_PLATFORM == RETRO_PS3 // PS3 is a standard platform
-#define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #else
 #define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #endif
 
 #define RETRO_SW_RENDER  (0)
 #define RETRO_HW_RENDER  (1)
-
-#if RETRO_PLATFORM == RETRO_PS3
-#define RETRO_RENDERTYPE (RETRO_HW_RENDER) // PS3 will use SDL_Renderer, considered HW accelerated
-#else
-#define RETRO_RENDERTYPE (RETRO_SW_RENDER) // Default for other platforms, can be overridden
-#endif
+#define RETRO_RENDERTYPE (RETRO_SW_RENDER)
 
 #ifdef USE_SW_REN
 #undef RETRO_RENDERTYPE
@@ -150,11 +125,7 @@ extern float lastPing;
 #define RETRO_RENDERTYPE (RETRO_HW_RENDER)
 #endif
 
-#if RETRO_PLATFORM == RETRO_PS3
-#define RETRO_USING_OPENGL (0) // PS3 will use SDL_Renderer, not direct OpenGL
-#else
-#define RETRO_USING_OPENGL (0) // Default for other platforms, original RSDKv4 might enable it elsewhere for other HW platforms
-#endif
+#define RETRO_USING_OPENGL (0)
 
 #define RETRO_SOFTWARE_RENDER (RETRO_RENDERTYPE == RETRO_SW_RENDER)
 #define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
@@ -212,11 +183,6 @@ extern float lastPing;
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <glad/glad.h>  // OpenGL loader
-#elif RETRO_PLATFORM == RETRO_PS3
-#include <GLES/gl.h> // SDL2PSL1GHT should provide GLES headers
-// May need specific EGL headers too, or SDL handles it.
-// #include <EGL/egl.h>
-// #include <EGL/eglext.h>
 #else
 #include <GL/glew.h>
 #endif
@@ -361,9 +327,7 @@ extern bool engineDebugMode;
 #include "Script.hpp"
 #include "Sprite.hpp"
 #include "Text.hpp"
-#ifndef PS3_DISABLE_NETWORKING
 #include "Networking.hpp"
-#endif // PS3_DISABLE_NETWORKING
 #include "Renderer.hpp"
 #include "Userdata.hpp"
 #include "Debug.hpp"
@@ -517,20 +481,18 @@ public:
     SDL_Window *window = nullptr;
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
-	SDL_Texture *videoBuffer = nullptr;
 #if RETRO_SOFTWARE_RENDER
     SDL_Texture *screenBuffer   = nullptr;
     SDL_Texture *screenBuffer2x = nullptr;
-    //SDL_Texture *videoBuffer = nullptr;
+    SDL_Texture *videoBuffer = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
 #endif
 
     SDL_Event sdlEvents;
 
-// Ya no se necesita glContext con SDL_Renderer
-//#if RETRO_USING_OPENGL 
-//    SDL_GLContext glContext; // OpenGL context
-//#endif // RETRO_USING_OPENGL
+#if RETRO_USING_OPENGL
+    SDL_GLContext glContext; // OpenGL context
+#endif // RETRO_USING_OPENGL
 #endif // RETRO_USING_SDL2
 
 #if RETRO_USING_SDL1

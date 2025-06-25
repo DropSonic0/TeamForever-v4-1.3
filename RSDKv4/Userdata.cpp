@@ -16,7 +16,6 @@ int nativeFunctionCount = 0;
 
 char gamePath[0x100];
 int saveRAM[SAVEDATA_SIZE];
-int touchFlags = 0;
 Achievement achievements[ACHIEVEMENT_COUNT];
 int achievementCount = 0;
 
@@ -286,7 +285,7 @@ void InitUserdata()
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
 
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
         StrCopy(networkHost, "127.0.0.1");
         ini.SetInteger("Network", "Port", networkPort = 50);
@@ -439,7 +438,7 @@ void InitUserdata()
         disableFocusPause = 3;
         disableFocusPause_Config = disableFocusPause;
 
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
             StrCopy(networkHost, "127.0.0.1");
         if (!ini.GetInteger("Network", "Port", &networkPort))
@@ -718,7 +717,7 @@ void WriteSettings()
     ini.SetComment("Game", "SSMenuComment", "If set to true, disables the start menu");
     ini.SetBool("Game", "SkipStartMenu", skipStartMenu_Config);
 
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
     ini.SetString("Network", "Host", networkHost);
     ini.SetComment("Network", "PortComment", "The port the game will try to connect to.");
@@ -1038,7 +1037,7 @@ void Connect2PVS(int *gameLength, int *itemMode)
     matchValueData[1]      = 0;
     matchValueReadPos      = 0;
     matchValueWritePos     = 0;
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
     Engine.gameMode = ENGINE_CONNECT2PVS;
 #endif
     // PauseSound();
@@ -1046,7 +1045,7 @@ void Connect2PVS(int *gameLength, int *itemMode)
     vsGameLength = *gameLength;
     vsItemMode   = *itemMode;
     if (Engine.onlineActive) {
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         disableFocusPause_Store = disableFocusPause;
         disableFocusPause       = 3;
         RunNetwork();
@@ -1058,7 +1057,7 @@ void Disconnect2PVS()
     PrintLog("Attempting to disconnect from 2P game");
 
     if (Engine.onlineActive) {
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         disableFocusPause = disableFocusPause_Store;
         // Engine.devMenu    = vsPlayerID;
         vsPlaying = false;
@@ -1073,7 +1072,7 @@ void SendEntity(int *entityID, int *verify)
         multiplayerDataOUT.type = 1;
         memcpy(multiplayerDataOUT.data, &objectEntityList[*entityID], sizeof(Entity));
         if (Engine.onlineActive) {
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
             SendData(*verify);
 #endif
         }
@@ -1087,7 +1086,7 @@ void SendValue(int *value, int *verify)
     multiplayerDataOUT.type    = 0;
     multiplayerDataOUT.data[0] = *value;
     if (Engine.onlineActive) {
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         SendData(*verify);
 #endif
     }
@@ -1135,7 +1134,7 @@ void TransmitGlobal(int *globalValue, const char *globalName)
     multiplayerDataOUT.data[0] = GetGlobalVariableID(globalName);
     multiplayerDataOUT.data[1] = *globalValue;
     if (Engine.onlineActive) {
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
         SendData();
 #endif
     }
@@ -1169,7 +1168,7 @@ void Receive2PVSMatchCode(int code)
     CREATE_ENTITY(RetroGameLoop); // hack
     if (Engine.gameDeviceType == RETRO_MOBILE)
         CREATE_ENTITY(VirtualDPad);
-#ifndef PS3_DISABLE_NETWORKING
+#if RETRO_USE_NETWORKING
     CREATE_ENTITY(MultiplayerHandler);
 #endif
 }

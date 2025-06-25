@@ -43,8 +43,6 @@
 #include "StaffCredits.cpp"
 #include "OptionsMenu.cpp"
 #if RETRO_USE_NETWORKING
-#ifndef PS3_DISABLE_NETWORKING
 #include "MultiplayerHandler.cpp"
 #include "MultiplayerScreen.cpp"
-#endif // PS3_DISABLE_NETWORKING
 #endif
