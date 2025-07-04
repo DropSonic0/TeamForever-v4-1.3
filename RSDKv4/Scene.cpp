@@ -351,7 +351,11 @@ void ProcessStage(void)
             }
 			*/
 
+#if RETRO_USE_NETWORKING
             if (!waitForVerify) {
+#else
+            if (true) { // Assuming normal operation if networking is disabled
+#endif
                 if (timeEnabled) {
                     if (++frameCounter == 60) {
                         frameCounter = 0;

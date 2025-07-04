@@ -1,3 +1,7 @@
+#ifndef PS3_PPU_PRX_LOADER // If not defined by compiler, define it here for this file
+#define PS3_PPU_PRX_LOADER
+#endif
+
 #include "RetroEngine.hpp"
 #include <cmath>
 
@@ -3331,6 +3335,9 @@ void ClearScriptData()
 
 void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
 {
+    #ifdef PS3_PPU_PRX_LOADER
+    printf("PS3_DEBUG: ProcessScript START - scriptCodePtr: %d, jumpTablePtr: %d, scriptEvent: %u, currentEntity: %p (type: %d)\n", scriptCodePtr, jumpTablePtr, scriptEvent, &objectEntityList[objectEntityPos], objectEntityList[objectEntityPos].type);
+    #endif
     bool running      = true;
     int scriptDataPtr = scriptCodePtr;
     // int jumpTableDataPtr = jumpTablePtr;

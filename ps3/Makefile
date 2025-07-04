@@ -22,13 +22,13 @@ TARGET		:=	s1fs2a
 BUILD		:=	build
 SOURCES		:=	\
 	../RSDKv4/ 			\
-	../RSDKv4/NativeObjects/  			\
+	../RSDKv4/NativeObjects/		\
 	../dependencies/all/theoraplay 	\
 	../dependencies/all/tinyxml2
 
 INCLUDES	:=	\
 	../RSDKv4/ 			\
-	../RSDKv4/NativeObjects/  			\
+	../RSDKv4/NativeObjects/		\
 	../dependencies/all/asio/asio/include \
 	../dependencies/all/stb-image \
 	../dependencies/all/tinyxml2 \

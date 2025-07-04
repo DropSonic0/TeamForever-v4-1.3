@@ -1,6 +1,11 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+// Ensure logging is not disabled for PS3 debug builds
+#ifdef RETRO_DISABLE_LOG
+#undef RETRO_DISABLE_LOG
+#endif
+
 #if RETRO_PLATFORM == RETRO_ANDROID
 #include <android/log.h>
 #endif
@@ -18,11 +23,11 @@ inline void PrintLog(const char *msg, ...)
         vsprintf(buffer, msg, args);
         if (endLine) {
             printf("%s\n", buffer);
-            sprintf(buffer, "%s\n", buffer);
+            // sprintf(buffer, "%s\n", buffer); // Redundant, buffer already contains the string
         }
         else {
             printf("%s", buffer);
-            sprintf(buffer, "%s", buffer);
+            // sprintf(buffer, "%s", buffer); // Redundant
         }
 
         char pathBuffer[0x100];
@@ -34,13 +39,23 @@ inline void PrintLog(const char *msg, ...)
 #elif RETRO_PLATFORM == RETRO_ANDROID
         sprintf(pathBuffer, "%s/log.txt", gamePath);
         __android_log_print(ANDROID_LOG_INFO, "RSDKv4", "%s", buffer);
-#else
+#else // PS3 falls into this case
         sprintf(pathBuffer, BASE_PATH "log.txt");
 #endif
+        // PS3 Log Debug: Check path and fOpen result
+        printf("PS3 LOG DEBUG: PrintLog(char*) called. Message: %s\n", buffer);
+        printf("PS3 LOG DEBUG: Attempting to open log file: %s\n", pathBuffer);
         FileIO *file = fOpen(pathBuffer, "a");
         if (file) {
-            fWrite(&buffer, 1, StrLength(buffer), file);
+            printf("PS3 LOG DEBUG: Log file opened successfully. Writing...\n");
+            size_t len = StrLength(buffer);
+            if (len > 0) { // Only write if there's something to write
+                fWrite(buffer, 1, len, file);
+            }
             fClose(file);
+            printf("PS3 LOG DEBUG: Log file closed.\n");
+        } else {
+            printf("PS3 LOG DEBUG: FAILED to open log file: %s\n", pathBuffer);
         }
     }
 #endif
@@ -50,14 +65,20 @@ inline void PrintLog(const ushort *msg)
 {
 #ifndef RETRO_DISABLE_LOG
     if (engineDebugMode) {
+        // PS3 Log Debug: ushort version
+        printf("PS3 LOG DEBUG: PrintLog(ushort) called.\n");
+        
+        // First, print to console if possible (original behavior)
         int mPos = 0;
         while (msg[mPos]) {
             printf("%lc", (ushort)msg[mPos]);
             mPos++;
         }
-        if (endLine)
+        if (endLine) {
             printf("\n");
+        }
 
+        // Now, attempt to write to log file
         char pathBuffer[0x100];
 #if RETRO_PLATFORM == RETRO_UWP
         if (!usingCWD)
@@ -67,21 +88,29 @@ inline void PrintLog(const ushort *msg)
 #elif RETRO_PLATFORM == RETRO_ANDROID
         sprintf(pathBuffer, "%s/log.txt", gamePath);
         __android_log_print(ANDROID_LOG_INFO, "RSDKv4", "%ls", (wchar_t *)msg);
-#else
+#else // PS3 falls into this case
         sprintf(pathBuffer, BASE_PATH "log.txt");
 #endif
-        mPos         = 0;
+        printf("PS3 LOG DEBUG: Attempting to open log file (ushort): %s\n", pathBuffer);
         FileIO *file = fOpen(pathBuffer, "a");
         if (file) {
+            printf("PS3 LOG DEBUG: Log file opened successfully (ushort). Writing...\n");
+            mPos = 0;
+            bool wroteSomething = false;
             while (msg[mPos]) {
-                fWrite(&msg[mPos], 2, 1, file);
+                fWrite(&msg[mPos], 2, 1, file); // Assuming ushort is 2 bytes
                 mPos++;
+                wroteSomething = true;
             }
 
-            ushort el = '\n';
-            if (endLine)
+            if (wroteSomething && endLine) { // Add newline if content was written and endLine is true
+                ushort el = '\n';
                 fWrite(&el, 2, 1, file);
+            }
             fClose(file);
+            printf("PS3 LOG DEBUG: Log file closed (ushort).\n");
+        } else {
+            printf("PS3 LOG DEBUG: FAILED to open log file (ushort): %s\n", pathBuffer);
         }
     }
 #endif

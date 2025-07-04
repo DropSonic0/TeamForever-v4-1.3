@@ -21,6 +21,7 @@ int achievementCount = 0;
 
 LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 
+#if RETRO_USE_NETWORKING
 MultiplayerData multiplayerDataIN  = MultiplayerData();
 MultiplayerData multiplayerDataOUT = MultiplayerData();
 int matchValueData[0x100];
@@ -33,6 +34,18 @@ int vsPlayerID   = 0;
 bool vsPlaying   = false;
 
 int sendCounter = 0;
+#else // !RETRO_USE_NETWORKING
+// Definitions for non-networking builds
+// MultiplayerData types are not needed here as they are fully guarded.
+int matchValueData[0x100] = {0}; // Initialize to zeros
+byte matchValueReadPos  = 0;
+byte matchValueWritePos = 0;
+int vsGameLength = 4; // Default value
+int vsItemMode   = 1; // Default value
+int vsPlayerID   = 0; // Default value
+bool vsPlaying   = false; // Default value
+int sendCounter = 0; // Default value
+#endif // RETRO_USE_NETWORKING
 
 #if RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX
 #include <sys/stat.h>
@@ -1027,6 +1040,7 @@ void ShowLeaderboardsScreen()
     PrintLog("we're showing the leaderboards screen");
 }
 
+#if RETRO_USE_NETWORKING
 bool disableFocusPause_Store = false;
 void Connect2PVS(int *gameLength, int *itemMode)
 {
@@ -1037,19 +1051,15 @@ void Connect2PVS(int *gameLength, int *itemMode)
     matchValueData[1]      = 0;
     matchValueReadPos      = 0;
     matchValueWritePos     = 0;
-#if RETRO_USE_NETWORKING
     Engine.gameMode = ENGINE_CONNECT2PVS;
-#endif
     // PauseSound();
     // actual connection code
     vsGameLength = *gameLength;
     vsItemMode   = *itemMode;
     if (Engine.onlineActive) {
-#if RETRO_USE_NETWORKING
         disableFocusPause_Store = disableFocusPause;
         disableFocusPause       = 3;
         RunNetwork();
-#endif
     }
 }
 void Disconnect2PVS()
@@ -1057,13 +1067,11 @@ void Disconnect2PVS()
     PrintLog("Attempting to disconnect from 2P game");
 
     if (Engine.onlineActive) {
-#if RETRO_USE_NETWORKING
         disableFocusPause = disableFocusPause_Store;
         // Engine.devMenu    = vsPlayerID;
         vsPlaying = false;
         DisconnectNetwork();
         InitNetwork();
-#endif
     }
 }
 void SendEntity(int *entityID, int *verify)
@@ -1072,9 +1080,7 @@ void SendEntity(int *entityID, int *verify)
         multiplayerDataOUT.type = 1;
         memcpy(multiplayerDataOUT.data, &objectEntityList[*entityID], sizeof(Entity));
         if (Engine.onlineActive) {
-#if RETRO_USE_NETWORKING
             SendData(*verify);
-#endif
         }
     }
     sendCounter = (sendCounter + 1) % 2;
@@ -1086,9 +1092,7 @@ void SendValue(int *value, int *verify)
     multiplayerDataOUT.type    = 0;
     multiplayerDataOUT.data[0] = *value;
     if (Engine.onlineActive) {
-#if RETRO_USE_NETWORKING
         SendData(*verify);
-#endif
     }
 }
 bool receiveReady = false;
@@ -1134,9 +1138,7 @@ void TransmitGlobal(int *globalValue, const char *globalName)
     multiplayerDataOUT.data[0] = GetGlobalVariableID(globalName);
     multiplayerDataOUT.data[1] = *globalValue;
     if (Engine.onlineActive) {
-#if RETRO_USE_NETWORKING
         SendData();
-#endif
     }
 }
 
@@ -1168,10 +1170,20 @@ void Receive2PVSMatchCode(int code)
     CREATE_ENTITY(RetroGameLoop); // hack
     if (Engine.gameDeviceType == RETRO_MOBILE)
         CREATE_ENTITY(VirtualDPad);
-#if RETRO_USE_NETWORKING
     CREATE_ENTITY(MultiplayerHandler);
-#endif
 }
+#else
+void Connect2PVS(int *gameLength, int *itemMode) { PrintLog("Connect2PVS: Networking Disabled"); }
+void Disconnect2PVS() { PrintLog("Disconnect2PVS: Networking Disabled"); }
+void SendEntity(int *entityID, int *verify) { PrintLog("SendEntity: Networking Disabled"); }
+void SendValue(int *value, int *verify) { PrintLog("SendValue: Networking Disabled"); }
+bool receiveReady = false; // Keep for compatibility, though it won't be set true
+void ReceiveEntity(int *entityID, int *incrementPos) { PrintLog("ReceiveEntity: Networking Disabled"); }
+void ReceiveValue(int *value, int *incrementPos) { PrintLog("ReceiveValue: Networking Disabled"); }
+void TransmitGlobal(int *globalValue, const char *globalName) { PrintLog("TransmitGlobal: Networking Disabled"); }
+void Receive2PVSData(void *data) { PrintLog("Receive2PVSData: Networking Disabled (data param is void*)"); unused(data); }
+void Receive2PVSMatchCode(int code) { PrintLog("Receive2PVSMatchCode: Networking Disabled"); unused(code); }
+#endif // RETRO_USE_NETWORKING
 
 void ShowPromoPopup(int *id, const char *popupName) { PrintLog("Attempting to show promo popup: \"%s\" (%d)", popupName, id ? *id : 0); }
 void ShowSegaIDPopup()

@@ -82,6 +82,7 @@ extern Achievement achievements[ACHIEVEMENT_COUNT];
 extern int achievementCount;
 extern LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 
+#if RETRO_USE_NETWORKING
 extern MultiplayerData multiplayerDataIN;
 extern MultiplayerData multiplayerDataOUT;
 
@@ -95,6 +96,19 @@ extern int vsPlayerID;
 extern bool vsPlaying;
 
 extern int sendCounter;
+#else // !RETRO_USE_NETWORKING
+// Provide stubs or default values for non-networking builds if these are accessed elsewhere
+// For now, just ensure they are declared to avoid undefined reference if not guarded in access points.
+// Access points should ideally also be guarded.
+extern int matchValueData[0x100]; // May not be strictly necessary if only used by guarded functions
+extern byte matchValueReadPos;    // May not be strictly necessary
+extern byte matchValueWritePos;   // May not be strictly necessary
+extern int vsGameLength;          // Default to a sensible value if accessed unguarded
+extern int vsItemMode;            // Default to a sensible value if accessed unguarded
+extern int vsPlayerID;            // Default to a sensible value if accessed unguarded
+extern bool vsPlaying;            // Default to false
+extern int sendCounter;           // Default to 0
+#endif // RETRO_USE_NETWORKING
 
 #if !RETRO_USE_ORIGINAL_CODE
 extern bool forceUseScripts;
@@ -194,8 +208,10 @@ void ReceiveEntity(int *entityID, int *incrementPos);
 void ReceiveValue(int *value, int *incrementPos);
 void TransmitGlobal(int *globalValue, const char *globalName);
 
+#if RETRO_USE_NETWORKING
 void Receive2PVSData(MultiplayerData *data);
 void Receive2PVSMatchCode(int code);
+#endif
 
 void ShowPromoPopup(int *id, const char *popupName);
 void ShowSegaIDPopup();
