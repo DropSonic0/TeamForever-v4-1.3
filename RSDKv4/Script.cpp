@@ -3336,7 +3336,6 @@ void ClearScriptData()
 void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
 {
     #ifdef PS3_PPU_PRX_LOADER
-    printf("PS3_DEBUG: ProcessScript START - scriptCodePtr: %d, jumpTablePtr: %d, scriptEvent: %u, currentEntity: %p (type: %d)\n", scriptCodePtr, jumpTablePtr, scriptEvent, &objectEntityList[objectEntityPos], objectEntityList[objectEntityPos].type);
     #endif
     bool running      = true;
     int scriptDataPtr = scriptCodePtr;

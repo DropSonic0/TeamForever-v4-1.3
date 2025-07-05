@@ -524,7 +524,6 @@ void ResetNativeObject(NativeEntityBase *obj, void (*create)(void *objPtr), void
 void ProcessNativeObjects()
 {
     #ifdef PS3_PPU_PRX_LOADER
-    printf("PS3_DEBUG: ProcessNativeObjects() entered. Current GameMode: %d\n", Engine.gameMode); 
     #endif
     ResetRenderStates();
     for (nativeEntityPos = 0; nativeEntityPos < nativeEntityCount; ++nativeEntityPos) {

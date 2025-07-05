@@ -294,8 +294,6 @@ bool processEvents()
 void RetroEngine::Init()
 {
     #ifdef PS3_PPU_PRX_LOADER
-    printf("PS3_DEBUG_INIT_ENTRY\n"); // <<< THIS IS THE MISSING LINE
-    printf("PS3_DEBUG: RetroEngine::Init() - Second printf, after engineDebugMode set.\n"); 
     #endif
     engineDebugMode = true;
 
@@ -389,9 +387,7 @@ void RetroEngine::Init()
 
     if (LoadGameConfig("Data/Game/GameConfig.bin")) {
         if (InitRenderDevice()) {
-            printf("PS3 EXECUTION TEST: Returned from InitRenderDevice. Before InitAudioPlayback.\n");
             if (InitAudioPlayback()) {
-                printf("PS3 EXECUTION TEST: Returned from InitAudioPlayback (successfully).\n");
                 
                 InitFirstStage();
                 ClearScriptData();
@@ -468,13 +464,10 @@ void RetroEngine::Init()
                     if (skipStart) Engine.gameMode = ENGINE_MAINGAME; else Engine.gameMode = ENGINE_WAIT;
                 #endif 
             } else { 
-                printf("PS3 EXECUTION TEST: InitAudioPlayback() failed.\n");
             }
         } else { 
-            printf("PS3 EXECUTION TEST: InitRenderDevice() failed.\n");
         }
     } else { 
-        printf("PS3 EXECUTION TEST: LoadGameConfig() failed.\n");
     }
 
 #if !RETRO_USE_ORIGINAL_CODE

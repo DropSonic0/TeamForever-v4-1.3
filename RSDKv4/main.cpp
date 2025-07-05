@@ -80,19 +80,15 @@ static void initNxLink()
 int main(int argc, char *argv[])
 {
     #ifdef PS3_PPU_PRX_LOADER
-    printf("PS3_DEBUG: main() function entered.\n");
     #endif
     // The old "PS3 EXECUTION TEST: main() started." should be removed or replaced by the line above.
 
     // Remove or comment out the other "PS3 EXECUTION TEST" printfs in main if you want, 
     // or leave them if they are helpful for your general PS3 testing.
     // For our current focused debugging, the "PS3_DEBUG" prefixed ones are primary.
-    printf("PS3 EXECUTION TEST: Calling SDL_Init(SDL_INIT_EVERYTHING) from main().\n");
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        printf("FATAL ERROR: SDL_Init(SDL_INIT_EVERYTHING) failed in main()! SDL Error: %s\n", SDL_GetError());
         return 1; // Exit early if this fails
     }
-    printf("PS3 EXECUTION TEST: SDL_Init(SDL_INIT_EVERYTHING) in main() returned.\n");
 #ifdef NXLINK
     initNxLink();
 #endif

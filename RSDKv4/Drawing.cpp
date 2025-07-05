@@ -100,10 +100,8 @@ bool bilinearScaling = false;
 
 int InitRenderDevice()
 {
-    printf("PS3 DEBUG: InitRenderDevice() started. (Prueba 3.0.2 - Fix GFX_LINESIZE)\n");
 
     Engine.windowScale = 2; 
-    printf("PS3 DEBUG: InitRenderDevice - Engine.windowScale ESTABLECIDO A: %d\n", Engine.windowScale);
 
     char gameTitle[0x100];
     if (Engine.gameWindowText[0] == '\0') {
@@ -111,13 +109,10 @@ int InitRenderDevice()
     } else {
         sprintf(gameTitle, "%s (Prueba 3.0.2)", Engine.gameWindowText);
     }
-    printf("PS3 DEBUG: InitRenderDevice - gameTitle: '%s'\n", gameTitle);
 
 #if RETRO_USING_SDL2
-    printf("PS3 DEBUG: InitRenderDevice - Dentro de RETRO_USING_SDL2.\n");
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest"); 
-    printf("PS3 DEBUG: InitRenderDevice - SDL_HINT_RENDER_SCALE_QUALITY set to 'nearest'.\n");
 
     Uint32 windowFlags = 0; 
     int window_w = SCREEN_XSIZE * Engine.windowScale; // Default width for windowed mode or if SDL ignores these for fullscreen_desktop
@@ -129,13 +124,9 @@ int InitRenderDevice()
         // Explicitly setting w/h might be overridden or might be necessary for some SDL backends.
         // The SFO file is responsible for telling the PS3 which resolutions are supported.
         // We'll let SDL pick the resolution. The previously calculated window_w, window_h might be used or ignored by SDL.
-        printf("PS3 DEBUG: InitRenderDevice - Engine.startFullScreen is TRUE. Requesting Fullscreen Desktop.\n");
     } else {
-        printf("PS3 DEBUG: InitRenderDevice - Engine.startFullScreen is FALSE. Using %dx%d window.\n", window_w, window_h);
     }
 
-    printf("PS3 DEBUG: InitRenderDevice - CALCULATED window_w: %d, window_h: %d PARA CreateWindow (Note: may be ignored for Fullscreen Desktop)\n", window_w, window_h);
-    printf("PS3 DEBUG: InitRenderDevice - Attempting SDL_CreateWindow ('%s', %dx%d) with flags: %u.\n", gameTitle, window_w, window_h, windowFlags);
 
     Engine.window = SDL_CreateWindow(gameTitle,
                                      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -143,64 +134,45 @@ int InitRenderDevice()
                                      windowFlags);
 
     if (!Engine.window) {
-        printf("PS3 FATAL ERROR: InitRenderDevice - SDL_CreateWindow FAILED! SDL Error: %s\n", SDL_GetError());
         return 0;
     }
-    printf("PS3 DEBUG: InitRenderDevice - SDL_CreateWindow() SUCCESSFUL.\n");
 
     #if !RETRO_USING_OPENGL
-        printf("PS3 DEBUG: InitRenderDevice - Attempting SDL_CreateRenderer().\n");
         Engine.renderer = SDL_CreateRenderer(Engine.window, -1, SDL_RENDERER_ACCELERATED); 
 
         if (!Engine.renderer) {
-            printf("PS3 FATAL ERROR: InitRenderDevice - SDL_CreateRenderer FAILED! SDL Error: %s\n", SDL_GetError());
             SDL_DestroyWindow(Engine.window); Engine.window = NULL;
             return 0;
         }
-        printf("PS3 DEBUG: InitRenderDevice - SDL_CreateRenderer() successful.\n");
-
-        printf("PS3 DEBUG: InitRenderDevice - SDL_RenderSetLogicalSize SKIPPED for Prueba 3.0.2.\n");
 
         if (SDL_SetRenderDrawBlendMode(Engine.renderer, SDL_BLENDMODE_BLEND) != 0) {
-             printf("PS3 WARNING: InitRenderDevice - SDL_SetRenderDrawBlendMode FAILED: %s\n", SDL_GetError());
         } else {
-             printf("PS3 DEBUG: InitRenderDevice - Renderer Blend Mode Set to SDL_BLENDMODE_BLEND.\n");
         }
 
         #if RETRO_SOFTWARE_RENDER
-            printf("PS3 DEBUG: InitRenderDevice - Allocating SDL Textures for software rendering (Prueba 3.0.2).\n");
             if (Engine.gameRenderTexture) {
                 SDL_DestroyTexture(Engine.gameRenderTexture);
                 Engine.gameRenderTexture = NULL;
-                printf("PS3 DEBUG: InitRenderDevice - Old Engine.gameRenderTexture destroyed.\n");
             }
 
             Engine.gameRenderTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_XSIZE, SCREEN_YSIZE);
             if (!Engine.gameRenderTexture) {
-                printf("PS3 FATAL ERROR: InitRenderDevice - SDL_CreateTexture for gameRenderTexture (ARGB8888 STREAMING %dx%d) FAILED! SDL Error: %s\n", SCREEN_XSIZE, SCREEN_YSIZE, SDL_GetError());
                 SDL_DestroyRenderer(Engine.renderer); Engine.renderer = NULL;
                 SDL_DestroyWindow(Engine.window); Engine.window = NULL;
                 return 0; 
             }
-            printf("PS3 DEBUG: InitRenderDevice - Engine.gameRenderTexture (ARGB8888 STREAMING, %dx%d) Created.\n", SCREEN_XSIZE, SCREEN_YSIZE);
 
             if(SDL_SetTextureBlendMode(Engine.gameRenderTexture, SDL_BLENDMODE_BLEND) != 0) {
-                printf("PS3 WARNING: InitRenderDevice - SDL_SetTextureBlendMode for gameRenderTexture FAILED: %s\n", SDL_GetError());
             } else {
-                printf("PS3 DEBUG: InitRenderDevice - Engine.gameRenderTexture Blend Mode set to SDL_BLENDMODE_BLEND.\n");
             }
 
             if (Engine.videoTexture) {
                 SDL_DestroyTexture(Engine.videoTexture);
                 Engine.videoTexture = NULL;
-                 printf("PS3 DEBUG: InitRenderDevice - Old Engine.videoTexture destroyed.\n");
             }
-            printf("PS3 DEBUG: InitRenderDevice - Engine.videoTexture remains NULL for this test.\n");
         #else
-             printf("PS3 DEBUG: InitRenderDevice - RETRO_SOFTWARE_RENDER is FALSE.\n");
         #endif 
     #else
-        printf("PS3 DEBUG: InitRenderDevice - RETRO_USING_OPENGL is TRUE.\n");
     #endif 
 
     Engine.screenRefreshRate = 60;
@@ -210,41 +182,29 @@ int InitRenderDevice()
             Engine.screenRefreshRate = mode.refresh_rate;
         }
     }
-    printf("PS3 DEBUG: InitRenderDevice - Screen Refresh Rate set to %d Hz.\n", Engine.screenRefreshRate);
 
 #else 
-    printf("PS3 FATAL ERROR: InitRenderDevice - RETRO_USING_SDL2 is not defined!\n");
     return 0;
 #endif 
 
     // *** CRITICAL FIX: Set GFX_LINESIZE before allocating Engine.frameBuffer ***
-    printf("PS3 DEBUG: InitRenderDevice - Calling SetScreenSize(%d, %d) to set GFX_LINESIZE.\n", SCREEN_XSIZE, SCREEN_XSIZE);
     SetScreenSize(SCREEN_XSIZE, SCREEN_XSIZE); // Sets GFX_LINESIZE = SCREEN_XSIZE (or a padded version if SetScreenSize does that)
-    printf("PS3 DEBUG: InitRenderDevice - GFX_LINESIZE is now %d (should be >= %d).\n", GFX_LINESIZE, SCREEN_XSIZE);
-
-    printf("PS3 DEBUG: InitRenderDevice - Internal game resolution: SCREEN_XSIZE=%d, SCREEN_YSIZE=%d.\n", SCREEN_XSIZE, SCREEN_YSIZE);
 
 #if RETRO_SOFTWARE_RENDER
-    printf("PS3 DEBUG: InitRenderDevice - Allocating RSDK software framebuffers using GFX_LINESIZE = %d.\n", GFX_LINESIZE);
     if (Engine.frameBuffer) delete[] Engine.frameBuffer;
     Engine.frameBuffer   = new ushort[GFX_LINESIZE * SCREEN_YSIZE]; 
     memset(Engine.frameBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(ushort));
-    printf("PS3 DEBUG: InitRenderDevice - Software Engine.frameBuffer (RGB565, using GFX_LINESIZE %d x %d) Allocated.\n", GFX_LINESIZE, SCREEN_YSIZE);
 
     if (Engine.texBuffer) delete[] Engine.texBuffer;
     Engine.texBuffer = new uint[GFX_LINESIZE * SCREEN_YSIZE]; 
     memset(Engine.texBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(uint)); 
-    printf("PS3 DEBUG: InitRenderDevice - Software Engine.texBuffer (32-bit, using GFX_LINESIZE %d x %d) Allocated.\n", GFX_LINESIZE, SCREEN_YSIZE);
 #endif 
 
     OBJECT_BORDER_X2 = SCREEN_XSIZE + 0x80;
     OBJECT_BORDER_X4 = SCREEN_XSIZE + 0x20;
-    printf("PS3 DEBUG: InitRenderDevice - Object borders calculated.\n");
 
-    printf("PS3 DEBUG: InitRenderDevice - Calling InitInputDevices().\n");
     InitInputDevices(); 
 
-    printf("PS3 DEBUG: InitRenderDevice() finished successfully (Prueba 3.0.2 - Fix GFX_LINESIZE).\n");
     return 1;
 }
 void FlipScreen()
@@ -257,8 +217,6 @@ void FlipScreen()
 
     if (!Engine.renderer || !Engine.gameRenderTexture || !Engine.frameBuffer) {
         if (current_frame_count_3_3 == 0) {
-             printf("PS3 FLIPSCREEN ERROR (Prueba 3.3): Critical component NULL! R=%p, GRT=%p, FB=%p.\n", 
-                 Engine.renderer, Engine.gameRenderTexture, Engine.frameBuffer);
         }
         if (Engine.renderer) { 
             SDL_SetRenderDrawColor(Engine.renderer, 255, 0, 0, 255); // RED
@@ -273,24 +231,15 @@ void FlipScreen()
     // El motor RSDK es responsable de llenar Engine.frameBuffer.
 
     if (!initial_flip_logged_3_3) {
-        printf("PS3 FLIPSCREEN (Prueba 3.3): Primera llamada. GFX_LINESIZE=%d, SCREEN_XSIZE=%d, SCREEN_YSIZE=%d\n", GFX_LINESIZE, SCREEN_XSIZE, SCREEN_YSIZE);
         initial_flip_logged_3_3 = true;
     }
     
     if (current_frame_count_3_3 % frame_count_log_interval == 0) {
-        printf("PS3 FLIPSCREEN (Prueba 3.3) Inspecting Engine.frameBuffer (Frame: %d):\n", current_frame_count_3_3);
         if (GFX_LINESIZE > 0 && SCREEN_YSIZE > 0 && Engine.frameBuffer) {
-            printf("  Line 0, Pix 0-4: ");
-            for (int i = 0; i < 5 && i < SCREEN_XSIZE && i < GFX_LINESIZE; ++i) printf("0x%04X ", Engine.frameBuffer[0 * GFX_LINESIZE + i]);
-            printf("\n");
             int mid_y = SCREEN_YSIZE / 2;
             if (mid_y < SCREEN_YSIZE) { 
-                 printf("  Line %d, Pix 0-4: ", mid_y);
-                 for (int i = 0; i < 5 && i < SCREEN_XSIZE && i < GFX_LINESIZE; ++i) printf("0x%04X ", Engine.frameBuffer[mid_y * GFX_LINESIZE + i]);
-                 printf("\n");
             }
         } else {
-            printf("  Engine.frameBuffer not inspectable (GFX_LINESIZE=%d, SCREEN_YSIZE=%d, FB Ptr: %p)\n", GFX_LINESIZE, SCREEN_YSIZE, Engine.frameBuffer);
         }
     }
 
@@ -300,7 +249,6 @@ void FlipScreen()
 
     if (SDL_LockTexture(Engine.gameRenderTexture, NULL, &texturePixels, &texturePitch) == 0) {
         if (!lock_info_logged_3_3) {
-            printf("PS3 FLIPSCREEN (Prueba 3.3): SDL_LockTexture OK. Pitch: %d. Expected: %d.\n", texturePitch, SCREEN_XSIZE * 4);
             lock_info_logged_3_3 = true; 
         }
 
@@ -321,7 +269,6 @@ void FlipScreen()
         SDL_UnlockTexture(Engine.gameRenderTexture);
     } else {
         if (current_frame_count_3_3 % frame_count_log_interval == 0 || !lock_info_logged_3_3) {
-            printf("PS3 FLIPSCREEN ERROR (Prueba 3.3): SDL_LockTexture FAILED: %s Frame: %d\n", SDL_GetError(), current_frame_count_3_3);
             lock_info_logged_3_3 = true; 
         }
         SDL_SetRenderDrawColor(Engine.renderer, 255, 128, 0, 255); 
@@ -337,7 +284,6 @@ void FlipScreen()
     // Using NULL for dstRect tells SDL_RenderCopy to fill the entire rendering target
     if (SDL_RenderCopy(Engine.renderer, Engine.gameRenderTexture, NULL, NULL) != 0) {
         if (current_frame_count_3_3 % frame_count_log_interval == 0) {
-            printf("PS3 FLIPSCREEN ERROR (Prueba 3.3): SDL_RenderCopy FAILED: %s Frame: %d\n", SDL_GetError(), current_frame_count_3_3);
         }
     }
     SDL_RenderPresent(Engine.renderer);
@@ -354,7 +300,6 @@ void FlipScreen()
 
 void ReleaseRenderDevice(bool refresh)
 {
-    printf("PS3 DEBUG: ReleaseRenderDevice(%s) called.\n", refresh ? "true" : "false");
 
 	if (!refresh) {
 		// ClearMeshData(); // Probablemente no relevante para PS3 software
@@ -366,12 +311,10 @@ void ReleaseRenderDevice(bool refresh)
         if (Engine.frameBuffer) { 
             delete[] Engine.frameBuffer; 
             Engine.frameBuffer = NULL; 
-            printf("PS3 DEBUG: ReleaseRenderDevice - Software Engine.frameBuffer released.\n"); 
         }
         if (Engine.texBuffer) { 
             delete[] Engine.texBuffer; 
             Engine.texBuffer = NULL; 
-            printf("PS3 DEBUG: ReleaseRenderDevice - Software Engine.texBuffer released.\n"); 
         }
     #endif 
 
@@ -380,12 +323,10 @@ void ReleaseRenderDevice(bool refresh)
             if (Engine.gameRenderTexture) { 
                 SDL_DestroyTexture(Engine.gameRenderTexture); 
                 Engine.gameRenderTexture = NULL; 
-                printf("PS3 DEBUG: ReleaseRenderDevice - Engine.gameRenderTexture released.\n"); 
             }
             if (Engine.videoTexture) { 
                 SDL_DestroyTexture(Engine.videoTexture); 
                 Engine.videoTexture = NULL; 
-                printf("PS3 DEBUG: ReleaseRenderDevice - Engine.videoTexture released.\n"); 
             }
         #endif 
 
@@ -396,16 +337,13 @@ void ReleaseRenderDevice(bool refresh)
         if (Engine.renderer) { 
             SDL_DestroyRenderer(Engine.renderer); 
             Engine.renderer = NULL; 
-            printf("PS3 DEBUG: ReleaseRenderDevice - Renderer released.\n"); 
         }
         if (Engine.window) { 
             SDL_DestroyWindow(Engine.window); 
             Engine.window = NULL; 
-            printf("PS3 DEBUG: ReleaseRenderDevice - Window released.\n"); 
         }
     #endif 
 #endif 
-    printf("PS3 DEBUG: ReleaseRenderDevice() finished.\n");
 }
 
 void GenerateBlendLookupTable(void)
