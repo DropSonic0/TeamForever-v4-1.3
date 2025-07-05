@@ -120,12 +120,22 @@ int InitRenderDevice()
     printf("PS3 DEBUG: InitRenderDevice - SDL_HINT_RENDER_SCALE_QUALITY set to 'nearest'.\n");
 
     Uint32 windowFlags = 0; 
+    int window_w = SCREEN_XSIZE * Engine.windowScale; // Default width for windowed mode or if SDL ignores these for fullscreen_desktop
+    int window_h = SCREEN_YSIZE * Engine.windowScale; // Default height for windowed mode or if SDL ignores these for fullscreen_desktop
 
-    int window_w = SCREEN_XSIZE * Engine.windowScale; // 852
-    int window_h = SCREEN_YSIZE * Engine.windowScale; // 480
+    if (Engine.startFullScreen) {
+        windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        // For SDL_WINDOW_FULLSCREEN_DESKTOP, SDL typically uses the current desktop resolution.
+        // Explicitly setting w/h might be overridden or might be necessary for some SDL backends.
+        // The SFO file is responsible for telling the PS3 which resolutions are supported.
+        // We'll let SDL pick the resolution. The previously calculated window_w, window_h might be used or ignored by SDL.
+        printf("PS3 DEBUG: InitRenderDevice - Engine.startFullScreen is TRUE. Requesting Fullscreen Desktop.\n");
+    } else {
+        printf("PS3 DEBUG: InitRenderDevice - Engine.startFullScreen is FALSE. Using %dx%d window.\n", window_w, window_h);
+    }
 
-    printf("PS3 DEBUG: InitRenderDevice - CALCULATED window_w: %d, window_h: %d PARA CreateWindow\n", window_w, window_h);
-    printf("PS3 DEBUG: InitRenderDevice - Attempting SDL_CreateWindow ('%s', %dx%d).\n", gameTitle, window_w, window_h);
+    printf("PS3 DEBUG: InitRenderDevice - CALCULATED window_w: %d, window_h: %d PARA CreateWindow (Note: may be ignored for Fullscreen Desktop)\n", window_w, window_h);
+    printf("PS3 DEBUG: InitRenderDevice - Attempting SDL_CreateWindow ('%s', %dx%d) with flags: %u.\n", gameTitle, window_w, window_h, windowFlags);
 
     Engine.window = SDL_CreateWindow(gameTitle,
                                      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -323,8 +333,9 @@ void FlipScreen()
 
     if (SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 255) != 0) { /* ... */ }
     if (SDL_RenderClear(Engine.renderer) != 0) { /* ... */ }
-    SDL_Rect dstRect = {0, 0, SCREEN_XSIZE, SCREEN_YSIZE}; 
-    if (SDL_RenderCopy(Engine.renderer, Engine.gameRenderTexture, NULL, &dstRect) != 0) {
+    // SDL_Rect dstRect = {0, 0, SCREEN_XSIZE, SCREEN_YSIZE}; // Old way
+    // Using NULL for dstRect tells SDL_RenderCopy to fill the entire rendering target
+    if (SDL_RenderCopy(Engine.renderer, Engine.gameRenderTexture, NULL, NULL) != 0) {
         if (current_frame_count_3_3 % frame_count_log_interval == 0) {
             printf("PS3 FLIPSCREEN ERROR (Prueba 3.3): SDL_RenderCopy FAILED: %s Frame: %d\n", SDL_GetError(), current_frame_count_3_3);
         }

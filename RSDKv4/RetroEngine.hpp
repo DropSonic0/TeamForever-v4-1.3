@@ -554,7 +554,7 @@ public:
 #if !RETRO_USE_ORIGINAL_CODE
     bool isFullScreen = false;
 
-    bool startFullScreen  = false; // if should start as fullscreen
+    bool startFullScreen  = true; // if should start as fullscreen
     bool borderless       = false;
     bool vsync            = true;
     int scalingMode       = 0;
