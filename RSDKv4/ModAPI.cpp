@@ -129,6 +129,7 @@ void InitMods()
     }
 
     char modRootPath[0x200]; // Ruta a la carpeta .../USRDIR/mods
+    // Ensure "mods" is lowercase
     sprintf(modRootPath, "%s/mods", modsPath); // modsPath aquí es la raíz del USRDIR
 
     if (pathExists(modRootPath) && isDirectory(modRootPath)) {
@@ -382,6 +383,7 @@ void ScanModFolder(ModInfo *info)
     // modsPath should be the USRDIR (e.g. /dev_hdd0/game/S1F00S2A0/USRDIR)
     // info->folder is the mod's folder name (e.g., "MyMod")
     char modTrueRootPath[0x200];
+    // Ensure "mods" is lowercase
     joinPath(modTrueRootPath, modsPath, "mods"); // Should be .../USRDIR/mods
     joinPath(modTrueRootPath, modTrueRootPath, info->folder.c_str()); // Should be .../USRDIR/mods/MyMod
 
@@ -394,6 +396,7 @@ void ScanModFolder(ModInfo *info)
 void SaveMods()
 {
     char modConfigDir[0x200];
+    // Ensure "mods" is lowercase
     joinPath(modConfigDir, modsPath, "mods"); // .../USRDIR/mods
 
     // On PS3, we assume the mods directory exists if we're trying to save.

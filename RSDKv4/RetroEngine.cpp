@@ -314,15 +314,32 @@ void RetroEngine::Init()
     printf("MODPATH DEBUG: modsPath after InitMods() is: '%s'\n", modsPath);
 
     if (RETRO_PLATFORM == RETRO_PS3) {
+        // This PS3-specific block was forcing modsPath to BASE_PATH + "Mods/" (uppercase M),
+        // overriding the generic logic in InitMods() which correctly uses BASE_PATH 
+        // and allows ModAPI.cpp functions to append "/mods" (lowercase m).
+        // By commenting out the StrAdd and the StrCopy, we let the value set by InitMods() persist.
+        // InitMods() sets modsPath = BASE_PATH (if empty) and removes trailing slash.
+        // Other functions in ModAPI.cpp then correctly append "/mods".
+        /*
         char expectedPath[0x200];
         StrCopy(expectedPath, BASE_PATH);
-        StrAdd(expectedPath, "Mods/"); // Ensure 'Mods/' (capital M)
+        // StrAdd(expectedPath, "Mods/"); // Ensure 'Mods/' (capital M) --- THIS WAS THE ISSUE
         if (strcmp(modsPath, expectedPath) != 0) {
-            printf("MODPATH DEBUG: Forcing modsPath for PS3 to: '%s'\n", expectedPath);
-            StrCopy(modsPath, expectedPath);
+            // If modsPath (likely BASE_PATH from InitMods) is different from BASE_PATH alone,
+            // it implies BASE_PATH might have a trailing slash and modsPath doesn't, or vice-versa.
+            // This scenario should ideally be handled by consistent BASE_PATH definition or
+            // robust slash handling in InitMods. Forcing it here might be risky.
+            // For now, we assume InitMods correctly sets modsPath from BASE_PATH.
+            // printf("MODPATH DEBUG: PS3: modsPath ('%s') vs expectedPath ('%s'). Not forcing.\n", modsPath, expectedPath);
         } else {
-            printf("MODPATH DEBUG: modsPath already correctly set for PS3: '%s'\n", modsPath);
+            // printf("MODPATH DEBUG: PS3: modsPath already same as BASE_PATH: '%s'\n", modsPath);
         }
+        */
+        // The desired state is that modsPath is effectively BASE_PATH (e.g., USRDIR),
+        // and ModAPI functions append "/mods" to it.
+        // The original InitMods() + the PS3 block resulted in modsPath = USRDIR/Mods/
+        // which then caused issues in SaveMods etc. (USRDIR/Mods/mods).
+        printf("MODPATH DEBUG: PS3: modsPath is '%s' (allowing ModAPI to handle '/mods' suffix)\n", modsPath);
     }
     printf("MODPATH DEBUG: Final modsPath is: '%s'\n", modsPath);
 #endif
