@@ -2782,6 +2782,7 @@ void ParseScriptFile(char *scriptName, int scriptID)
     char scriptPath[0x40];
     StrCopy(scriptPath, "Scripts/");
     StrAdd(scriptPath, scriptName);
+    PrintLog("ParseScriptFile: Attempting to load script '%s'. gamePath='%s', forceUseScripts=%d, engineDebugMode=%d", scriptPath, gamePath, forceUseScripts, engineDebugMode); // ADDED LOG
     FileInfo info;
     if (LoadFile(scriptPath, &info)) {
         int readMode   = READMODE_NORMAL;

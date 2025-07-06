@@ -359,9 +359,14 @@ void RetroEngine::Init()
 #elif RETRO_PLATFORM == RETRO_ANDROID
     StrCopy(dest, gamePath);
     StrAdd(dest, Engine.dataFile[0]);
-#else
-    StrCopy(dest, BASE_PATH);
+#elif RETRO_PLATFORM == RETRO_PS3
+    StrCopy(dest, gamePath); // Use gamePath for PS3
     StrAdd(dest, Engine.dataFile[0]);
+    PrintLog("RetroEngine::Init - PS3: Loading primary data file '%s' from gamePath '%s'", Engine.dataFile[0], gamePath);
+#else
+    StrCopy(dest, BASE_PATH); // Fallback for other platforms
+    StrAdd(dest, Engine.dataFile[0]);
+    PrintLog("RetroEngine::Init - Other: Loading primary data file '%s' from BASE_PATH '%s'", Engine.dataFile[0], BASE_PATH);
 #endif
     CheckRSDKFile(dest);
 #else // Original RSDK code path
@@ -375,7 +380,13 @@ void RetroEngine::Init()
 #if !RETRO_USE_ORIGINAL_CODE
     for (int i = 1; i < RETRO_PACK_COUNT; ++i) {
         if (Engine.dataFile[i][0] != '\0') { 
-            StrCopy(dest, BASE_PATH);
+#if RETRO_PLATFORM == RETRO_PS3
+            StrCopy(dest, gamePath); // Use gamePath for PS3
+            PrintLog("RetroEngine::Init - PS3: Loading additional data file '%s' from gamePath '%s'", Engine.dataFile[i], gamePath);
+#else
+            StrCopy(dest, BASE_PATH); // Fallback for other platforms
+            PrintLog("RetroEngine::Init - Other: Loading additional data file '%s' from BASE_PATH '%s'", Engine.dataFile[i], BASE_PATH);
+#endif
             StrAdd(dest, Engine.dataFile[i]);
             CheckRSDKFile(dest);
         }

@@ -181,6 +181,18 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
     }
 #endif
 
+#if RETRO_PLATFORM == RETRO_PS3
+    // If filePathBuf is still relative at this point (e.g. not an absolute mod path,
+    // and not handled by OSX/Android specific prepends), then prepend gamePath.
+    // The forceFolder flag indicates it might be an absolute path from a mod.
+    if (!forceFolder && filePathBuf[0] != '/') {
+        char systemPath[0x200]; // Use a different buffer to avoid issues if filePathBuf is small
+        sprintf(systemPath, "%s%s", gamePath, filePathBuf);
+        StrCopy(filePathBuf, systemPath); // Now filePathBuf is absolute for PS3 loose files
+        PrintLog("LoadFile (PS3): Relative path detected, adjusted to: %s", filePathBuf);
+    }
+#endif
+
 #if RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_ANDROID
 #if RETRO_USE_MOD_LOADER
     if (addPath) {

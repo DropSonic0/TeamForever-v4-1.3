@@ -1,0 +1,360 @@
+// ----------------------------------
+// RSDK Project: Sonic 1/Sonic 2
+// Script Description: SBZ Setup Object
+// Script Author: Christian Whitehead/Simon Thomley
+// Unpacked by Rubberduckycooly's script unpacker
+// ----------------------------------
+
+//-------Aliases-------//
+private alias 39 : TYPE_MBZSETUP
+
+// Function declarations
+reserve function MBZSetup_Function95
+reserve function MBZSetup_Function96
+reserve function LavaFlowMain
+reserve function LavaFlowOscillate
+reserve function LavaFlowStraight
+reserve function LavaFlowOscRight
+reserve function LavaFlowExp
+
+// Static Values
+public value MBZSetup_value31 = 0;
+public value MBZSetup_value30 = 0;
+public value MBZSetup_value29 = 0;
+public value MBZSetup_value28 = 0;
+public value MBZBossHits = 8;
+
+
+// Tables
+public table MBZSetup_table35
+	0xE0E000, 0xE08000, 0xE00000, 0x800000, 0x800000, 0xE00000, 0xE08000, 0xE0E000
+end table
+
+
+public table MBZSetup_table36
+	0x800000, 0xE00000, 0xE08000, 0xE0E000, 0xE0E000, 0xE08000, 0xE00000, 0x800000
+end table
+
+
+function LavaFlowMain
+	
+	while object.value8 < 0
+		object.value8 += 32
+	loop
+	object.value8 %= 32
+	
+	temp0 = object.value8
+	temp0 *= 4
+	temp0 += 340
+	
+	Copy16x16Tile(152, temp0)
+	temp0++
+	Copy16x16Tile(153, temp0)
+	temp0++
+	Copy16x16Tile(155, temp0)
+	temp0++
+	Copy16x16Tile(156, temp0)
+end function
+
+function LavaFlowExp
+
+end function
+
+
+function LavaFlowOscRight
+	object.value2++
+	object.value2 &= 511
+	temp0 = object.value2
+	temp0 >>= 1
+	temp0 += 128
+	Sin(object.value8, temp0)
+	object.value8 >>= 3
+end function
+
+function LavaFlowOscillate
+	object.value2++
+	object.value2 &= 511
+	Sin(object.value8, object.value2)
+	object.value8 >>= 3
+	
+end function
+
+function LavaFlowStraight
+	object.value4--
+	object.value4 &= 0xFFF
+	object.value8 = object.value4
+	object.value8 >>= 1
+end function
+
+function MBZSetup_Function95
+	CheckEqual(object[25].type, TypeName[Music Event])
+	temp0 = checkResult
+	CheckEqual(object[25].propertyValue, 2)
+	temp0 &= checkResult
+	CheckEqual(stage.musicFlag, 0)
+	temp0 &= checkResult
+	if temp0 == 0
+		switch music.currentTrack
+		case 0
+			SetMusicTrack("Invincibility_F.ogg", 2, 0x76E4)
+			SwapMusicTrack("BossRush_F.ogg", 0, 19766, 0x1F40)
+			break
+		case 2
+			SetMusicTrack("BossRush_F.ogg", 0, 19766)
+			SwapMusicTrack("Invincibility_F.ogg", 2, 0x76E4, 0x1F40)
+			break
+		default
+			SetMusicTrack("BossRush_F.ogg", 0, 19766)
+			SetMusicTrack("Invincibility_F.ogg", 2, 0x76E4)
+			break
+		end switch
+	else
+		stage.musicFlag = 1
+	end if
+end function
+
+
+function MBZSetup_Function96
+	CheckEqual(object[25].type, TypeName[Music Event])
+	temp0 = checkResult
+	CheckEqual(object[25].propertyValue, 2)
+	temp0 &= checkResult
+	CheckEqual(stage.musicFlag, 0)
+	temp0 &= checkResult
+	if temp0 == 0
+		switch music.currentTrack
+		case 0
+			SetMusicTrack("Invincibility.ogg", 2, 0x9A68)
+			SwapMusicTrack("BossRush.ogg", 0, 24708, 0x30D4)
+			break
+		case 2
+			SetMusicTrack("BossRush.ogg", 0, 24708)
+			SwapMusicTrack("Invincibility.ogg", 2, 0x9A68, 0x30D4)
+			break
+		default
+			SetMusicTrack("BossRush.ogg", 0, 24708)
+			SetMusicTrack("Invincibility.ogg", 2, 0x9A68)
+			break			
+		end switch
+	else
+		stage.musicFlag = 2
+	end if
+end function
+
+
+event ObjectMain
+
+	//Searchlight Palette Rotation
+	object.value7++
+	if object.value7 == 14
+		object.value7 = 0
+		object.value15++
+		object.value15 &= 7
+		GetTableValue(temp0, object.value15, MBZSetup_table35)
+		SetPaletteEntry(0, 169, temp0)
+		GetTableValue(temp0, object.value15, MBZSetup_table36)
+		SetPaletteEntry(0, 188, temp0)
+	end if
+	
+	//Lightning
+	if MBZSetup_value31 == 0
+
+	end if
+	MBZSetup_value31++
+	
+	if MBZSetup_value31 == MBZSetup_value30 
+		MBZSetup_value29 = 16
+		PlaySfx(SfxName[Thunder], 0)
+		MBZSetup_value31 = 0		
+		Rand(MBZSetup_value30, 1500)
+		MBZSetup_value30 += 300
+	end if
+		
+	temp1 = 0
+	if MBZSetup_value29 > 0
+		MBZSetup_value29--
+		temp0 = MBZSetup_value29
+		temp0 /= 4
+		temp0 %= 2
+		if temp0 == 0
+			temp1 = 1
+		end if
+	end if
+	
+	if temp1 == 1
+		//lightning colours
+		CopyPalette(0, 249, 0, 224, 4)
+	else
+		//regular colours
+		CopyPalette(0, 245, 0, 224, 4)
+	end if
+		
+	//Lava Hurts
+	foreach (GROUP_PLAYERS, currentPlayer, ACTIVE_ENTITIES)
+		temp1 = object[currentPlayer].xpos
+		temp1 >>= 16
+		temp2 = object[currentPlayer].ypos
+		temp2 >>= 16
+		temp2 += 4
+		temp2 += 16
+		Get16x16TileInfo(temp0, temp1, temp2, TILEINFO_ANGLEB)
+		if temp0 == 1
+			if object[currentPlayer].value37 != 3
+				CallFunction(PlayerObject_Hit)
+			end if
+		end if
+	next
+	
+	//Lava Flow		
+	//CallFunction(LavaFlowOscillate)
+	//CallFunction(LavaFlowStraight)
+	CallFunction(LavaFlowOscRight)	
+	//CallFunction(LavaFlowExp)	
+	CallFunction(LavaFlowMain)
+	
+	object.value3++
+	temp0 = object.value3
+	temp0 %= 20
+	if temp0 == 0
+		//RotatePalette(0, 214, 217, 1)
+	end if
+	
+	
+	//Piston Palette Rotation
+	temp0 = object.value3
+	temp0 %= 30
+	if temp0 == 0
+		RotatePalette(0, 233, 238, 0)
+	end if
+
+	//Gamer PC Palette Rotation
+	object.value35++
+	if object.value35 == 6
+		object.value35 = 0
+		RotatePalette(0, 242, 243, 1)
+	end if
+	
+	//Conveyors
+	RotatePalette(0, 229, 231, 0)
+	foreach (GROUP_PLAYERS, currentPlayer, ACTIVE_ENTITIES)
+		if object[currentPlayer].gravity == GRAVITY_GROUND
+			temp2 = object[currentPlayer].ypos
+			temp2 >>= 16
+			temp2 += object[currentPlayer].collisionBottom
+			temp2 += 2
+			temp1 = object[currentPlayer].xpos
+			temp1 >>= 16
+			temp1 += object[currentPlayer].collisionLeft
+			temp3 = 0
+			Get16x16TileInfo(temp0, temp1, temp2, TILEINFO_ANGLEB)
+			if temp0 == 2
+				Get16x16TileInfo(temp0, temp1, temp2, TILEINFO_DIRECTION)
+				if temp0 == 0
+					temp3 += 0x20000
+				else
+					temp3 -= 0x20000
+				end if
+			end if
+			temp1 = object[currentPlayer].xpos
+			temp1 >>= 16
+			temp1 += object[currentPlayer].collisionRight
+			Get16x16TileInfo(temp0, temp1, temp2, TILEINFO_ANGLEB)
+			if temp0 == 2
+				Get16x16TileInfo(temp0, temp1, temp2, TILEINFO_DIRECTION)
+				if temp0 == 0
+					temp3 += 0x20000
+					if temp3 > 0x20000
+						temp3 = 0x20000
+					end if
+				else
+					temp3 -= 0x20000
+					if temp3 < -0x20000
+						temp3 = -0x20000
+					end if
+				end if
+			end if
+			object[currentPlayer].xpos += temp3
+		end if
+	next
+	
+	//Water palette lightning shield control
+	if MBZSetup_value28 > 0
+		MBZSetup_value28--
+	end if
+end event
+
+event ObjectDraw
+	switch object.drawOrder
+		case 0
+			//Water Palette
+			temp0 = stage.waterLevel
+			temp0 -= screen.yoffset
+			if temp0 < 0
+				temp0 = 0
+			end if
+			if temp0 > screen.ysize
+				temp0 = screen.ysize
+			end if
+			SetActivePalette(0, 0, temp0)
+			if MBZSetup_value28 > 0
+				SetActivePalette(2, temp0, screen.ysize)
+			else
+				SetActivePalette(1, temp0, screen.ysize)
+			end if
+			object.drawOrder = 2
+			AddDrawListEntityRef(2, object.entityPos)
+			break
+		case 2
+			if MBZSetup_value29 > 0
+				temp0 = MBZSetup_value30
+				temp0 %= screen.xsize
+				temp1 = MBZSetup_value30
+				temp1 &= 3
+				DrawSpriteScreenXY(temp1, temp0, 64)
+			end if
+			object.drawOrder = 0
+			break
+	end switch
+end event
+
+
+event ObjectStartup
+	SetMusicTrack("BossRush.ogg", 0, 24708)
+	SpeedUpMusic = MBZSetup_Function95
+	SlowDownMusic = MBZSetup_Function96
+		
+	animalType1 = TypeName[Pecky]
+	animalType2 = TypeName[Ricky]
+	object[10].type = TypeName[MBZ Setup]
+	object[10].priority = PRIORITY_ACTIVE
+	object[10].drawOrder = 0
+	
+	if saveRAM[410] == 0
+		stage.activeList = PRESENTATION_STAGE
+		stage.listPos = StageName[P - TITLE SCREEN]
+		options.attractMode = 0
+		LoadStage()
+	end if
+	
+	Rand(MBZSetup_value30, 1500)
+	MBZSetup_value30 += 300
+	
+	
+	LoadPalette("MBZ_WaterPal.act", 1, 0, 0, 256)
+	LoadPalette("ElectricFlash.act", 2, 0, 0, 256)
+	
+	LoadSpriteSheet("MBZ/Lightning.gif")
+	SpriteFrame(-67, 0, 134, 240, 1, 1)
+	SpriteFrame(-67, 0, 134, 240, 1, 1)
+	SpriteFrame(-67, 0, 134, 240, 1, 1)
+	SpriteFrame(-67, 0, 134, 240, 1, 1)
+end event
+
+event RSDKDraw
+	DrawSprite(0)
+end event
+
+event RSDKLoad
+	LoadSpriteSheet("Global/Display.gif")
+	SpriteFrame(-16, -16, 32, 32, 1, 143)
+end event

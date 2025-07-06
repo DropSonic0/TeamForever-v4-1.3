@@ -64,9 +64,11 @@ int InitAudioPlayback()
     if ((audioDevice = SDL_OpenAudioDevice(nullptr, 0, &want, &audioDeviceFormat, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE)) > 0) {
         audioEnabled = true;
         SDL_PauseAudioDevice(audioDevice, 0);
+        PrintLog("InitAudioPlayback: SDL_OpenAudioDevice successful. Actual device format - Freq: %d, Format: 0x%X, Channels: %d, Samples: %d",
+                 audioDeviceFormat.freq, audioDeviceFormat.format, audioDeviceFormat.channels, audioDeviceFormat.samples);
     }
     else { // SDL_OpenAudioDevice failed
-        // VVVV MODIFY THIS PRINTF VVVV
+        PrintLog("InitAudioPlayback: SDL_OpenAudioDevice failed! SDL_Error: %s", SDL_GetError());
         audioEnabled = false;
     }
 
@@ -667,52 +669,65 @@ void LoadSfx(char *filePath, byte sfxID)
     char fullPath[0x80];
 
     StrCopy(fullPath, "Data/SoundFX/");
-    StrAdd(fullPath, filePath);
+    StrAdd(fullPath, filePath); // filePath is from GameConfig.bin, e.g., "Global/Jump.wav" or "Global/Laser.ogg"
+
+    PrintLog("LoadSfx: Received filePath='%s', constructed initial fullPath='%s'", filePath, fullPath);
 
     if (LoadFile(fullPath, &info)) {
-        
+        PrintLog("LoadSfx: LoadFile successful for '%s'", fullPath);
         byte type = 0;
         if (StrLength(fullPath) > 3) {
-            type = fullPath[StrLength(fullPath) - 3];
+            type = fullPath[StrLength(fullPath) - 3]; // Get first char of extension, e.g., 'w' or 'o'
         }
+        PrintLog("LoadSfx: Detected type char: '%c' for %s", type ? type : '?', fullPath);
 
          if (type == 'w' || type == 'W') { // WAV file
+            PrintLog("LoadSfx: Attempting to load as WAV: %s", fullPath);
             byte *sfx_buffer_wav = new byte[info.vfileSize];
             FileRead(sfx_buffer_wav, info.vfileSize);
+            PrintLog("LoadSfx (WAV): FileRead %d bytes into sfx_buffer_wav for %s", info.vfileSize, fullPath);
 
             SDL_RWops *src = SDL_RWFromMem(sfx_buffer_wav, info.vfileSize);
             if (src == NULL) {
+                PrintLog("LoadSfx (WAV): SDL_RWFromMem failed for %s", fullPath);
                 delete[] sfx_buffer_wav;
-            }
-            else {
+                sfxList[sfxID].loaded = false; // Ensure loaded is false
+            } else {
+                PrintLog("LoadSfx (WAV): SDL_RWFromMem successful for %s", fullPath);
                 SDL_AudioSpec wav_spec;
                 Uint32 wav_length;
                 Uint8 *wav_buffer;
                 
-                SDL_AudioSpec *wav_loaded_spec = SDL_LoadWAV_RW(src, 0, &wav_spec, &wav_buffer, &wav_length);
+                SDL_AudioSpec *wav_loaded_spec = SDL_LoadWAV_RW(src, 1, &wav_spec, &wav_buffer, &wav_length); // Changed to auto-close src
 
                 if (wav_loaded_spec == NULL) {
+                    PrintLog("LoadSfx (WAV): SDL_LoadWAV_RW failed for %s. SDL_Error: %s", fullPath, SDL_GetError());
                     delete[] sfx_buffer_wav; 
-                    if (src) SDL_RWclose(src); 
-                }
-                else {
+                    // src is closed by SDL_LoadWAV_RW if second param is 1
+                } else {
+                    PrintLog("LoadSfx (WAV): SDL_LoadWAV_RW successful for %s. Format:0x%X, Freq:%d, Channels:%d, Length: %u", fullPath, wav_spec.format, wav_spec.freq, wav_spec.channels, wav_length);
                     SDL_AudioCVT convert;
                     int build_cvt_result = SDL_BuildAudioCVT(&convert, wav_spec.format, wav_spec.channels, wav_spec.freq, 
                                                               audioDeviceFormat.format, audioDeviceFormat.channels, audioDeviceFormat.freq);
+                    PrintLog("LoadSfx (WAV): SDL_BuildAudioCVT result: %d for %s. Need to convert: %s", fullPath, build_cvt_result, (build_cvt_result == 1) ? "yes" : "no/error");
 
-                    if (build_cvt_result >= 0) { 
-                        // VVVV THESE ARE THE NEW/CRITICAL PRINTFS VVVV
-                        
-                        convert.buf = (Uint8 *)malloc(wav_length * convert.len_mult);
+                    if (build_cvt_result >= 0) { // 0 means no conversion needed, 1 means conversion needed, -1 means error
+                        convert.len = wav_length;
+                        convert.buf = (Uint8 *)malloc(wav_length * convert.len_mult); // len_mult might be 1 if no conversion
                         
                         if (!convert.buf) {
+                            PrintLog("LoadSfx (WAV): Failed to malloc convert.buf for %s", fullPath);
                             sfxList[sfxID].loaded = false;
-                            sfxList[sfxID].buffer = NULL; // <<< ADD THIS
+                            sfxList[sfxID].buffer = NULL; 
                         } else {
-                            convert.len = wav_length;
                             memcpy(convert.buf, wav_buffer, wav_length);
-                            SDL_ConvertAudio(&convert);
-                            // ... rest of WAV success logic ...
+                            if (build_cvt_result == 1) { // Only call SDL_ConvertAudio if needed
+                                SDL_ConvertAudio(&convert);
+                                PrintLog("LoadSfx (WAV): SDL_ConvertAudio done for %s. New length: %d", fullPath, convert.len_cvt);
+                            } else {
+                                convert.len_cvt = convert.len; // If no conversion, len_cvt is same as len
+                                PrintLog("LoadSfx (WAV): No audio conversion needed for %s.", fullPath);
+                            }
 
                             LockAudioDevice();
                             StrCopy(sfxList[sfxID].name, filePath);
@@ -720,18 +735,21 @@ void LoadSfx(char *filePath, byte sfxID)
                             sfxList[sfxID].length = convert.len_cvt / sizeof(Sint16);
                             sfxList[sfxID].loaded = true;
                             UnlockAudioDevice();
+                            PrintLog("LoadSfx (WAV): Successfully loaded and prepared %s. SFX length in samples: %d", fullPath, sfxList[sfxID].length);
                         }
-                        // ^^^^ END OF NEW/CRITICAL PRINTFS ^^^^
-                    }
-                    else { // build_cvt_result < 0
+                    } else { 
+                        PrintLog("LoadSfx (WAV): SDL_BuildAudioCVT failed with code %d for %s", build_cvt_result, fullPath);
                         sfxList[sfxID].loaded = false;
+                        if (convert.buf) { free(convert.buf); convert.buf = NULL; } // Should not happen if build_cvt_result < 0
                     }
                     SDL_FreeWAV(wav_buffer); 
                 }
                 delete[] sfx_buffer_wav; 
+                // SDL_RWclose(src) is handled by SDL_LoadWAV_RW(src, 1, ...)
             }
         }
         else if (type == 'o' || type == 'O') { // OGG file
+            PrintLog("LoadSfx: Attempting to load as OGG: %s", fullPath);
             OggVorbis_File vf;
             ov_callbacks callbacks = OV_CALLBACKS_DEFAULT; 
             vorbis_info *vinfo;
@@ -758,34 +776,50 @@ void LoadSfx(char *filePath, byte sfxID)
             callbacks.close_func = closeVorbis; 
 
             int ov_error = ov_open_callbacks(sfxFile, &vf, NULL, 0, callbacks);
+            PrintLog("LoadSfx (OGG): ov_open_callbacks result: %d for %s", ov_error, fullPath);
             if (ov_error != 0) {
-            }
-            else {
+                PrintLog("LoadSfx (OGG): Failed to open vorbis callbacks for %s. Error: %d", fullPath, ov_error);
+                sfxList[sfxID].loaded = false;
+            } else {
                 vinfo = ov_info(&vf, -1);
+                PrintLog("LoadSfx (OGG): Vorbis info: %ld Hz, %d channels, %ld samples for %s", vinfo->rate, vinfo->channels, (long)ov_pcm_total(&vf, -1), fullPath);
                 
                 memset(&spec_ogg, 0, sizeof(SDL_AudioSpec));
                 spec_ogg.format   = AUDIO_S16SYS; 
                 spec_ogg.channels = vinfo->channels;
                 spec_ogg.freq     = (int)vinfo->rate;
+                PrintLog("LoadSfx (OGG): Original OGG Freq=%d. Device Freq=%d.", spec_ogg.freq, audioDeviceFormat.freq);
+                spec_ogg.freq     = audioDeviceFormat.freq; // Force match device frequency
+                PrintLog("LoadSfx (OGG): Forcing OGG Freq to %d for conversion.", spec_ogg.freq);
 
                 samples_ogg = (long)ov_pcm_total(&vf, -1);
-                audioLen_ogg = (Uint32)(samples_ogg * spec_ogg.channels * (SDL_AUDIO_BITSIZE(spec_ogg.format) / 8));
+                // Recalculate audioLen_ogg based on potentially altered spec_ogg.freq IF ov_read uses it (it doesn't directly, uses samples)
+                // However, the number of PCM samples from ov_pcm_total is fixed. The duration changes if rate is forced.
+                // For buffer allocation, using ov_pcm_total is correct for decoded samples.
+                audioLen_ogg = (Uint32)(samples_ogg * vinfo->channels * (SDL_AUDIO_BITSIZE(AUDIO_S16SYS) / 8)); // Use vinfo->channels and AUDIO_S16SYS
+                PrintLog("LoadSfx (OGG): Calculated PCM audio length (using original OGG channels & S16 format): %u bytes for %s", audioLen_ogg, fullPath);
+
 
                 audioBuf_ogg = (Uint8 *)malloc(audioLen_ogg);
                 if (!audioBuf_ogg) {
+                    PrintLog("LoadSfx (OGG): Failed to malloc audioBuf_ogg (%u bytes) for %s", audioLen_ogg, fullPath);
                     ov_clear(&vf);
+                    sfxList[sfxID].loaded = false;
                 } else {
                     Uint8 *buf_ptr_ogg = audioBuf_ogg;
                     long toRead_ogg = audioLen_ogg;
                     long read_total_ogg = 0;
                     int bitstream_dummy;
 
+                    PrintLog("LoadSfx (OGG): Starting OGG decode loop for %s", fullPath);
                     while(read_total_ogg < audioLen_ogg) {
                         long ret = ov_read(&vf, (char*)buf_ptr_ogg, toRead_ogg > 4096 ? 4096 : toRead_ogg, 0, 2, 1, &bitstream_dummy);
-                        if (ret == 0) { 
-                            break;
+                        if (ret == 0) { // End of file
+                            PrintLog("LoadSfx (OGG): ov_read returned 0 (EOF) after %ld bytes for %s", read_total_ogg, fullPath);
+                            break; 
                         }
-                        if (ret < 0) { 
+                        if (ret < 0) { // Error in stream
+                            PrintLog("LoadSfx (OGG): ov_read error %ld after %ld bytes for %s", ret, read_total_ogg, fullPath);
                             free(audioBuf_ogg);
                             audioBuf_ogg = NULL;
                             break;
@@ -794,34 +828,61 @@ void LoadSfx(char *filePath, byte sfxID)
                         buf_ptr_ogg += ret;
                         toRead_ogg -= ret;
                     }
+                    PrintLog("LoadSfx (OGG): OGG decode loop finished. Total bytes decoded: %ld for %s", read_total_ogg, fullPath);
 
-                    if (audioBuf_ogg) {
+                    if (audioBuf_ogg) { // if decode was successful (or partially successful)
                         SDL_AudioCVT convert_ogg;
+                        PrintLog("LoadSfx (OGG): Preparing for SDL_BuildAudioCVT. Src Spec: Format=0x%X, Freq=%d, Chan=%d. Dst Spec: Format=0x%X, Freq=%d, Chan=%d",
+                                 spec_ogg.format, spec_ogg.freq, spec_ogg.channels,
+                                 audioDeviceFormat.format, audioDeviceFormat.freq, audioDeviceFormat.channels);
                         int build_cvt_result_ogg = SDL_BuildAudioCVT(&convert_ogg, spec_ogg.format, spec_ogg.channels, spec_ogg.freq, 
                                                                       audioDeviceFormat.format, audioDeviceFormat.channels, audioDeviceFormat.freq);
+                        PrintLog("LoadSfx (OGG): SDL_BuildAudioCVT result: %d for %s. Need to convert: %s", fullPath, build_cvt_result_ogg, (build_cvt_result_ogg == 1) ? "yes" : (build_cvt_result_ogg == 0 ? "no" : "error"));
                         
                         if (build_cvt_result_ogg >= 0) {
+                            convert_ogg.len = read_total_ogg; // Use actual decoded length
+                            PrintLog("LoadSfx (OGG): Attempting to malloc convert_ogg.buf (size: %d * %d = %d bytes) for %s", read_total_ogg, convert_ogg.len_mult, read_total_ogg * convert_ogg.len_mult, fullPath);
                             convert_ogg.buf = (Uint8*)malloc(read_total_ogg * convert_ogg.len_mult);
-                            convert_ogg.len = read_total_ogg;
-                            memcpy(convert_ogg.buf, audioBuf_ogg, read_total_ogg);
+                            
+                            if (!convert_ogg.buf) {
+                                PrintLog("LoadSfx (OGG): Failed to malloc convert_ogg.buf for %s", fullPath);
+                                sfxList[sfxID].loaded = false;
+                            } else {
+                                PrintLog("LoadSfx (OGG): Malloc successful for convert_ogg.buf. Copying %ld bytes.", read_total_ogg);
+                                memcpy(convert_ogg.buf, audioBuf_ogg, read_total_ogg);
+                                if (build_cvt_result_ogg == 1) { // Only convert if necessary
+                                    PrintLog("LoadSfx (OGG): Calling SDL_ConvertAudio for %s", fullPath);
+                                    SDL_ConvertAudio(&convert_ogg);
+                                    PrintLog("LoadSfx (OGG): SDL_ConvertAudio done for %s. New length: %d", fullPath, convert_ogg.len_cvt);
+                                } else {
+                                    convert_ogg.len_cvt = convert_ogg.len;
+                                     PrintLog("LoadSfx (OGG): No audio conversion needed for %s.", fullPath);
+                                }
 
-                            SDL_ConvertAudio(&convert_ogg);
-
-                            LockAudioDevice();
-                            StrCopy(sfxList[sfxID].name, filePath);
-                            sfxList[sfxID].buffer = (Sint16 *)convert_ogg.buf; 
-                            sfxList[sfxID].length = convert_ogg.len_cvt / sizeof(Sint16);
-                            sfxList[sfxID].loaded = true;
-                            UnlockAudioDevice();
+                                LockAudioDevice();
+                                StrCopy(sfxList[sfxID].name, filePath);
+                                sfxList[sfxID].buffer = (Sint16 *)convert_ogg.buf; 
+                                sfxList[sfxID].length = convert_ogg.len_cvt / sizeof(Sint16);
+                                sfxList[sfxID].loaded = true;
+                                UnlockAudioDevice();
+                                PrintLog("LoadSfx (OGG): Successfully loaded and prepared %s. SFX length in samples: %d", fullPath, sfxList[sfxID].length);
+                            }
                         } else {
+                            PrintLog("LoadSfx (OGG): SDL_BuildAudioCVT failed with code %d for %s", build_cvt_result_ogg, fullPath);
                             sfxList[sfxID].loaded = false;
+                            // if (convert_ogg.buf) { free(convert_ogg.buf); convert_ogg.buf = NULL; } // convert_ogg.buf would not be allocated if build_cvt_result_ogg is < 0
                         }
                         free(audioBuf_ogg); 
+                    } else {
+                         sfxList[sfxID].loaded = false; // If audioBuf_ogg became NULL due to decode error
+                         PrintLog("LoadSfx (OGG): audioBuf_ogg was NULL after decode loop for %s", fullPath);
                     }
                 }
                 ov_clear(&vf); 
             }
         } else {
+            PrintLog("LoadSfx: Unknown or unsupported SFX type for %s (type char: '%c')", fullPath, type ? type : '?');
+            sfxList[sfxID].loaded = false;
         }
         CloseFile(); 
     } else {
