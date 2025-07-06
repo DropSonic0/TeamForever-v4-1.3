@@ -101,9 +101,18 @@ typedef unsigned int uint;
 
 #ifndef BASE_PATH
 #if RETRO_PLATFORM == RETRO_PS3
-#define BASE_PATH "/dev_hdd0/game/S1F00S2A0/USRDIR/"
+    #if defined(S1F_BUILD)
+        #define BASE_PATH "/dev_hdd0/game/S1F00S2A0/USRDIR/"
+    #elif defined(S2A_BUILD)
+        #define BASE_PATH "/dev_hdd0/game/S2A00S1F0/USRDIR/"
+    #else
+        // Fallback or error if no specific PS3 game build is defined.
+        // This could be an error, or a default path if that makes sense.
+        // For now, let's make it an error to ensure a conscious choice is made.
+        #error "PS3 Build type (S1F_BUILD or S2A_BUILD) not defined for BASE_PATH!"
+    #endif
 #else
-#define BASE_PATH "./"
+    #define BASE_PATH "./" // Default for other platforms
 #endif
 #endif
 
