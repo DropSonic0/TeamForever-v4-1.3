@@ -18,7 +18,7 @@ include $(PSL1GHT)/ppu_rules
 # ICON0 the image for XMB
 # SFOXML for build PARAM.SFO
 #---------------------------------------------------------------------------------
-TARGET		:=	s1fs2a
+TARGET		:=	s1f
 BUILD		:=	build
 SOURCES		:=	\
 	../RSDKv4/ 			\
@@ -34,13 +34,13 @@ INCLUDES	:=	\
 	../dependencies/all/tinyxml2 \
 	../dependencies/all/theoraplay
 
-PKGFILES	:=	../pkgfiles
+PKGFILES	:=	../pkgfiles1
 ICON0		:=	$(PKGFILES)/ICON0.PNG
-SFOXML		:=	../sfo.xml
+SFOXML		:=	../sfo1.xml
 
-TITLE		:=	Sonic Forever & Sonic Absolute
+TITLE		:=	Sonic 1 Forever
 APPID		:=	S1F00S2A0
-CONTENTID	:=	UP0001-$(APPID)_00-SONIC1FOREVERPS3
+CONTENTID	:=	UP0001-$(APPID)_00-SONIC1FOREVER000
 
 CFLAGS		=	-std=c++17 -DPS3 -DPS3_DISABLE_NETWORKING -g3 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS) -DPS3_DISABLE_NETWORKING

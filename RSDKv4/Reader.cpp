@@ -4,7 +4,7 @@
 RSDKContainer rsdkContainer;
 
 char fileName[0x100];
-byte fileBuffer[0x2000];
+byte fileBuffer[0x8000]; // Aumentado de 0x2000 a 0x8000 (32KB)
 int fileSize          = 0;
 int vFileSize         = 0;
 int readPos           = 0;

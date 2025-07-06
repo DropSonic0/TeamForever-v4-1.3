@@ -91,7 +91,7 @@ struct RSDKContainer {
 extern RSDKContainer rsdkContainer;
 
 extern char fileName[0x100];
-extern byte fileBuffer[0x2000];
+extern byte fileBuffer[0x8000];
 extern int fileSize;
 extern int vFileSize;
 extern int readPos;
@@ -153,8 +153,8 @@ void FileSkip(int count);
 
 inline size_t FillFileBuffer()
 {
-    if (readPos + 0x2000 <= fileSize)
-        readSize = 0x2000;
+    if (readPos + 0x8000 <= fileSize)
+        readSize = 0x8000;
     else
         readSize = fileSize - readPos;
 
