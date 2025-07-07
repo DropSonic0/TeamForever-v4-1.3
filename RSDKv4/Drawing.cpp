@@ -283,10 +283,77 @@ void FlipScreen()
 
     if (SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 255) != 0) { /* ... */ }
     if (SDL_RenderClear(Engine.renderer) != 0) { /* ... */ }
-    // SDL_Rect dstRect = {0, 0, SCREEN_XSIZE, SCREEN_YSIZE}; // Old way
-    // Using NULL for dstRect tells SDL_RenderCopy to fill the entire rendering target
-    if (SDL_RenderCopy(Engine.renderer, Engine.gameRenderTexture, NULL, NULL) != 0) {
+
+    SDL_Rect destRect;
+    int currentOutputWidth = 0;
+    int currentOutputHeight = 0;
+    SDL_GetRendererOutputSize(Engine.renderer, &currentOutputWidth, &currentOutputHeight);
+
+    // Default to stretching (this will be overridden if conditions for correct aspect are met)
+    destRect.x = 0;
+    destRect.y = 0;
+    destRect.w = currentOutputWidth;
+    destRect.h = currentOutputHeight;
+
+    bool isHD = (currentOutputHeight >= 720); 
+    bool userPrefersStretchingInSD = false; // TODO: Replace with actual game setting global variable from options
+
+    if (isHD) { // HD resolutions: Always maintain aspect ratio
+        destRect.x = displaySettings.offsetX;
+        destRect.w = displaySettings.width;
+        destRect.h = displaySettings.height;
+        // Center vertically if letterboxed by displaySettings
+        if (displaySettings.offsetX == 0 && displaySettings.width == currentOutputWidth && displaySettings.height < currentOutputHeight) {
+            destRect.y = (currentOutputHeight - displaySettings.height) / 2;
+        } else {
+            destRect.y = 0; // Default for pillarbox or if height matches
+        }
+
+        // Safety recalculation (primarily if SetFullScreen's info was stale or calculations differ)
+        if (destRect.w > currentOutputWidth || destRect.h > currentOutputHeight || (destRect.x == 0 && destRect.w < currentOutputWidth && destRect.h < currentOutputHeight) ) { // Added condition for initial incorrect letterbox
+            float gameAspectRatio = (float)SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
+            if ((float)currentOutputWidth / gameAspectRatio <= (float)currentOutputHeight) { // Pillarbox
+                destRect.w = currentOutputWidth;
+                destRect.h = (int)(currentOutputWidth / gameAspectRatio);
+            } else { // Letterbox
+                destRect.h = currentOutputHeight;
+                destRect.w = (int)(currentOutputHeight * gameAspectRatio);
+            }
+            destRect.x = (currentOutputWidth - destRect.w) / 2;
+            destRect.y = (currentOutputHeight - destRect.h) / 2;
+        }
+    } else { // SD Resolutions (480p, 576p)
+        if (!userPrefersStretchingInSD) { // User wants correct aspect ratio in SD
+            destRect.x = displaySettings.offsetX;
+            destRect.w = displaySettings.width;
+            destRect.h = displaySettings.height;
+            // Center vertically if letterboxed by displaySettings
+            if (displaySettings.offsetX == 0 && displaySettings.width == currentOutputWidth && displaySettings.height < currentOutputHeight) {
+                 destRect.y = (currentOutputHeight - displaySettings.height) / 2;
+            } else {
+                 destRect.y = 0; // Default for pillarbox or if height matches
+            }
+
+            // Safety recalculation, same as HD
+            if (destRect.w > currentOutputWidth || destRect.h > currentOutputHeight || (destRect.x == 0 && destRect.w < currentOutputWidth && destRect.h < currentOutputHeight) ) {
+                float gameAspectRatio = (float)SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
+                if ((float)currentOutputWidth / gameAspectRatio <= (float)currentOutputHeight) {
+                    destRect.w = currentOutputWidth;
+                    destRect.h = (int)(currentOutputWidth / gameAspectRatio);
+                } else {
+                    destRect.h = currentOutputHeight;
+                    destRect.w = (int)(currentOutputHeight * gameAspectRatio);
+                }
+                destRect.x = (currentOutputWidth - destRect.w) / 2;
+                destRect.y = (currentOutputHeight - destRect.h) / 2;
+            }
+        }
+        // Else (userPrefersStretchingInSD is true): destRect remains fullscreen, causing stretch.
+    }
+
+    if (SDL_RenderCopy(Engine.renderer, Engine.gameRenderTexture, NULL, &destRect) != 0) {
         if (current_frame_count_3_3 % frame_count_log_interval == 0) {
+            // Log error: SDL_GetError()
         }
     }
     SDL_RenderPresent(Engine.renderer);
