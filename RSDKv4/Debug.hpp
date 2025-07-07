@@ -42,19 +42,17 @@ inline void PrintLog(const char *msg, ...)
 #elif RETRO_PLATFORM == RETRO_PS3
         sprintf(pathBuffer, BASE_PATH "log.txt");
         printf("PS3 LOG DEBUG: PrintLog(char*) called. Message: %s\n", buffer);
-        printf("PS3 LOG DEBUG: PrintLog(char*) called. Message: %s\n", buffer);
-        // printf("PS3 LOG DEBUG: Attempting to open log file: %s\n", pathBuffer); // File I/O disabled for PS3
-#else
+        printf("PS3 LOG DEBUG: PrintLog(char*) called. Message: %s\n", buffer); // Keep this console print
+        printf("PS3 LOG DEBUG: Attempting to open log file: %s\n", pathBuffer); // Keep this console print
+#else // Other platforms
         sprintf(pathBuffer, "log.txt"); // Default path for other platforms
 #endif
-// File I/O for log.txt on PS3 is now disabled to save memory.
-// The #if 0 block can be removed if this is permanent, or kept for easy re-enabling.
-#if RETRO_PLATFORM == RETRO_PS3
-    // File logging explicitly disabled for PS3 in PrintLog
-    // printf("PS3 LOG DEBUG: File logging is disabled.\n");
-#else // For other platforms, keep the file logging
+        // Restore file I/O for all platforms including PS3
         FileIO *file = fOpen(pathBuffer, "a");
         if (file) {
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: Log file opened successfully. Writing...\n"); // Keep this console print
+#endif
             size_t len = StrLength(buffer);
             if (len > 0) { 
                 fWrite(buffer, 1, len, file);
@@ -63,11 +61,17 @@ inline void PrintLog(const char *msg, ...)
                 }
             }
             fClose(file);
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: Log file closed.\n"); // Keep this console print
+#endif
         } else {
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: FAILED to open log file: %s\n", pathBuffer); // Keep this console print
+#else
             // Optional: some generic error for other platforms if file opening fails
             // printf("LOG ERROR: FAILED to open log file: %s\n", pathBuffer);
-        }
 #endif
+        }
     }
 #endif
 }
@@ -77,7 +81,7 @@ inline void PrintLog(const ushort *msg)
 #ifndef RETRO_DISABLE_LOG
     if (engineDebugMode) {
 #if RETRO_PLATFORM == RETRO_PS3
-        printf("PS3 LOG DEBUG: PrintLog(ushort*) called.\n");
+        printf("PS3 LOG DEBUG: PrintLog(ushort*) called.\n"); // Keep this console print
 #endif
         int mPos = 0;
         while (msg[mPos]) {
@@ -98,19 +102,17 @@ inline void PrintLog(const ushort *msg)
         sprintf(pathBuffer, "%s/log.txt", gamePath);
         __android_log_print(ANDROID_LOG_INFO, "RSDKv4", "%ls", (wchar_t *)msg);
 #elif RETRO_PLATFORM == RETRO_PS3
-        sprintf(pathBuffer, BASE_PATH "log.txt"); // Path still constructed for console message
-        // printf("PS3 LOG DEBUG: Attempting to open log file (ushort): %s\n", pathBuffer); // File I/O disabled for PS3
+        sprintf(pathBuffer, BASE_PATH "log.txt"); 
+        printf("PS3 LOG DEBUG: Attempting to open log file (ushort): %s\n", pathBuffer); // Keep this console print
 #else
         sprintf(pathBuffer, "log.txt"); // Default path
 #endif
-
-// File I/O for log.txt on PS3 is now disabled to save memory.
-#if RETRO_PLATFORM == RETRO_PS3
-    // File logging explicitly disabled for PS3 in PrintLog
-    // printf("PS3 LOG DEBUG: File logging for ushort is disabled.\n");
-#else // For other platforms, keep the file logging
+        // Restore file I/O for all platforms including PS3
         FileIO *file = fOpen(pathBuffer, "a");
         if (file) {
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: Log file opened successfully (ushort). Writing...\n"); // Keep this console print
+#endif
             mPos = 0;
             bool wroteSomething = false;
             char convBuffer[3]; 
@@ -128,10 +130,16 @@ inline void PrintLog(const ushort *msg)
                 fWrite("\n", 1, 1, file);
             }
             fClose(file);
-        } else {
-            // printf("LOG ERROR: FAILED to open log file (ushort): %s\n", pathBuffer);
-        }
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: Log file closed (ushort).\n"); // Keep this console print
 #endif
+        } else {
+#if RETRO_PLATFORM == RETRO_PS3
+            printf("PS3 LOG DEBUG: FAILED to open log file (ushort): %s\n", pathBuffer); // Keep this console print
+#else
+            // printf("LOG ERROR: FAILED to open log file (ushort): %s\n", pathBuffer);
+#endif
+        }
     }
 #endif
 }
