@@ -158,7 +158,7 @@ int InitRenderDevice()
                 Engine.gameRenderTexture = NULL;
             }
 
-            Engine.gameRenderTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_XSIZE, SCREEN_YSIZE);
+            Engine.gameRenderTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, SCREEN_XSIZE, SCREEN_YSIZE);
             if (!Engine.gameRenderTexture) {
                 SDL_DestroyRenderer(Engine.renderer); Engine.renderer = NULL;
                 SDL_DestroyWindow(Engine.window); Engine.window = NULL;
@@ -255,19 +255,19 @@ void FlipScreen()
             lock_info_logged_3_3 = true; 
         }
 
+        // Direct copy for RGB565 texture
+        // Engine.frameBuffer is RGB565 (ushort array)
+        // Engine.gameRenderTexture is now also RGB565
         for (int y = 0; y < SCREEN_YSIZE; ++y) {
-            uint32_t *dstLineARGB8888 = (uint32_t*)((unsigned char*)texturePixels + y * texturePitch);
-            ushort *srcLineRGB565 = &Engine.frameBuffer[y * GFX_LINESIZE];
-            for (int x = 0; x < SCREEN_XSIZE; ++x) {
-                ushort rgb565_pixel = srcLineRGB565[x];
-                uint8_t r5 = (rgb565_pixel >> 11) & 0x1F;
-                uint8_t g6 = (rgb565_pixel >> 5) & 0x3F;
-                uint8_t b5 = rgb565_pixel & 0x1F;
-                uint8_t r8 = (r5 * 255 + 15) / 31;
-                uint8_t g8 = (g6 * 255 + 31) / 63;
-                uint8_t b8 = (b5 * 255 + 15) / 31;
-                dstLineARGB8888[x] = (0xFFU << 24) | (r8 << 16) | (g8 << 8) | b8;
-            }
+            ushort *srcLine = &Engine.frameBuffer[y * GFX_LINESIZE];
+            // texturePitch is in bytes. dstLine is ushort*, so pointer arithmetic is scaled by sizeof(ushort)
+            ushort *dstLine = (ushort*)((unsigned char*)texturePixels + y * texturePitch); 
+            
+            // SCREEN_XSIZE is the actual width of content to copy.
+            // GFX_LINESIZE is the pitch of Engine.frameBuffer (source), which might be wider due to padding.
+            // texturePitch is the pitch of the destination SDL_Texture.
+            // We copy SCREEN_XSIZE * sizeof(ushort) bytes.
+            memcpy(dstLine, srcLine, SCREEN_XSIZE * sizeof(ushort));
         }
         SDL_UnlockTexture(Engine.gameRenderTexture);
     } else {
