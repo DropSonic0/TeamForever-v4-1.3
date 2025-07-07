@@ -136,6 +136,9 @@ int InitRenderDevice()
     if (!Engine.window) {
         return 0;
     }
+    if (Engine.startFullScreen) { // If we intended to start fullscreen
+        Engine.isFullScreen = true; // Confirm the state
+    }
 
     #if !RETRO_USING_OPENGL
         Engine.renderer = SDL_CreateRenderer(Engine.window, -1, SDL_RENDERER_ACCELERATED); 
@@ -717,64 +720,75 @@ void SetupViewport()
 
 void SetFullScreen(bool fs)
 {
-    if (fs) {
+    // Force fullscreen ON
 #if RETRO_USING_SDL1
-        Engine.windowSurface =
-            SDL_SetVideoMode(SCREEN_XSIZE * Engine.windowScale, SCREEN_YSIZE * Engine.windowScale, 16, SDL_SWSURFACE | SDL_FULLSCREEN);
-        SDL_ShowCursor(SDL_FALSE);
+    Engine.windowSurface =
+        SDL_SetVideoMode(SCREEN_XSIZE * Engine.windowScale, SCREEN_YSIZE * Engine.windowScale, 16, SDL_SWSURFACE | SDL_FULLSCREEN);
+    SDL_ShowCursor(SDL_FALSE);
 #elif RETRO_USING_SDL2
-        SDL_RestoreWindow(Engine.window);
-        SDL_SetWindowFullscreen(Engine.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-        SDL_ShowCursor(SDL_FALSE);
+    SDL_RestoreWindow(Engine.window);
+    SDL_SetWindowFullscreen(Engine.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_ShowCursor(SDL_FALSE);
 
-#if RETRO_USING_OPENGL
+    SDL_SetWindowFullscreen(Engine.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    SDL_ShowCursor(SDL_FALSE);
+
+    // Get the actual size of the window after attempting to set it to fullscreen.
+    // This might be more reliable than GetDesktopDisplayMode on some platforms/backends.
+    int w = 0;
+    int h = 0;
+    SDL_GetWindowSize(Engine.window, &w, &h);
+
+    if (w == 0 || h == 0) {
+        // Fallback if GetWindowSize fails or returns zero (e.g., window not fully ready)
+        // Try GetDesktopDisplayMode as a secondary measure
         SDL_DisplayMode mode;
-        SDL_GetDesktopDisplayMode(0, &mode);
-
-        int w = mode.w;
-        int h = mode.h;
-        if (mode.h > mode.w) {
-            w = mode.h;
-            h = mode.w;
+        if (SDL_GetDesktopDisplayMode(0, &mode) == 0) {
+            w = mode.w;
+            h = mode.h;
+            if (mode.h > mode.w) { // Ensure w is width and h is height (landscape)
+                int temp_w = w;
+                w = h;
+                h = temp_w;
+            }
+        } else {
+            // Absolute fallback: use a common PS3 resolution if all else fails.
+            // This is a last resort and might not match user's actual display setting.
+            PrintLog("WARNING: Could not determine fullscreen window size. Defaulting to 1280x720.");
+            w = 1280;
+            h = 720;
         }
-
-#if RETRO_PLATFORM != RETRO_iOS && RETRO_PLATFORM != RETRO_ANDROID
-        float aspect            = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
-        displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs(w - displaySettings.width) / 2;
-        if (displaySettings.width > w) {
-            displaySettings.offsetX = 0;
-            displaySettings.width   = w;
-        }
-
-        SetupViewport();
-#else
-        displaySettings.height = h;
-        displaySettings.width  = w;
-        glViewport(0, 0, displaySettings.width, displaySettings.height);
-#endif
-#endif
-#endif
     }
-    else {
-#if RETRO_USING_SDL1
-        Engine.windowSurface = SDL_SetVideoMode(SCREEN_XSIZE * Engine.windowScale, SCREEN_YSIZE * Engine.windowScale, 16, SDL_SWSURFACE);
-        SDL_ShowCursor(SDL_TRUE);
-#elif RETRO_USING_SDL2
-        SDL_SetWindowFullscreen(Engine.window, false);
-        SDL_ShowCursor(SDL_TRUE);
-        SDL_SetWindowSize(Engine.window, SCREEN_XSIZE_CONFIG * Engine.windowScale, SCREEN_YSIZE * Engine.windowScale);
-        SDL_SetWindowPosition(Engine.window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-        SDL_RestoreWindow(Engine.window);
 
-        displaySettings.width   = SCREEN_XSIZE_CONFIG * Engine.windowScale;
-        displaySettings.height  = SCREEN_YSIZE * Engine.windowScale;
+#if RETRO_PLATFORM != RETRO_iOS && RETRO_PLATFORM != RETRO_ANDROID // PS3 Path
+    float gameAspectRatio = (float)SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE; 
+    
+    displaySettings.height = h;
+    displaySettings.width = (int)(h * gameAspectRatio);
+    displaySettings.offsetX = (w - displaySettings.width) / 2;
+    // displaySettings.offsetY = 0; // Removed, member does not exist
+
+    if (displaySettings.width > w) {
+        displaySettings.width = w;
+        displaySettings.height = (int)(w / gameAspectRatio);
         displaySettings.offsetX = 0;
-        SetupViewport();
-#endif
+        // displaySettings.offsetY = (h - displaySettings.height) / 2; // Removed, member does not exist
     }
-    Engine.isFullScreen = fs;
+    
+    SetupViewport(); 
+#else // Mobile Platforms
+    displaySettings.height = h;
+    displaySettings.width  = w;
+    displaySettings.offsetX = 0;
+    // displaySettings.offsetY = 0; // Removed, member does not exist
+    #if RETRO_USING_OPENGL
+    glViewport(0, 0, displaySettings.width, displaySettings.height);
+    #endif
+    SetupViewport(); 
+#endif // RETRO_PLATFORM check
+#endif // RETRO_USING_SDL1 / SDL2
+
+    Engine.isFullScreen = true; // Always true
 }
 
 void DrawObjectList(int Layer)

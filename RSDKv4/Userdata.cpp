@@ -374,7 +374,12 @@ void InitUserdata()
         ini.SetInteger("Network", "Port", networkPort = 50);
 #endif
 
-        ini.SetBool("Window", "FullScreen", Engine.startFullScreen = DEFAULT_FULLSCREEN);
+        bool initialFullScreenState = DEFAULT_FULLSCREEN;
+#if RETRO_PLATFORM == RETRO_PS3
+        initialFullScreenState = true;
+#endif
+        Engine.startFullScreen = initialFullScreenState; // Keep Engine.startFullScreen consistent
+        ini.SetBool("Window", "FullScreen", initialFullScreenState);
         ini.SetBool("Window", "Borderless", Engine.borderless = false);
         ini.SetBool("Window", "VSync", Engine.vsync = true);
         ini.SetInteger("Window", "ScalingMode", Engine.scalingMode = 0);
@@ -531,6 +536,9 @@ void InitUserdata()
 
         if (!ini.GetBool("Window", "FullScreen", &Engine.startFullScreen))
             Engine.startFullScreen = DEFAULT_FULLSCREEN;
+#if RETRO_PLATFORM == RETRO_PS3
+        Engine.startFullScreen = true; // Force fullscreen ON for PS3, overriding INI
+#endif
         if (!ini.GetBool("Window", "Borderless", &Engine.borderless))
             Engine.borderless = false;
         if (!ini.GetBool("Window", "VSync", &Engine.vsync))
@@ -847,6 +855,9 @@ void WriteSettings()
 #endif
 
     ini.SetComment("Window", "FSComment", "Determines if the window will be fullscreen or not");
+#if RETRO_PLATFORM == RETRO_PS3
+    Engine.startFullScreen = true; // Ensure the value about to be saved is true for PS3
+#endif
     ini.SetBool("Window", "FullScreen", Engine.startFullScreen);
     ini.SetComment("Window", "BLComment", "Determines if the window will be borderless or not");
     ini.SetBool("Window", "Borderless", Engine.borderless);

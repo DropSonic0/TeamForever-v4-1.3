@@ -214,8 +214,9 @@ bool processEvents()
                         break;
 
                     case SDLK_F4:
-                        Engine.isFullScreen ^= 1;
-                        SetFullScreen(Engine.isFullScreen);
+                        // Fullscreen is now locked ON, do nothing.
+                        // Engine.isFullScreen ^= 1;
+                        // SetFullScreen(Engine.isFullScreen);
                         break;
 
                     case SDLK_F5:

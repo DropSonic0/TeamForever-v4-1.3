@@ -561,7 +561,7 @@ public:
     uint *texBuffer = nullptr;
 
 #if !RETRO_USE_ORIGINAL_CODE
-    bool isFullScreen = false;
+    bool isFullScreen = true;
 
     bool startFullScreen  = true; // if should start as fullscreen
     bool borderless       = false;
