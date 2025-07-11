@@ -282,7 +282,7 @@ void FlipScreen()
     }
 
     if (SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 255) != 0) { /* ... */ }
-    if (SDL_RenderClear(Engine.renderer) != 0) { /* ... */ }
+    //if (SDL_RenderClear(Engine.renderer) != 0) { /* ... */ }
 
     SDL_Rect destRect;
     int currentOutputWidth = 0;
