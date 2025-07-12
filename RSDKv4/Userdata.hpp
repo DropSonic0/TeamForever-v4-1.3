@@ -157,10 +157,14 @@ bool ReadSaveRAMData();
 bool WriteSaveRAMData();
 
 #if !RETRO_USE_ORIGINAL_CODE
+
+extern bool UserdataDirty;
+
 void InitUserdata();
 void WriteSettings();
 void ReadUserdata();
 void WriteUserdata();
+void SaveUserdata();
 
 inline void AddAchievement(const char *name, const char *description)
 {

@@ -54,6 +54,7 @@ int sendCounter = 0; // Default value
 
 #if !RETRO_USE_ORIGINAL_CODE
 
+bool UserdataDirty            = false;
 bool forceUseScripts          = true;
 bool forceUseScripts_Config   = true;
 bool skipStartMenu            = true;
@@ -1049,6 +1050,14 @@ void WriteUserdata()
         // Load from online
     }
 }
+
+void SaveUserdata()
+{
+    if (!UserdataDirty)
+        return;
+    WriteUserdata();
+    UserdataDirty = false;
+}
 #endif
 
 void AwardAchievement(int id, int status)
@@ -1065,7 +1074,8 @@ void AwardAchievement(int id, int status)
         // Set Achievement online
     }
 #if !RETRO_USE_ORIGINAL_CODE
-    WriteUserdata();
+    //WriteUserdata();
+    UserdataDirty = true;
 #endif
 }
 
@@ -1143,7 +1153,8 @@ int SetLeaderboard(int *leaderboardID, int *score)
         if (*score < leaderboards[*leaderboardID].score) {
             PrintLog("Set leaderboard (%d) value to %d", *leaderboardID, score);
             leaderboards[*leaderboardID].score = *score;
-            WriteUserdata();
+            //WriteUserdata();
+            UserdataDirty = true;
         }
         else {
             PrintLog("Attempted to set leaderboard (%d) value to %d... but score was already %d!", *leaderboardID, *score,

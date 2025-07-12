@@ -308,6 +308,7 @@ void RetroEngine::Init()
 
 #if !RETRO_USE_ORIGINAL_CODE
     InitUserdata();
+    UserdataDirty = false;
 #if RETRO_USE_MOD_LOADER
     InitMods(); 
     printf("MODPATH DEBUG: modsPath after InitMods() is: '%s'\n", modsPath);
@@ -676,6 +677,7 @@ void RetroEngine::Run()
     DisconnectNetwork(true);
 #endif
     WriteSettings();
+    SaveUserdata();
 #if RETRO_USE_MOD_LOADER
     SaveMods();
 #endif

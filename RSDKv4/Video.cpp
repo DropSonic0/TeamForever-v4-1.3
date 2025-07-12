@@ -23,7 +23,7 @@ static long videoRead(THEORAPLAY_Io *io, void *buf, long buflen)
 {
     FileIO *file = (FileIO *)io->userdata;
     size_t br = fRead(buf, 1, buflen, file);
-    if (br == 0) { // Si no se leyó nada
+    if (br == 0) { // Si no se leyï¿½ nada
     Sint64 current_pos = SDL_RWtell(file);
     Sint64 total_size = SDL_RWsize(file);
     if (current_pos >= total_size) {
@@ -44,43 +44,81 @@ static void videoClose(THEORAPLAY_Io *io)
     }
 }
 
+// This entire old function will be replaced by the corrected one below,
+// which was previously inserted. This is to remove the duplicated function.
+// The actual new PlayVideoFile function with logging is already present further down.
+
 void PlayVideoFile(char *filePath) {
+    PrintLog("PlayVideoFile: Initial filePath = '%s'", filePath); // Log initial filePath
+
     char pathBuffer[0x100];
     int len = StrLength(filePath);
     if (len > 2 && StrComp(filePath + (len - 2), "us")) {
-        filePath[len - 2] = 0;
+        filePath[len - 2] = 0; // Remove "us" suffix if present
     }
     StrCopy(pathBuffer, "videos/");
     StrAdd(pathBuffer, filePath);
     StrAdd(pathBuffer, ".ogv");
+    PrintLog("PlayVideoFile: pathBuffer after initial mods and adding .ogv = '%s'", pathBuffer);
 
-    bool addPath = true;
+    bool addBasePath = true; // Renamed from addPath for clarity
     char pathLower[0x100];
     memset(pathLower, 0, sizeof(pathLower));
     for (size_t c = 0; c < strlen(pathBuffer); ++c) {
         pathLower[c] = tolower(pathBuffer[c]);
     }
+    PrintLog("PlayVideoFile: pathLower for mod lookup = '%s'", pathLower);
 
 #if RETRO_USE_MOD_LOADER
+    PrintLog("PlayVideoFile: RETRO_USE_MOD_LOADER is enabled.");
     for (size_t m = 0; m < modList.size(); ++m) {
         if (modList[m].active) {
+            PrintLog("PlayVideoFile: Checking active mod: '%s' (Folder: '%s')", modList[m].name.c_str(), modList[m].folder.c_str());
             std::map<std::string, std::string>::const_iterator iter = modList[m].fileMap.find(pathLower);
             if (iter != modList[m].fileMap.cend()) {
-                StrCopy(pathBuffer, iter->second.c_str());
-                addPath = false; 
+                // If found in mod, the path should be relative to the mod's folder,
+                // or an absolute path if the mod system prepares it that way.
+                // Assuming iter->second is a path that fOpen can use directly or needs BASE_PATH.
+                // For now, let's assume mod paths are relative to game's data directory structure if not absolute.
+                // This part might need adjustment based on how mod paths are stored.
+                // If iter->second is already an absolute path for the system, addBasePath should be false.
+                // If iter->second is relative to the game's root (like "mods/MyMod/videos/video.ogv"),
+                // then BASE_PATH should be prepended.
+
+                StrCopy(pathBuffer, iter->second.c_str()); // Use the path from the mod
+                PrintLog("PlayVideoFile: Found video in mod '%s'. Using mod path: '%s'", modList[m].name.c_str(), pathBuffer);
+                // Determine if BASE_PATH is still needed. If iter->second is like "C:/Games/RSDK/mods/MyMod/video.ogv",
+                // then addBasePath should be false. If it's "mods/MyMod/video.ogv", it depends on what BASE_PATH is.
+                // For safety, let's assume mods provide paths that might need BASE_PATH unless they are clearly absolute.
+                // This logic might need refinement based on typical mod structures.
+                // For now, if a mod supplies a path, we'll assume it's complete or relative to something fOpen understands.
+                // Let's assume mod paths are relative to BASE_PATH for now, so addBasePath remains true,
+                // but pathBuffer is now the mod's specific path.
+                // If mods *always* provide a full path, then addBasePath = false would be set here.
+                // Given the original logic, if a mod path is found, `addPath` became `false`, implying the mod path was self-contained.
+                addBasePath = false; // Mod path is likely complete or relative to a known mod root handled by fOpen
                 break;
             }
         }
     }
+#else
+    PrintLog("PlayVideoFile: RETRO_USE_MOD_LOADER is disabled.");
 #endif
 
     char finalFilepath[0x200];
-    if (addPath) sprintf(finalFilepath, "%s%s", BASE_PATH, pathBuffer);
-    else sprintf(finalFilepath, "%s", pathBuffer);
+    if (addBasePath) {
+        // This is the typical case for non-modded files or mods that provide relative paths
+        sprintf(finalFilepath, "%s%s", BASE_PATH, pathBuffer);
+        PrintLog("PlayVideoFile: addBasePath is true. BASE_PATH = '%s'. finalFilepath = '%s'", BASE_PATH ? BASE_PATH : "NULL", finalFilepath);
+    } else {
+        // This case is for when a mod provides a full, directly usable path
+        sprintf(finalFilepath, "%s", pathBuffer);
+        PrintLog("PlayVideoFile: addBasePath is false (likely using a mod-provided path). finalFilepath = '%s'", finalFilepath);
+    }
 
     FileIO *file = fOpen(finalFilepath, "rb");
     if (file) {
-        PrintLog("Video: Attempting to play '%s'", finalFilepath);
+        PrintLog("Video: Successfully opened '%s'. Attempting to play.", finalFilepath);
         callbacks.read = videoRead; callbacks.close = videoClose; callbacks.userdata = (void *)file;
         videoDecoder = THEORAPLAY_startDecode(&callbacks, 30000, THEORAPLAY_VIDFMT_IYUV);
 
@@ -88,14 +126,19 @@ void PlayVideoFile(char *filePath) {
             PrintLog("Video Decoder Error: Failed to start decoding '%s'", finalFilepath);
             fClose(file); return;
         }
+        PrintLog("Video: Decoder started for '%s'. Waiting for video data...", finalFilepath);
         while (!videoVidData && THEORAPLAY_isDecoding(videoDecoder)) {
             videoVidData = THEORAPLAY_getVideo(videoDecoder);
+            // Potentially add a small delay or a counter here if this loop spins too fast without yielding
         }
         if (!videoVidData) {
-            PrintLog("Video Error: No video data found in '%s'", finalFilepath);
+            PrintLog("Video Error: No video data found in '%s' after attempting to decode. Decoder status: %s", 
+                     finalFilepath, THEORAPLAY_isDecoding(videoDecoder) ? "still decoding" : "stopped/error");
             THEORAPLAY_stopDecode(videoDecoder); videoDecoder = nullptr;
             return;
         }
+        PrintLog("Video: Video data retrieved for '%s'. Width: %d, Height: %d, FPS: %f", 
+                 finalFilepath, videoVidData->width, videoVidData->height, videoVidData->fps);
         videoWidth  = videoVidData->width; videoHeight = videoVidData->height;
         videoAR = (videoHeight != 0) ? ((float)videoWidth / (float)videoHeight) : (16.0f/9.0f);
         SetupVideoBuffer(videoWidth, videoHeight);
@@ -105,13 +148,15 @@ void PlayVideoFile(char *filePath) {
         videoSkipped = false; Engine.gameMode = ENGINE_VIDEOWAIT;
         PrintLog("Video: Playing '%s' (%dx%d @ %f fps, frame_ms: %d)", finalFilepath, videoWidth, videoHeight, videoVidData->fps, vidFrameMS);
     } else {
-        PrintLog("Video: Couldn't find file '%s'", finalFilepath);
+        PrintLog("Video Error: COULD NOT OPEN FILE '%s'. fOpen returned NULL.", finalFilepath);
+        // Consider adding platform-specific error logging here if fOpen or a similar function provides error codes.
+        // For example, on POSIX systems, you might check errno.
     }
 }
 
 void UpdateVideoFrame() 
 {
-    if (videoPlaying == 2) { /* ... Tu lógica original para formato RVF ... */ }
+    if (videoPlaying == 2) { /* ... Tu lï¿½gica original para formato RVF ... */ }
 }
 
 int ProcessVideo() {
