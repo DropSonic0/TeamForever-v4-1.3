@@ -100,6 +100,7 @@ bool bilinearScaling = false;
 
 int InitRenderDevice()
 {
+
     Engine.windowScale = 2; 
 
     char gameTitle[0x100];
@@ -114,12 +115,18 @@ int InitRenderDevice()
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest"); 
 
     Uint32 windowFlags = 0; 
-    int window_w = SCREEN_XSIZE * Engine.windowScale;
-    int window_h = SCREEN_YSIZE * Engine.windowScale;
+    int window_w = SCREEN_XSIZE * Engine.windowScale; // Default width for windowed mode or if SDL ignores these for fullscreen_desktop
+    int window_h = SCREEN_YSIZE * Engine.windowScale; // Default height for windowed mode or if SDL ignores these for fullscreen_desktop
 
     if (Engine.startFullScreen) {
         windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        // For SDL_WINDOW_FULLSCREEN_DESKTOP, SDL typically uses the current desktop resolution.
+        // Explicitly setting w/h might be overridden or might be necessary for some SDL backends.
+        // The SFO file is responsible for telling the PS3 which resolutions are supported.
+        // We'll let SDL pick the resolution. The previously calculated window_w, window_h might be used or ignored by SDL.
+    } else {
     }
+
 
     Engine.window = SDL_CreateWindow(gameTitle,
                                      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -127,58 +134,49 @@ int InitRenderDevice()
                                      windowFlags);
 
     if (!Engine.window) {
-        // PrintLog("FATAL ERROR: Failed to create SDL_Window: %s", SDL_GetError());
         return 0;
     }
-    if (Engine.startFullScreen) {
-        Engine.isFullScreen = true;
+    if (Engine.startFullScreen) { // If we intended to start fullscreen
+        Engine.isFullScreen = true; // Confirm the state
     }
 
-#if !RETRO_USING_OPENGL
-    Engine.renderer = SDL_CreateRenderer(Engine.window, -1, SDL_RENDERER_ACCELERATED); 
+    #if !RETRO_USING_OPENGL
+        Engine.renderer = SDL_CreateRenderer(Engine.window, -1, SDL_RENDERER_ACCELERATED); 
 
-    if (!Engine.renderer) { // Original critical error check
-        // PrintLog("FATAL ERROR: Failed to create SDL_Renderer: %s", SDL_GetError());
-        SDL_DestroyWindow(Engine.window); Engine.window = NULL;
-        return 0; 
-    }
+        if (!Engine.renderer) {
+            SDL_DestroyWindow(Engine.window); Engine.window = NULL;
+            return 0;
+        }
 
-    // --- START: One-Time Screen Clear ---
-    SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 255); // Black
-    SDL_RenderClear(Engine.renderer);
-    SDL_RenderPresent(Engine.renderer);
-    // Optional: Second clear/present for robustness
-    SDL_RenderClear(Engine.renderer);
-    SDL_RenderPresent(Engine.renderer);
-    // --- END: One-Time Screen Clear ---
+        if (SDL_SetRenderDrawBlendMode(Engine.renderer, SDL_BLENDMODE_BLEND) != 0) {
+        } else {
+        }
 
-    if (SDL_SetRenderDrawBlendMode(Engine.renderer, SDL_BLENDMODE_BLEND) != 0) {
-        // PrintLog("Warning: Failed to set render draw blend mode: %s", SDL_GetError());
-    }
+        #if RETRO_SOFTWARE_RENDER
+            if (Engine.gameRenderTexture) {
+                SDL_DestroyTexture(Engine.gameRenderTexture);
+                Engine.gameRenderTexture = NULL;
+            }
 
-#if RETRO_SOFTWARE_RENDER
-    if (Engine.gameRenderTexture) {
-        SDL_DestroyTexture(Engine.gameRenderTexture);
-        Engine.gameRenderTexture = NULL;
-    }
-    Engine.gameRenderTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, SCREEN_XSIZE, SCREEN_YSIZE);
-    if (!Engine.gameRenderTexture) {
-        // PrintLog("FATAL ERROR: Failed to create gameRenderTexture: %s", SDL_GetError());
-        SDL_DestroyRenderer(Engine.renderer); Engine.renderer = NULL;
-        SDL_DestroyWindow(Engine.window); Engine.window = NULL;
-        return 0; 
-    }
-    if(SDL_SetTextureBlendMode(Engine.gameRenderTexture, SDL_BLENDMODE_BLEND) != 0) {
-        // PrintLog("Warning: Failed to set texture blend mode for gameRenderTexture: %s", SDL_GetError());
-    }
-    if (Engine.videoTexture) {
-        SDL_DestroyTexture(Engine.videoTexture);
-        Engine.videoTexture = NULL;
-    }
-#endif // RETRO_SOFTWARE_RENDER
-#else // RETRO_USING_OPENGL
-    // OpenGL setup would go here
-#endif // !RETRO_USING_OPENGL
+            Engine.gameRenderTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, SCREEN_XSIZE, SCREEN_YSIZE);
+            if (!Engine.gameRenderTexture) {
+                SDL_DestroyRenderer(Engine.renderer); Engine.renderer = NULL;
+                SDL_DestroyWindow(Engine.window); Engine.window = NULL;
+                return 0; 
+            }
+
+            if(SDL_SetTextureBlendMode(Engine.gameRenderTexture, SDL_BLENDMODE_BLEND) != 0) {
+            } else {
+            }
+
+            if (Engine.videoTexture) {
+                SDL_DestroyTexture(Engine.videoTexture);
+                Engine.videoTexture = NULL;
+            }
+        #else
+        #endif 
+    #else
+    #endif 
 
     Engine.screenRefreshRate = 60;
     SDL_DisplayMode mode;
@@ -188,28 +186,28 @@ int InitRenderDevice()
         }
     }
 
-#else // Not RETRO_USING_SDL2
+#else 
     return 0;
-#endif // RETRO_USING_SDL2
+#endif 
 
-    SetScreenSize(SCREEN_XSIZE, SCREEN_XSIZE);
+    // *** CRITICAL FIX: Set GFX_LINESIZE before allocating Engine.frameBuffer ***
+    SetScreenSize(SCREEN_XSIZE, SCREEN_XSIZE); // Sets GFX_LINESIZE = SCREEN_XSIZE (or a padded version if SetScreenSize does that)
 
 #if RETRO_SOFTWARE_RENDER
     if (Engine.frameBuffer) delete[] Engine.frameBuffer;
     Engine.frameBuffer   = new ushort[GFX_LINESIZE * SCREEN_YSIZE]; 
-    if (!Engine.frameBuffer) { /* ... handle error, cleanup ... */ return 0; }
     memset(Engine.frameBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(ushort));
 
     if (Engine.texBuffer) delete[] Engine.texBuffer;
     Engine.texBuffer = new uint[GFX_LINESIZE * SCREEN_YSIZE]; 
-    if (!Engine.texBuffer) { /* ... handle error, cleanup ... */ return 0; }
     memset(Engine.texBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(uint)); 
-#endif // RETRO_SOFTWARE_RENDER
+#endif 
 
     OBJECT_BORDER_X2 = SCREEN_XSIZE + 0x80;
     OBJECT_BORDER_X4 = SCREEN_XSIZE + 0x20;
 
     InitInputDevices(); 
+
     return 1;
 }
 void FlipScreen()
