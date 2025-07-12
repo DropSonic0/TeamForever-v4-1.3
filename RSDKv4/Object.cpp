@@ -1,7 +1,3 @@
-#ifndef PS3_PPU_PRX_LOADER // If not defined by compiler, define it here for this file
-#define PS3_PPU_PRX_LOADER
-#endif
-
 #include "RetroEngine.hpp"
 
 // Native Objects
@@ -523,8 +519,6 @@ void ResetNativeObject(NativeEntityBase *obj, void (*create)(void *objPtr), void
 }
 void ProcessNativeObjects()
 {
-    #ifdef PS3_PPU_PRX_LOADER
-    #endif
     ResetRenderStates();
     for (nativeEntityPos = 0; nativeEntityPos < nativeEntityCount; ++nativeEntityPos) {
         NativeEntity *entity = &objectEntityBank[activeEntityList[nativeEntityPos]];

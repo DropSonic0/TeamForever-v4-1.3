@@ -1,7 +1,3 @@
-#ifndef PS3_PPU_PRX_LOADER // If not defined by compiler, define it here for this file
-#define PS3_PPU_PRX_LOADER
-#endif
-
 #include "RetroEngine.hpp"
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -294,8 +290,6 @@ bool processEvents()
 
 void RetroEngine::Init()
 {
-    #ifdef PS3_PPU_PRX_LOADER
-    #endif
     engineDebugMode = true;
 
     CalculateTrigAngles();
@@ -308,7 +302,6 @@ void RetroEngine::Init()
 
 #if !RETRO_USE_ORIGINAL_CODE
     InitUserdata();
-    UserdataDirty = false;
 #if RETRO_USE_MOD_LOADER
     InitMods(); 
     printf("MODPATH DEBUG: modsPath after InitMods() is: '%s'\n", modsPath);
@@ -677,7 +670,6 @@ void RetroEngine::Run()
     DisconnectNetwork(true);
 #endif
     WriteSettings();
-    SaveUserdata();
 #if RETRO_USE_MOD_LOADER
     SaveMods();
 #endif

@@ -1,7 +1,3 @@
-#ifndef PS3_PPU_PRX_LOADER // If not defined by compiler, define it here for this file
-#define PS3_PPU_PRX_LOADER
-#endif
-
 #include "RetroEngine.hpp"
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -79,16 +75,6 @@ static void initNxLink()
 
 int main(int argc, char *argv[])
 {
-    #ifdef PS3_PPU_PRX_LOADER
-    #endif
-    // The old "PS3 EXECUTION TEST: main() started." should be removed or replaced by the line above.
-
-    // Remove or comment out the other "PS3 EXECUTION TEST" printfs in main if you want, 
-    // or leave them if they are helpful for your general PS3 testing.
-    // For our current focused debugging, the "PS3_DEBUG" prefixed ones are primary.
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        return 1; // Exit early if this fails
-    }
 #ifdef NXLINK
     initNxLink();
 #endif

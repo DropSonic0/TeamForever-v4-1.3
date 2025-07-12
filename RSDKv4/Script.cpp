@@ -1,7 +1,3 @@
-#ifndef PS3_PPU_PRX_LOADER // If not defined by compiler, define it here for this file
-#define PS3_PPU_PRX_LOADER
-#endif
-
 #include "RetroEngine.hpp"
 #include <cmath>
 
@@ -2782,7 +2778,6 @@ void ParseScriptFile(char *scriptName, int scriptID)
     char scriptPath[0x40];
     StrCopy(scriptPath, "Scripts/");
     StrAdd(scriptPath, scriptName);
-    PrintLog("ParseScriptFile: Attempting to load script '%s'. gamePath='%s', forceUseScripts=%d, engineDebugMode=%d", scriptPath, gamePath, forceUseScripts, engineDebugMode); // ADDED LOG
     FileInfo info;
     if (LoadFile(scriptPath, &info)) {
         int readMode   = READMODE_NORMAL;
@@ -3336,8 +3331,6 @@ void ClearScriptData()
 
 void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
 {
-    #ifdef PS3_PPU_PRX_LOADER
-    #endif
     bool running      = true;
     int scriptDataPtr = scriptCodePtr;
     // int jumpTableDataPtr = jumpTablePtr;
