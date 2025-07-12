@@ -47,6 +47,7 @@ SDL_AudioSpec audioDeviceFormat;
 
 int InitAudioPlayback()
 {
+    PrintLog("Initializing audio playback...");
     StopAllSfx(); //"init"
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -327,6 +328,7 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
 
 void ProcessAudioPlayback(void *userdata, Uint8 *stream, int len)
 {
+    PrintLog("ProcessAudioPlayback called!");
     (void)userdata; // Unused
 
     if (!audioEnabled)
@@ -657,7 +659,6 @@ bool PlayMusic(int track, int musStartPos)
 
     if (musicTracks[track].fileName[0]) {
         if (musicStatus != MUSIC_LOADING) {
-            LockAudioDevice();
             if (track < 0 || track >= TRACK_COUNT) {
                 StopMusic(true);
                 currentMusicTrack = -1;
@@ -666,8 +667,10 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            LoadMusic(NULL);
-            UnlockAudioDevice();
+            SDL_Thread *thread = SDL_CreateThread((SDL_ThreadFunction)LoadMusic, "LoadMusic", NULL);
+            if (thread) {
+                SDL_DetachThread(thread);
+            }
             return true;
         }
         else {

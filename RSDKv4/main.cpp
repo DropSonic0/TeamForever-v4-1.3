@@ -83,6 +83,10 @@ int main(int argc, char *argv[])
     parseArguments(argc, argv);
 #endif
 
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+        return -1;
+    }
+
     SDL_SetHint(SDL_HINT_WINRT_HANDLE_BACK_BUTTON, "1");
     Engine.Init();
     Engine.Run();
