@@ -49,6 +49,12 @@ bool IsDirectory(const char *path)
 void InitMods()
 {
     modList.clear();
+    forceUseScripts    = forceUseScripts_Config;
+    skipStartMenu      = skipStartMenu_Config;
+    disableFocusPause  = disableFocusPause_Config;
+    redirectSave       = false;
+    Engine.forceSonic1 = false;
+    sprintf(savePath, "");
 
     char modBuf[0x100];
     sprintf(modBuf, "%s/mods", modsPath);
@@ -60,11 +66,11 @@ void InitMods()
             fClose(configFile);
             IniParser modConfig(mod_config.c_str(), false);
 
-            for (const auto& item : modConfig.items) {
+            for (int m = 0; m < modConfig.items.size(); ++m) {
                 bool active = false;
                 ModInfo info;
-                modConfig.GetBool("mods", item.key, &active);
-                if (LoadMod(&info, modBuf, item.key, active))
+                modConfig.GetBool("mods", modConfig.items[m].key, &active);
+                if (LoadMod(&info, modBuf, modConfig.items[m].key, active))
                     modList.push_back(info);
             }
         }
@@ -76,25 +82,20 @@ void InitMods()
                 if (entry->d_name[0] == '.')
                     continue;
 
-                bool isDir = entry->d_type == DT_DIR;
-                if (entry->d_type == DT_UNKNOWN) {
-                    std::string modDirPath = std::string(modBuf) + "/" + entry->d_name;
-                    isDir = IsDirectory(modDirPath.c_str());
-                }
-
-                if (isDir) {
+                std::string modDirPath = std::string(modBuf) + "/" + entry->d_name;
+                if (IsDirectory(modDirPath.c_str())) {
                     ModInfo info;
                     std::string folder = entry->d_name;
 
-                    bool found = false;
-                    for (const auto& mod : modList) {
-                        if (mod.folder == folder) {
-                            found = true;
+                    bool flag = true;
+                    for (int m = 0; m < modList.size(); ++m) {
+                        if (modList[m].folder == folder) {
+                            flag = false;
                             break;
                         }
                     }
 
-                    if (!found) {
+                    if (flag) {
                         if (LoadMod(&info, modBuf, folder.c_str(), false))
                             modList.insert(modList.begin(), info);
                     }
@@ -104,7 +105,31 @@ void InitMods()
         }
     }
 
-    RefreshEngine();
+    forceUseScripts    = forceUseScripts_Config;
+    skipStartMenu      = skipStartMenu_Config;
+    disableFocusPause  = disableFocusPause_Config;
+    redirectSave       = false;
+    Engine.forceSonic1 = false;
+    sprintf(savePath, "");
+    for (int m = 0; m < modList.size(); ++m) {
+        if (!modList[m].active)
+            continue;
+        if (modList[m].useScripts)
+            forceUseScripts = true;
+        if (modList[m].skipStartMenu)
+            skipStartMenu = true;
+        if (modList[m].disableFocusPause)
+            disableFocusPause |= modList[m].disableFocusPause;
+        if (modList[m].redirectSave) {
+            sprintf(savePath, "%s", modList[m].savePath.c_str());
+            redirectSave = true;
+        }
+        if (modList[m].forceSonic1)
+            Engine.forceSonic1 = true;
+    }
+
+    ReadSaveRAMData();
+    ReadUserdata();
 }
 
 bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool active)
@@ -113,12 +138,12 @@ bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool activ
         return false;
 
     info->fileMap.clear();
-    info->name    = "Unnamed Mod";
+    info->name    = "";
     info->desc    = "";
-    info->author  = "Unknown Author";
-    info->version = "1.0.0";
-    info->folder  = folder;
-    info->active  = active;
+    info->author  = "";
+    info->version = "";
+    info->folder  = "";
+    info->active  = false;
 
     std::string modDir = std::string(modsPath) + "/" + folder;
 
@@ -127,35 +152,65 @@ bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool activ
         fClose(f);
         IniParser modSettings((modDir + "/mod.ini").c_str(), false);
 
+        info->name    = "Unnamed Mod";
+        info->desc    = "";
+        info->author  = "Unknown Author";
+        info->version = "1.0.0";
+        info->folder  = folder;
+
         char infoBuf[0x100];
+        // Name
+        StrCopy(infoBuf, "");
         modSettings.GetString("", "Name", infoBuf);
         if (StrLength(infoBuf))
             info->name = infoBuf;
-
+        // Desc
+        StrCopy(infoBuf, "");
         modSettings.GetString("", "Description", infoBuf);
         if (StrLength(infoBuf))
             info->desc = infoBuf;
-
+        // Author
+        StrCopy(infoBuf, "");
         modSettings.GetString("", "Author", infoBuf);
         if (StrLength(infoBuf))
             info->author = infoBuf;
-
+        // Version
+        StrCopy(infoBuf, "");
         modSettings.GetString("", "Version", infoBuf);
         if (StrLength(infoBuf))
             info->version = infoBuf;
 
+        info->active = active;
+
         ScanModFolder(info);
 
+        info->useScripts = false;
         modSettings.GetBool("", "TxtScripts", &info->useScripts);
+        if (info->useScripts && info->active)
+            forceUseScripts = true;
+
+        info->skipStartMenu = false;
         modSettings.GetBool("", "SkipStartMenu", &info->skipStartMenu);
+        if (info->skipStartMenu && info->active)
+            skipStartMenu = true;
+
+        info->disableFocusPause = false;
         modSettings.GetInteger("", "DisableFocusPause", &info->disableFocusPause);
+        if (info->disableFocusPause && info->active)
+            disableFocusPause |= info->disableFocusPause;
+
+        info->redirectSave = false;
         modSettings.GetBool("", "RedirectSaveRAM", &info->redirectSave);
         if (info->redirectSave) {
             char path[0x100];
             sprintf(path, "mods/%s/", folder);
             info->savePath = path;
         }
+
+        info->forceSonic1 = false;
         modSettings.GetBool("", "ForceSonic1", &info->forceSonic1);
+        if (info->forceSonic1 && info->active)
+            Engine.forceSonic1 = true;
 
         return true;
     }
@@ -174,23 +229,19 @@ void ScanModFolderSub(ModInfo *info, const char *modDir, const char *folder)
                     continue;
 
                 std::string path = std::string(folder) + "/" + entry->d_name;
-                
-                bool isDir = entry->d_type == DT_DIR;
-                if (entry->d_type == DT_UNKNOWN) {
-                    std::string entryFullPath = fullPath + "/" + entry->d_name;
-                    isDir = IsDirectory(entryFullPath.c_str());
-                }
+                std::string entryFullPath = fullPath + "/" + entry->d_name;
 
-                if (isDir) {
+                if (IsDirectory(entryFullPath.c_str())) {
                     ScanModFolderSub(info, modDir, path.c_str());
                 }
                 else {
-                    std::string modPath = fullPath + "/" + entry->d_name;
-                    char pathLower[0x100] = {0};
-                    for (size_t c = 0; c < path.size(); ++c) {
+                    std::string modPath = entryFullPath;
+                    char pathLower[0x100];
+                    memset(pathLower, 0, sizeof(char) * 0x100);
+                    for (int c = 0; c < path.size(); ++c) {
                         pathLower[c] = tolower(path.c_str()[c]);
                     }
-                    info->fileMap[pathLower] = modPath;
+                    info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modPath));
                 }
             }
             closedir(dir);
@@ -224,8 +275,9 @@ void SaveMods()
         std::string mod_config = std::string(modBuf) + "/modconfig.ini";
         IniParser modConfig;
 
-        for (const auto& info : modList) {
-            modConfig.SetBool("mods", info.folder.c_str(), info.active);
+        for (int m = 0; m < modList.size(); ++m) {
+            ModInfo *info = &modList[m];
+            modConfig.SetBool("mods", info->folder.c_str(), info->active);
         }
         modConfig.Write(mod_config.c_str(), false);
     }
@@ -238,12 +290,12 @@ void RefreshEngine()
 #if RETRO_USING_SDL2
     if (Engine.window) {
         char gameTitle[0x40];
-        sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : " - DECOMPLUS");
+        sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : "");
         SDL_SetWindowTitle(Engine.window, gameTitle);
     }
 #elif RETRO_USING_SDL1
     char gameTitle[0x40];
-    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : " - DECOMPLUS");
+    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : "");
     SDL_WM_SetCaption(gameTitle, NULL);
 #endif
 
@@ -278,24 +330,32 @@ void RefreshEngine()
     redirectSave       = false;
     Engine.forceSonic1 = false;
     sprintf(savePath, "");
-    for (const auto& mod : modList) {
-        if (!mod.active)
+    for (int m = 0; m < modList.size(); ++m) {
+        if (!modList[m].active)
             continue;
-        forceUseScripts |= mod.useScripts;
-        skipStartMenu |= mod.skipStartMenu;
-        disableFocusPause |= mod.disableFocusPause;
-        if (mod.redirectSave) {
-            sprintf(savePath, "%s", mod.savePath.c_str());
+        if (modList[m].useScripts)
+            forceUseScripts = true;
+        if (modList[m].skipStartMenu)
+            skipStartMenu = true;
+        if (modList[m].disableFocusPause)
+            disableFocusPause |= modList[m].disableFocusPause;
+        if (modList[m].redirectSave) {
+            sprintf(savePath, "%s", modList[m].savePath.c_str());
             redirectSave = true;
         }
-        Engine.forceSonic1 |= mod.forceSonic1;
+        if (modList[m].forceSonic1)
+            Engine.forceSonic1 = true;
     }
 
-    Engine.gameType = (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) ? GAME_SONIC1 : GAME_SONIC2;
+    Engine.gameType = GAME_SONIC2;
+    if (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) {
+        Engine.gameType = GAME_SONIC1;
+    }
 
     achievementCount = 0;
     if (Engine.gameType == GAME_SONIC1) {
-        AddAchievement("Ramp Ring Acrobatics", "Without touching the ground,collect all the rings in atrapezoid formation in GreenHill Zone Act 1");
+        AddAchievement("Ramp Ring Acrobatics",
+                       "Without touching the ground,collect all the rings in atrapezoid formation in GreenHill Zone Act 1");
         AddAchievement("Blast Processing", "Clear Green Hill Zone Act 1in under 30 seconds");
         AddAchievement("Secret of Marble Zone", "Travel though a secretroom in Marbale Zone Act 3");
         AddAchievement("Block Buster", "Break 16 blocks in a rowwithout stopping");
@@ -372,25 +432,36 @@ void GetModVersion(int *textMenu, int *highlight, uint *id, int *unused)
 
 void GetModActive(uint *id, int *unused)
 {
-    scriptEng.checkResult = (*id < modList.size()) ? modList[*id].active : false;
+    scriptEng.checkResult = false;
+    if (*id >= modList.size())
+        return;
+    scriptEng.checkResult = modList[*id].active;
 }
 
 void SetModActive(uint *id, int *active)
 {
-    if (*id < modList.size())
-        modList[*id].active = *active;
+    if (*id >= modList.size())
+        return;
+
+    modList[*id].active = *active;
 }
 
 void MoveMod(uint *id, int *up)
 {
-    if (!id || *id >= modList.size())
+    if (!id)
         return;
 
-    int option = *id + (*up ? -1 : 1);
-    if (option < 0 || option >= (int)modList.size())
+    int preOption = *id;
+    int option    = preOption + (*up ? -1 : 1);
+    if (option < 0 || preOption < 0)
         return;
 
-    std::swap(modList[*id], modList[option]);
+    if (option >= (int)modList.size() || preOption >= (int)modList.size())
+        return;
+
+    ModInfo swap       = modList[preOption];
+    modList[preOption] = modList[option];
+    modList[option]    = swap;
 }
 
 #endif
@@ -401,20 +472,27 @@ int GetSceneID(byte listID, const char *sceneName)
     if (listID >= 3)
         return -1;
 
-    char scnName[0x40] = {0};
-    int pos = 0;
-    for (int i = 0; sceneName[i]; ++i) {
-        if (sceneName[i] != ' ')
-            scnName[pos++] = sceneName[i];
+    char scnName[0x40];
+    int scnPos = 0;
+    int pos    = 0;
+    while (sceneName[scnPos]) {
+        if (sceneName[scnPos] != ' ')
+            scnName[pos++] = sceneName[scnPos];
+        ++scnPos;
     }
+    scnName[pos] = 0;
 
     for (int s = 0; s < stageListCount[listID]; ++s) {
-        char nameBuffer[0x40] = {0};
-        pos = 0;
-        for (int i = 0; stageList[listID][s].name[i]; ++i) {
-            if (stageList[listID][s].name[i] != ' ')
-                nameBuffer[pos++] = stageList[listID][s].name[i];
+        char nameBuffer[0x40];
+
+        scnPos = 0;
+        pos    = 0;
+        while (stageList[listID][s].name[scnPos]) {
+            if (stageList[listID][s].name[scnPos] != ' ')
+                nameBuffer[pos++] = stageList[listID][s].name[scnPos];
+            ++scnPos;
         }
+        nameBuffer[pos] = 0;
 
         if (StrComp(scnName, nameBuffer)) {
             return s;

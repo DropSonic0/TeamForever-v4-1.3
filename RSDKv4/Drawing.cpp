@@ -2553,10 +2553,9 @@ void DrawClassicFade(int XPos, int YPos, int width, int height, int R, int G, in
     }
     if (width <= 0 || height <= 0 || A <= 0)
         return;
-	
 	//A works differently here, and we're going to tweak the value to compensate
-	A *= 3;
-	A >>= 3;
+	//A *= 3;
+	//A >>= 3;
 	
     int pitch              = GFX_LINESIZE - width;
     ushort *frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];
@@ -2738,8 +2737,8 @@ void SetFadeHQ(int R, int G, int B, int A)
         }
     }
     else {
-        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - A)];
-        ushort *pixelBlend   = &blendLookupTable[0x20 * A];
+        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - (int)(A * (Engine.deltaTime * 60.0f)))];
+        ushort *pixelBlend   = &blendLookupTable[0x20 * (int)(A * (Engine.deltaTime * 60.0f))];
 
         int h = SCREEN_YSIZE;
         while (h--) {
@@ -4518,8 +4517,8 @@ void DrawFadedFace(void *v, uint color, uint fogColor, int alpha)
     ushort fogColor16 = PACK_RGB888(((fogColor >> 16) & 0xFF), ((fogColor >> 8) & 0xFF), ((fogColor >> 0) & 0xFF));
 
     ushort *frameBufferPtr = &Engine.frameBuffer[GFX_LINESIZE * faceTop];
-    ushort *fbufferBlend   = &blendLookupTable[0x20 * (0xFF - alpha)];
-    ushort *pixelBlend     = &blendLookupTable[0x20 * alpha];
+    ushort *fbufferBlend   = &blendLookupTable[0x20 * (0xFF - (int)(alpha * (Engine.deltaTime * 60.0f)))];
+    ushort *pixelBlend     = &blendLookupTable[0x20 * (int)(alpha * (Engine.deltaTime * 60.0f))];
 
     while (faceTop < faceBottom) {
         int startX = faceLineStart[faceTop];
