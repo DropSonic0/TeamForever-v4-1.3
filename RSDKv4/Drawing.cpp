@@ -30,12 +30,12 @@ ushort tintLookupTable[0x10000];
 
 int SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE; // Asumiendo DEFAULT_SCREEN_XSIZE está definido
 int SCREEN_XSIZE        = DEFAULT_SCREEN_XSIZE;
-int SCREEN_CENTERX      = DEFAULT_SCREEN_XSIZE / 2;
+int SCREEN_CENTERX      = DEFAULT_SCREEN_XSIZE;
 
 float SCREEN_XSIZE_F   = (float)DEFAULT_SCREEN_XSIZE;
-float SCREEN_CENTERX_F = (float)DEFAULT_SCREEN_XSIZE / 2.0f;
+float SCREEN_CENTERX_F = (float)DEFAULT_SCREEN_XSIZE;
 float SCREEN_YSIZE_F   = (float)SCREEN_YSIZE; // SCREEN_YSIZE es un define
-float SCREEN_CENTERY_F = (float)SCREEN_YSIZE / 2.0f;
+float SCREEN_CENTERY_F = (float)SCREEN_YSIZE;
 
 int touchWidth     = DEFAULT_SCREEN_XSIZE;
 int touchHeight    = SCREEN_YSIZE;
@@ -65,43 +65,10 @@ bool disableEnhancedScaling = false;
 bool bilinearScaling = false;
 #endif
 
-// --- Defines (Idealmente en un .hpp) ---
-#ifndef LAYER_DISABLED
-#define LAYER_DISABLED (0xFF) 
-#endif
-
-#ifndef FX_NONE
-#define FX_NONE (0)
-#endif
-#ifndef FX_INK
-#define FX_INK (1 << 0)
-#endif
-#ifndef FX_ALPHA
-#define FX_ALPHA (1 << 1)
-#endif
-#ifndef FX_HSCALE
-#define FX_HSCALE (1 << 2)
-#endif
-#ifndef FX_VSCALE
-#define FX_VSCALE (1 << 3)
-#endif
-#ifndef FX_ROTATE
-#define FX_ROTATE (1 << 4)
-#endif
-#ifndef FX_FLIPX
-#define FX_FLIPX (1 << 5)
-#endif
-#ifndef FX_FLIPY
-#define FX_FLIPY (1 << 6) 
-#endif
-#ifndef FX_ALL 
-#define FX_ALL (FX_INK | FX_ALPHA | FX_HSCALE | FX_VSCALE | FX_ROTATE | FX_FLIPX | FX_FLIPY)
-#endif
-
 int InitRenderDevice()
 {
 
-    Engine.windowScale = 2; 
+    Engine.windowScale = 4; 
 
     char gameTitle[0x100];
     if (Engine.gameWindowText[0] == '\0') {
@@ -203,7 +170,7 @@ int InitRenderDevice()
     memset(Engine.texBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(uint)); 
 #endif 
 
-    OBJECT_BORDER_X2 = SCREEN_XSIZE + 0x80;
+    OBJECT_BORDER_X2 = SCREEN_XSIZE + 0x20;
     OBJECT_BORDER_X4 = SCREEN_XSIZE + 0x20;
 
     InitInputDevices(); 
@@ -432,19 +399,6 @@ void GenerateBlendLookupTable(void)
     }
 }
 
-void ClearScreen(byte index)
-{
-#if RETRO_SOFTWARE_RENDER
-    ushort color        = activePalette[index];
-    ushort *framebuffer = Engine.frameBuffer;
-    int cnt             = GFX_LINESIZE * SCREEN_YSIZE;
-    while (cnt--) {
-        *framebuffer = color;
-        ++framebuffer;
-    }
-#endif
-}
-
 void SetScreenDimensions(int width, int height)
 {
     touchWidth               = width;
@@ -555,43 +509,6 @@ void SetScreenSize(int width, int lineSize)
     GFX_FRAMEBUFFERSIZE   = SCREEN_YSIZE * lineSize;
     GFX_FBUFFERMINUSONE   = SCREEN_YSIZE * lineSize - 1;
 }
-
-#if RETRO_SOFTWARE_RENDER
-void CopyFrameOverlay2x()
-{
-    ushort *frameBuffer   = &Engine.frameBuffer[((SCREEN_YSIZE / 2) + 12) * GFX_LINESIZE];
-    ushort *frameBuffer2x = Engine.frameBuffer2x;
-
-    for (int y = 0; y < (SCREEN_YSIZE / 2) - 12; ++y) {
-        for (int x = 0; x < GFX_LINESIZE; ++x) {
-            if (*frameBuffer == 0xF81F) { // magenta
-                frameBuffer2x += 2;
-            }
-            else {
-                *frameBuffer2x = *frameBuffer;
-                frameBuffer2x++;
-                *frameBuffer2x = *frameBuffer;
-                frameBuffer2x++;
-            }
-            ++frameBuffer;
-        }
-
-        frameBuffer -= GFX_LINESIZE;
-        for (int x = 0; x < GFX_LINESIZE; ++x) {
-            if (*frameBuffer == 0xF81F) { // magenta
-                frameBuffer2x += 2;
-            }
-            else {
-                *frameBuffer2x = *frameBuffer;
-                frameBuffer2x++;
-                *frameBuffer2x = *frameBuffer;
-                frameBuffer2x++;
-            }
-            ++frameBuffer;
-        }
-    }
-}
-#endif
 
 void SetupViewport()
 {
@@ -1105,7 +1022,6 @@ void DrawStageGFX()
 
 #if RETRO_SOFTWARE_RENDER
     if (drawStageGFXHQ) {
-        CopyFrameOverlay2x();
 
 		switch (fadeMode) {
 			case 1:
@@ -3642,30 +3558,30 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
 #endif
 }
 
-void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
-                        int sheetID, int alpha, int ink, int flags)
+#if RETRO_PLATFORM == RETRO_PS3
+void DrawSpriteAllFX_PS3(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation,
+                         int scale, int sheetID, int alpha, int ink, int flags)
 {
-#if RETRO_SOFTWARE_RENDER
-	//check flags
-	int hscale = scale;
-	int vscale = scale;
-	if ((flags & FX_INK) == 0)
-		ink = INK_NONE;
-	if ((flags & FX_HSCALE) == 0)
-		hscale = 0x200;
-	if ((flags & FX_VSCALE) == 0)
-		vscale = 0x200;
-	if ((flags & FX_ROTATE) == 0)
-		rotation = 0;
-	if ((flags & 3) == 0)
-		direction = FLIP_NONE;
-	
-	if ((ink > INK_NONE) && (alpha < 0))
-		return;
-	
-	if (alpha > 0xFF)
+    // check flags
+    int hscale = scale;
+    int vscale = scale;
+    if ((flags & FX_INK) == 0)
+        ink = INK_NONE;
+    if ((flags & FX_HSCALE) == 0)
+        hscale = 0x200;
+    if ((flags & FX_VSCALE) == 0)
+        vscale = 0x200;
+    if ((flags & FX_ROTATE) == 0)
+        rotation = 0;
+    if ((flags & 3) == 0)
+        direction = FLIP_NONE;
+
+    if ((ink > INK_NONE) && (alpha < 0))
+        return;
+
+    if (alpha > 0xFF)
         alpha = 0xFF;
-	
+
     if (scale == 0)
         return;
 
@@ -3677,9 +3593,9 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
     if (angle < 0)
         angle += 0x200;
     if (angle)
-        angle = 0x200 - angle;
-    int sine   = hscale * sin512LookupTable[angle] >> 9;
-    int cosine = hscale * cos512LookupTable[angle] >> 9;
+        angle       = 0x200 - angle;
+    int sine    = hscale * sin512LookupTable[angle] >> 9;
+    int cosine  = hscale * cos512LookupTable[angle] >> 9;
     int vsine   = vscale * sin512LookupTable[angle] >> 9;
     int vcosine = vscale * cos512LookupTable[angle] >> 9;
     int xPositions[4];
@@ -3697,7 +3613,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
         xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
         yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
     }
-	else if (direction == FLIP_Y) {
+    else if (direction == FLIP_Y) {
         xPositions[0] = XPos + ((vsine * (pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
         yPositions[0] = YPos + ((vcosine * (pivotY + 2) - sine * (-pivotX - 2)) >> 9);
         xPositions[1] = XPos + ((vsine * (pivotY + 2) + cosine * (width - pivotX + 2)) >> 9);
@@ -3709,7 +3625,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
         xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
         yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
     }
-	else if (direction == FLIP_XY) {
+    else if (direction == FLIP_XY) {
         xPositions[0] = XPos + ((vsine * (pivotY + 2) + cosine * (pivotX + 2)) >> 9);
         yPositions[0] = YPos + ((vcosine * (pivotY + 2) - sine * (pivotX + 2)) >> 9);
         xPositions[1] = XPos + ((vsine * (pivotY + 2) + cosine * (pivotX - width - 2)) >> 9);
@@ -3736,9 +3652,9 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
     int truescale = (signed int)(float)((float)(512.0 / (float)hscale) * 512.0);
     sine          = truescale * sin512LookupTable[angle] >> 9;
     cosine        = truescale * cos512LookupTable[angle] >> 9;
-    truescale = (signed int)(float)((float)(512.0 / (float)vscale) * 512.0);
-    vsine          = truescale * sin512LookupTable[angle] >> 9;
-    vcosine        = truescale * cos512LookupTable[angle] >> 9;
+    truescale     = (signed int)(float)((float)(512.0 / (float)vscale) * 512.0);
+    vsine         = truescale * sin512LookupTable[angle] >> 9;
+    vcosine       = truescale * cos512LookupTable[angle] >> 9;
 
     int left = GFX_LINESIZE;
     for (int i = 0; i < 4; ++i) {
@@ -3777,11 +3693,11 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
     if (maxX <= 0 || maxY <= 0)
         return;
 
-	//ink tables here -- unused by this function
-	//ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-	//ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
-	//ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
-	
+    // ink tables here -- unused by this function
+    // ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
+    // ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
+    // ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
+
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = GFX_LINESIZE - maxX;
     int lineSize           = surface->widthShift;
@@ -3811,53 +3727,8 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								//R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								//G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								//B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-								
-								R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
-								G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
-								B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								//R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								//G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								//B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
-
-								R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								//R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								//G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								//B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
-                
-								R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
-
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+                        *frameBufferPtr = activePalette[index];
+                    }
                 }
                 ++frameBufferPtr;
                 finalX -= cosine;
@@ -3882,54 +3753,8 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								//R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								//G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								//B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-								
-								R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
-								G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
-								B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								//R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								//G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								//B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
-
-								R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								//R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								//G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								//B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
-                
-								R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
-
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
-
+                        *frameBufferPtr = activePalette[index];
+                    }
                 }
                 ++frameBufferPtr;
                 finalX += cosine;
@@ -3954,54 +3779,8 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								//R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								//G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								//B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-								
-								R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
-								G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
-								B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								//R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								//G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								//B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
-
-								R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
-
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								//R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								//G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								//B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
-                
-								R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
-
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
-
+                        *frameBufferPtr = activePalette[index];
+                    }
                 }
                 ++frameBufferPtr;
                 finalX -= cosine;
@@ -4026,53 +3805,430 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								//R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								//G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								//B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-								
-								R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
-								G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
-								B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
+                        *frameBufferPtr = activePalette[index];
+                    }
+                }
+                ++frameBufferPtr;
+                finalX += cosine;
+                finalY += vsine;
+            }
+            drawX -= sine;
+            drawY += vcosine;
+            frameBufferPtr += pitch;
+        }
+    }
+}
+#endif
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								//R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								//G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								//B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
+                     int sheetID, int alpha, int ink, int flags)
+{
+#if RETRO_SOFTWARE_RENDER
+    // check flags
+    int hscale = scale;
+    int vscale = scale;
+    if ((flags & FX_INK) == 0)
+        ink = INK_NONE;
+    if ((flags & FX_HSCALE) == 0)
+        hscale = 0x200;
+    if ((flags & FX_VSCALE) == 0)
+        vscale = 0x200;
+    if ((flags & FX_ROTATE) == 0)
+        rotation = 0;
+    if ((flags & 3) == 0)
+        direction = FLIP_NONE;
 
-								R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
+    if ((ink > INK_NONE) && (alpha < 0))
+        return;
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								//R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								//G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								//B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
-                
-								R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+    if (alpha > 0xFF)
+        alpha = 0xFF;
 
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+    if (scale == 0)
+        return;
+
+    int sprXPos    = (pivotX + sprX) << 9;
+    int sprYPos    = (pivotY + sprY) << 9;
+    int fullwidth  = width + sprX;
+    int fullheight = height + sprY;
+    int angle      = rotation & 0x1FF;
+    if (angle < 0)
+        angle += 0x200;
+    if (angle)
+        angle       = 0x200 - angle;
+    int sine    = hscale * sin512LookupTable[angle] >> 9;
+    int cosine  = hscale * cos512LookupTable[angle] >> 9;
+    int vsine   = vscale * sin512LookupTable[angle] >> 9;
+    int vcosine = vscale * cos512LookupTable[angle] >> 9;
+    int xPositions[4];
+    int yPositions[4];
+
+    if (direction == FLIP_X) {
+        xPositions[0] = XPos + ((vsine * (-pivotY - 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (-pivotY - 2) - sine * (pivotX + 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (-pivotY - 2) + cosine * (pivotX - width - 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (-pivotY - 2) - sine * (pivotX - width - 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (height - pivotY + 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (height - pivotY + 2) - sine * (pivotX + 2)) >> 9);
+        int a         = pivotX - width - 2;
+        int b         = height - pivotY + 2;
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
+    }
+    else if (direction == FLIP_Y) {
+        xPositions[0] = XPos + ((vsine * (pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (pivotY + 2) - sine * (-pivotX - 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (pivotY + 2) + cosine * (width - pivotX + 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (pivotY + 2) - sine * (width - pivotX + 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (pivotY - height - 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (pivotY - height - 2) - sine * (-pivotX - 2)) >> 9);
+        int a         = width - pivotX + 2;
+        int b         = pivotY - height - 2;
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
+    }
+    else if (direction == FLIP_XY) {
+        xPositions[0] = XPos + ((vsine * (pivotY + 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (pivotY + 2) - sine * (pivotX + 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (pivotY + 2) + cosine * (pivotX - width - 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (pivotY + 2) - sine * (pivotX - width - 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (pivotY - height - 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (pivotY - height - 2) - sine * (pivotX + 2)) >> 9);
+        int a         = pivotX - width - 2;
+        int b         = pivotY - height - 2;
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
+    }
+    else {
+        xPositions[0] = XPos + ((vsine * (-pivotY - 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (-pivotY - 2) - sine * (-pivotX - 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (-pivotY - 2) + cosine * (width - pivotX + 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (-pivotY - 2) - sine * (width - pivotX + 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (height - pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (height - pivotY + 2) - sine * (-pivotX - 2)) >> 9);
+        int a         = width - pivotX + 2;
+        int b         = height - pivotY + 2;
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
+    }
+    int truescale = (signed int)(float)((float)(512.0 / (float)hscale) * 512.0);
+    sine          = truescale * sin512LookupTable[angle] >> 9;
+    cosine        = truescale * cos512LookupTable[angle] >> 9;
+    truescale     = (signed int)(float)((float)(512.0 / (float)vscale) * 512.0);
+    vsine         = truescale * sin512LookupTable[angle] >> 9;
+    vcosine       = truescale * cos512LookupTable[angle] >> 9;
+
+    int left = GFX_LINESIZE;
+    for (int i = 0; i < 4; ++i) {
+        if (xPositions[i] < left)
+            left = xPositions[i];
+    }
+    if (left < 0)
+        left = 0;
+
+    int right = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (xPositions[i] > right)
+            right = xPositions[i];
+    }
+    if (right > GFX_LINESIZE)
+        right = GFX_LINESIZE;
+    int maxX = right - left;
+
+    int top = SCREEN_YSIZE;
+    for (int i = 0; i < 4; ++i) {
+        if (yPositions[i] < top)
+            top = yPositions[i];
+    }
+    if (top < 0)
+        top = 0;
+
+    int bottom = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (yPositions[i] > bottom)
+            bottom = yPositions[i];
+    }
+    if (bottom > SCREEN_YSIZE)
+        bottom = SCREEN_YSIZE;
+    int maxY = bottom - top;
+
+    if (maxX <= 0 || maxY <= 0)
+        return;
+
+    // ink tables here -- unused by this function
+    // ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
+    // ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
+    // ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
+
+    GFXSurface *surface    = &gfxSurface[sheetID];
+    int pitch              = GFX_LINESIZE - maxX;
+    int lineSize           = surface->widthShift;
+    ushort *frameBufferPtr = &Engine.frameBuffer[left + GFX_LINESIZE * top];
+    byte *lineBuffer       = &gfxLineBuffer[top];
+    int startX             = left - XPos;
+    int startY             = top - YPos;
+    int shiftPivot         = (sprX << 9) - 1;
+    fullwidth <<= 9;
+    int shiftheight = (sprY << 9) - 1;
+    fullheight <<= 9;
+    byte *gfxData = &graphicData[surface->dataPosition];
+    if (vcosine < 0 || vsine < 0)
+        sprYPos += vsine + vcosine;
+
+    if (direction == FLIP_X) {
+        int drawX = sprXPos - (cosine * startX - sine * startY) - (truescale >> 1);
+        int drawY = vcosine * startY + sprYPos + vsine * startX;
+        while (maxY--) {
+            activePalette   = fullPalette[*lineBuffer];
+            activePalette32 = fullPalette32[*lineBuffer];
+            lineBuffer++;
+            int finalX = drawX;
+            int finalY = drawY;
+            int w      = maxX;
+            while (w--) {
+                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
+                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
+                    if (index > 0) {
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE: *frameBufferPtr = activePalette[index]; break;
+                            case INK_BLEND: *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1); break;
+                            case INK_ALPHA:
+                                // R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                // G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                // B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                // R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                // G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                // B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                // R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                // G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                // B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
+                }
+                ++frameBufferPtr;
+                finalX -= cosine;
+                finalY += vsine;
+            }
+            drawX += sine;
+            drawY += vcosine;
+            frameBufferPtr += pitch;
+        }
+    }
+    else if (direction == FLIP_Y) {
+        int drawX = sprXPos + cosine * startX - sine * startY;
+        int drawY = sprYPos - (vcosine * startY + vsine * startX);
+        while (maxY--) {
+            activePalette   = fullPalette[*lineBuffer];
+            activePalette32 = fullPalette32[*lineBuffer];
+            lineBuffer++;
+            int finalX = drawX;
+            int finalY = drawY;
+            int w      = maxX;
+            while (w--) {
+                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
+                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
+                    if (index > 0) {
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE: *frameBufferPtr = activePalette[index]; break;
+                            case INK_BLEND: *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1); break;
+                            case INK_ALPHA:
+                                // R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                // G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                // B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                // R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                // G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                // B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                // R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                // G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                // B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
+                }
+                ++frameBufferPtr;
+                finalX += cosine;
+                finalY -= vsine;
+            }
+            drawX -= sine;
+            drawY -= vcosine;
+            frameBufferPtr += pitch;
+        }
+    }
+    else if (direction == FLIP_XY) {
+        int drawX = sprXPos - (cosine * startX - sine * startY) - (truescale >> 1);
+        int drawY = sprYPos - (vcosine * startY + vsine * startX);
+        while (maxY--) {
+            activePalette   = fullPalette[*lineBuffer];
+            activePalette32 = fullPalette32[*lineBuffer];
+            lineBuffer++;
+            int finalX = drawX;
+            int finalY = drawY;
+            int w      = maxX;
+            while (w--) {
+                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
+                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
+                    if (index > 0) {
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE: *frameBufferPtr = activePalette[index]; break;
+                            case INK_BLEND: *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1); break;
+                            case INK_ALPHA:
+                                // R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                // G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                // B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                // R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                // G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                // B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                // R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                // G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                // B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
+                }
+                ++frameBufferPtr;
+                finalX -= cosine;
+                finalY -= vsine;
+            }
+            drawX += sine;
+            drawY -= vcosine;
+            frameBufferPtr += pitch;
+        }
+    }
+    else {
+        int drawX = sprXPos + cosine * startX - sine * startY;
+        int drawY = vcosine * startY + sprYPos + vsine * startX;
+        while (maxY--) {
+            activePalette   = fullPalette[*lineBuffer];
+            activePalette32 = fullPalette32[*lineBuffer];
+            lineBuffer++;
+            int finalX = drawX;
+            int finalY = drawY;
+            int w      = maxX;
+            while (w--) {
+                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
+                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
+                    if (index > 0) {
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE: *frameBufferPtr = activePalette[index]; break;
+                            case INK_BLEND: *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1); break;
+                            case INK_ALPHA:
+                                // R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                // G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                // B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                // R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                // G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                // B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                // R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                // G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                // B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
                 }
                 ++frameBufferPtr;
                 finalX += cosine;
@@ -4331,25 +4487,117 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
     SpriteFrame *frame         = &animFrames[sprAnim->frameListOffset + entity->frame];
     int rotation               = 0;
 
+#if RETRO_PLATFORM == RETRO_PS3
     switch (sprAnim->rotationStyle) {
         case ROTSTYLE_NONE:
-			DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 0, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL - FX_ROTATE);
+            DrawSpriteAllFX_PS3(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                frame->height, 0, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL - FX_ROTATE);
             break;
 
         case ROTSTYLE_FULL:
-			DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 entity->rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+            DrawSpriteAllFX_PS3(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                frame->height, entity->rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+            break;
+
+        case ROTSTYLE_45DEG:
+            if (entity->rotation >= 0x100)
+                DrawSpriteAllFX_PS3(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                    frame->height, 0x200 - ((0x214 - entity->rotation) >> 6 << 6), entity->scale, frame->sheetID, entity->alpha,
+                                    entity->inkEffect, FX_ALL);
+            else
+                DrawSpriteAllFX_PS3(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                    frame->height, (entity->rotation + 20) >> 6 << 6, entity->scale, frame->sheetID, entity->alpha,
+                                    entity->inkEffect, FX_ALL);
+            break;
+
+        case ROTSTYLE_STATICFRAMES: {
+            if (entity->rotation >= 0x100)
+                rotation = 8 - ((532 - entity->rotation) >> 6);
+            else
+                rotation = (entity->rotation + 20) >> 6;
+            int frameID = entity->frame;
+            switch (rotation) {
+                case 0: // 0 deg
+                case 8: // 360 deg
+                    rotation = 0x00;
+                    break;
+
+                case 1: // 45 deg
+                    frameID += sprAnim->frameCount;
+                    if (entity->direction)
+                        rotation = 0;
+                    else
+                        rotation = 0x80;
+                    break;
+
+                case 2: // 90 deg
+                    rotation = 0x80;
+                    break;
+
+                case 3: // 135 deg
+                    frameID += sprAnim->frameCount;
+                    if (entity->direction)
+                        rotation = 0x80;
+                    else
+                        rotation = 0x100;
+                    break;
+
+                case 4: // 180 deg
+                    rotation = 0x100;
+                    break;
+
+                case 5: // 225 deg
+                    frameID += sprAnim->frameCount;
+                    if (entity->direction)
+                        rotation = 0x100;
+                    else
+                        rotation = 384;
+                    break;
+
+                case 6: // 270 deg
+                    rotation = 384;
+                    break;
+
+                case 7: // 315 deg
+                    frameID += sprAnim->frameCount;
+                    if (entity->direction)
+                        rotation = 384;
+                    else
+                        rotation = 0;
+                    break;
+
+                default: break;
+            }
+
+            frame = &animFrames[sprAnim->frameListOffset + frameID];
+            DrawSpriteAllFX_PS3(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                frame->height, rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+            break;
+        }
+
+        default: break;
+    }
+#else
+    switch (sprAnim->rotationStyle) {
+        case ROTSTYLE_NONE:
+            DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height, 0,
+                            entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL - FX_ROTATE);
+            break;
+
+        case ROTSTYLE_FULL:
+            DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
+                            entity->rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
             break;
 
         case ROTSTYLE_45DEG:
             if (entity->rotation >= 0x100)
                 DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 0x200 - ((0x214 - entity->rotation) >> 6 << 6), entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
-			else
+                                0x200 - ((0x214 - entity->rotation) >> 6 << 6), entity->scale, frame->sheetID, entity->alpha, entity->inkEffect,
+                                FX_ALL);
+            else
                 DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 (entity->rotation + 20) >> 6 << 6, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
-			break;
+                                (entity->rotation + 20) >> 6 << 6, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+            break;
 
         case ROTSTYLE_STATICFRAMES: {
             if (entity->rotation >= 0x100)
@@ -4412,7 +4660,7 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
 
             frame = &animFrames[sprAnim->frameListOffset + frameID];
             DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+                            rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
             // DrawSpriteRotozoom(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
             // frame->height,
             //                  rotation, entity->scale, frame->sheetID);
@@ -4421,6 +4669,7 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
 
         default: break;
     }
+#endif
 }
 
 void DrawFace(void *v, uint color)

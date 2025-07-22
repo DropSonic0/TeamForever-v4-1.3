@@ -59,7 +59,6 @@ void LoadPalette(const char *filePath, int paletteID, int startPaletteIndex, int
 #if RETRO_REV00
 void SetLimitedFade(byte paletteID, byte R, byte G, byte B, ushort alpha, int startIndex, int endIndex)
 {
-#if !RETRO_PS3
     if (paletteID >= PALETTE_COUNT)
         return;
     paletteMode     = 1;
@@ -82,12 +81,10 @@ void SetLimitedFade(byte paletteID, byte R, byte G, byte B, ushort alpha, int st
         activePalette32[i].g = (byte)((ushort)(G * alpha + alpha2 * activePalette32[i].g) >> 8);
         activePalette32[i].b = (byte)((ushort)(B * alpha + alpha2 * activePalette32[i].b) >> 8);
     }
-#endif
 }
 #else
 void SetPaletteFade(byte destPaletteID, byte srcPaletteA, byte srcPaletteB, ushort blendAmount, int startIndex, int endIndex)
 {
-#if !RETRO_PS3
     if (destPaletteID >= PALETTE_COUNT || srcPaletteA >= PALETTE_COUNT || srcPaletteB >= PALETTE_COUNT)
         return;
 
@@ -111,6 +108,5 @@ void SetPaletteFade(byte destPaletteID, byte srcPaletteA, byte srcPaletteB, usho
         ++dst;
         ++dst32;
     }
-#endif
 }
 #endif

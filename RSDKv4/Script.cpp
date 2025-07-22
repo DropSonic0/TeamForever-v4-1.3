@@ -4802,7 +4802,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
                 break;
             case FUNC_CLEARSCREEN:
                 opcodeSize = 0;
-                ClearScreen(scriptEng.operands[0]);
+                (scriptEng.operands[0]);
                 break;
             case FUNC_DRAWSPRITEFX:
                 opcodeSize  = 0;
@@ -5313,7 +5313,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
                     case MAT_TEMP: MatrixRotateXYZ(&matTemp, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]); break;
                 }
                 break;
-#if !RETRO_REV00
+#if !RETRO_REV00 && RETRO_PLATFORM != RETRO_PS3
             case FUNC_MATRIXINVERSE:
                 opcodeSize = 0;
                 switch (scriptEng.operands[0]) {

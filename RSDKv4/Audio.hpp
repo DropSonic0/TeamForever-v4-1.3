@@ -123,17 +123,19 @@ inline void freeMusInfo()
 {
     LockAudioDevice();
 
+    for (int i = 0; i < STREAMFILE_COUNT; ++i) {
 #if RETRO_USING_SDL2
-    if (streamInfo[currentStreamIndex].stream)
-        SDL_FreeAudioStream(streamInfo[currentStreamIndex].stream);
-    streamInfo[currentStreamIndex].stream = NULL;
+        if (streamInfo[i].stream)
+            SDL_FreeAudioStream(streamInfo[i].stream);
+        streamInfo[i].stream = NULL;
 #endif
 
-    ov_clear(&streamInfo[currentStreamIndex].vorbisFile);
+        ov_clear(&streamInfo[i].vorbisFile);
 
 #if RETRO_USING_SDL2
-    streamInfo[currentStreamIndex].stream = nullptr;
+        streamInfo[i].stream = nullptr;
 #endif
+    }
 
     UnlockAudioDevice();
 }

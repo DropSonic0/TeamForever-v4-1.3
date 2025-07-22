@@ -354,7 +354,7 @@ void ProcessStage(void)
 #if RETRO_USE_NETWORKING
             if (!waitForVerify) {
 #else
-            if (true) { // Assuming normal operation if networking is disabled
+            if (true) {
 #endif
                 if (timeEnabled) {
                     if (++frameCounter == 60) {
@@ -1740,7 +1740,7 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
     }
     if (newXBoundary2 > curXBoundary2) {
         if (SCREEN_XSIZE + xScrollOffset >= curXBoundary2) {
-            ++curXBoundary2;
+            ++curYBoundary2;
             if (target->xvel > 0) {
                 curXBoundary2 += target->xvel >> 16;
                 if (curXBoundary2 > newXBoundary2)

@@ -21,7 +21,9 @@
 // ================
 #include <stdio.h>
 #include <string.h>
+#if RETRO_PLATFORM != RETRO_PS3
 #include <cmath>
+#endif
 
 // ================
 // STANDARD TYPES
@@ -365,80 +367,7 @@ extern bool engineDebugMode;
 #include "Video.hpp"
 
 // Native Entities
-#include "NativeObjects/NativeObjects.hpp"
-
-#ifndef LAYER_DISABLED
-#define LAYER_DISABLED (0xFF)
-#endif
-#ifndef FX_NONE
-#define FX_NONE (0)
-#endif
-#ifndef FX_INK
-#define FX_INK (1 << 0)
-#endif
-#ifndef FX_ALPHA
-#define FX_ALPHA (1 << 1)
-#endif
-#ifndef FX_HSCALE
-#define FX_HSCALE (1 << 2)
-#endif
-#ifndef FX_VSCALE
-#define FX_VSCALE (1 << 3)
-#endif
-#ifndef FX_ROTATE
-#define FX_ROTATE (1 << 4)
-#endif
-#ifndef FX_FLIPX
-#define FX_FLIPX (1 << 5) 
-#endif
-#ifndef FX_FLIPY
-#define FX_FLIPY (1 << 6) 
-#endif
-#ifndef FX_ALL 
-#define FX_ALL (FX_INK | FX_ALPHA | FX_HSCALE | FX_VSCALE | FX_ROTATE | FX_FLIPX | FX_FLIPY)
-#endif
-
-#ifndef MAX_DEBUG_HITBOXES
-#define MAX_DEBUG_HITBOXES 256 
-#endif
-#ifndef MAX_MENU_ENTRIES_SIZE_ARRAY
-#define MAX_MENU_ENTRIES_SIZE_ARRAY 0x200 // o 512
-#endif
-#ifndef MAX_MENU_ROWS
-#define MAX_MENU_ROWS 128      
-#endif
-#ifndef MAX_TEXTMENU_CHARS 
-#define MAX_TEXTMENU_CHARS 2048 
-#endif
-#ifndef MAX_FONT_CHARS
-#define MAX_FONT_CHARS 256     
-#endif
-#ifndef MAX_PALETTE_COUNT 
-#define MAX_PALETTE_COUNT 8    
-#endif
-#ifndef GFXLINEBUFFER_SIZE
-#define GFXLINEBUFFER_SIZE SCREEN_YSIZE 
-#endif
-#ifndef PARALLAX_COUNT 
-#define PARALLAX_COUNT 16 
-#endif
-#ifndef VPARALLAX_COUNT
-#define VPARALLAX_COUNT 16 
-#endif
-#ifndef MAX_TILES_IN_SHEET 
-#define MAX_TILES_IN_SHEET 1024 
-#endif
-#ifndef MAX_TILE_CHUNKS_3D
-#define MAX_TILE_CHUNKS_3D 65536 
-#endif
-#ifndef M7_TABLE_SIZE
-#define M7_TABLE_SIZE 512 
-#endif
-
-#define SCRIPT_DATA_SIZE 0x100000 // O el tamaño real de tu scriptData
-#define MAX_SPRITE_FRAMES SPRITEFRAME_COUNT // SPRITEFRAME_COUNT viene de Animation.hpp
-// Solución temporal para STAGELAYER_COUNT (INVESTIGA EL VALOR CORRECTO):
-#define STAGELAYER_COUNT 4
+#include "NativeObjects.hpp"
 
 class RetroEngine
 {
@@ -580,30 +509,35 @@ public:
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
-    // ... otros miembros ...
 #if RETRO_USING_SDL2
     SDL_Window *window = nullptr;
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
 #if RETRO_SOFTWARE_RENDER
-    // SDL_Texture *screenBuffer   = nullptr; // Comentado o eliminado
-    SDL_Texture *gameRenderTexture = nullptr; // NUEVO NOMBRE
-    SDL_Texture *screenBuffer2x = nullptr;    // Se mantiene por ahora para posible uso HQ
-    // SDL_Texture *videoBuffer = nullptr;    // Comentado o eliminado
-    SDL_Texture *videoTexture = nullptr;      // NUEVO NOMBRE
+    SDL_Texture *gameRenderTexture   = nullptr;
+    SDL_Texture *screenBuffer2x = nullptr;
+    SDL_Texture *videoTexture = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
-#endif // !RETRO_USING_OPENGL
+#endif
 
     SDL_Event sdlEvents;
 
 #if RETRO_USING_OPENGL
-    SDL_GLContext glContext; 
-#endif 
+    SDL_GLContext glContext; // OpenGL context
+#endif // RETRO_USING_OPENGL
 #endif // RETRO_USING_SDL2
-    // ... resto de la struct ...
+
+#if RETRO_USING_SDL1
+    SDL_Surface *windowSurface = nullptr;
+
+    SDL_Surface *screenBuffer   = nullptr;
+    SDL_Surface *screenBuffer2x = nullptr;
+    SDL_Surface *videoBuffer = nullptr;
+
+    SDL_Event sdlEvents;
+#endif // RETRO_USING_SDL1
 #endif //! RETRO_USE_ORIGINAL_CODE
-// ...
-}; // Fin de class RetroEngine
+};
 
 extern RetroEngine Engine;
 #endif // !RETROENGINE_H
