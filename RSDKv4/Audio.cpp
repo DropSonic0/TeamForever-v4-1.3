@@ -657,6 +657,7 @@ bool PlayMusic(int track, int musStartPos)
 
     if (musicTracks[track].fileName[0]) {
         if (musicStatus != MUSIC_LOADING) {
+            LockAudioDevice();
             if (track < 0 || track >= TRACK_COUNT) {
                 StopMusic(true);
                 currentMusicTrack = -1;
@@ -665,10 +666,8 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            SDL_Thread *thread = SDL_CreateThread((SDL_ThreadFunction)LoadMusic, "LoadMusic", NULL);
-            if (thread) {
-                SDL_DetachThread(thread);
-            }
+            LoadMusic(NULL);
+            UnlockAudioDevice();
             return true;
         }
         else {
@@ -692,6 +691,7 @@ void SetSfxName(const char *sfxName, int sfxID)
         ++sfxNameID;
     }
     sfxNames[sfxID][soundNameID] = 0;
+    PrintLog("Set SFX (%d) name to: %s", sfxID, sfxName);
 }
 
 void LoadSfx(char *filePath, byte sfxID)
