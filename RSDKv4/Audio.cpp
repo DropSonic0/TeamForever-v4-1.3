@@ -47,7 +47,6 @@ SDL_AudioSpec audioDeviceFormat;
 
 int InitAudioPlayback()
 {
-    PrintLog("Initializing audio playback...");
     StopAllSfx(); //"init"
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -328,7 +327,6 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
 
 void ProcessAudioPlayback(void *userdata, Uint8 *stream, int len)
 {
-    PrintLog("ProcessAudioPlayback called!");
     (void)userdata; // Unused
 
     if (!audioEnabled)
@@ -694,7 +692,6 @@ void SetSfxName(const char *sfxName, int sfxID)
         ++sfxNameID;
     }
     sfxNames[sfxID][soundNameID] = 0;
-    PrintLog("Set SFX (%d) name to: %s", sfxID, sfxName);
 }
 
 void LoadSfx(char *filePath, byte sfxID)

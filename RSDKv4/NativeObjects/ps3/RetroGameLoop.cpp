@@ -66,6 +66,7 @@ void RetroGameLoop_Main(void *objPtr)
             break;
 
         case ENGINE_ENDGAME:
+            ClearScreen(1);
             TransferRetroBuffer();
             RestoreNativeObjects();
             Engine.LoadGameConfig("Data/Game/GameConfig.bin");
@@ -74,6 +75,7 @@ void RetroGameLoop_Main(void *objPtr)
             break;
 
         case ENGINE_RESETGAME: // Also called when 2P VS disconnects
+            ClearScreen(1);
             TransferRetroBuffer();
             RestoreNativeObjects();
             break;

@@ -73,6 +73,7 @@ void InitErrorMessage()
 }
 void ProcessStageSelect()
 {
+    ClearScreen(0xF0);
 
     CheckKeyDown(&inputDown);
     CheckKeyPress(&inputPress);

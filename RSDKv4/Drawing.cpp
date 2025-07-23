@@ -399,6 +399,19 @@ void GenerateBlendLookupTable(void)
     }
 }
 
+void ClearScreen(byte index)
+{
+#if RETRO_SOFTWARE_RENDER
+    ushort color        = activePalette[index];
+    ushort *framebuffer = Engine.frameBuffer;
+    int cnt             = GFX_LINESIZE * SCREEN_YSIZE;
+    while (cnt--) {
+        *framebuffer = color;
+        ++framebuffer;
+    }
+#endif
+}
+
 void SetScreenDimensions(int width, int height)
 {
     touchWidth               = width;
@@ -509,6 +522,43 @@ void SetScreenSize(int width, int lineSize)
     GFX_FRAMEBUFFERSIZE   = SCREEN_YSIZE * lineSize;
     GFX_FBUFFERMINUSONE   = SCREEN_YSIZE * lineSize - 1;
 }
+
+#if RETRO_SOFTWARE_RENDER
+void CopyFrameOverlay2x()
+{
+    ushort *frameBuffer   = &Engine.frameBuffer[((SCREEN_YSIZE / 2) + 12) * GFX_LINESIZE];
+    ushort *frameBuffer2x = Engine.frameBuffer2x;
+
+    for (int y = 0; y < (SCREEN_YSIZE / 2) - 12; ++y) {
+        for (int x = 0; x < GFX_LINESIZE; ++x) {
+            if (*frameBuffer == 0xF81F) { // magenta
+                frameBuffer2x += 2;
+            }
+            else {
+                *frameBuffer2x = *frameBuffer;
+                frameBuffer2x++;
+                *frameBuffer2x = *frameBuffer;
+                frameBuffer2x++;
+            }
+            ++frameBuffer;
+        }
+
+        frameBuffer -= GFX_LINESIZE;
+        for (int x = 0; x < GFX_LINESIZE; ++x) {
+            if (*frameBuffer == 0xF81F) { // magenta
+                frameBuffer2x += 2;
+            }
+            else {
+                *frameBuffer2x = *frameBuffer;
+                frameBuffer2x++;
+                *frameBuffer2x = *frameBuffer;
+                frameBuffer2x++;
+            }
+            ++frameBuffer;
+        }
+    }
+}
+#endif
 
 void SetupViewport()
 {
@@ -1022,6 +1072,7 @@ void DrawStageGFX()
 
 #if RETRO_SOFTWARE_RENDER
     if (drawStageGFXHQ) {
+        CopyFrameOverlay2x();
 
 		switch (fadeMode) {
 			case 1:

@@ -4802,7 +4802,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
                 break;
             case FUNC_CLEARSCREEN:
                 opcodeSize = 0;
-                (scriptEng.operands[0]);
+                ClearScreen(scriptEng.operands[0]);
                 break;
             case FUNC_DRAWSPRITEFX:
                 opcodeSize  = 0;
