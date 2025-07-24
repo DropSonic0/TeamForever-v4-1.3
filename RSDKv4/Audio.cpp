@@ -666,7 +666,7 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            LoadMusicAsync(NULL);
+            LoadMusic(NULL);
             UnlockAudioDevice();
             return true;
         }
