@@ -1,16 +1,5 @@
 #include "RetroEngine.hpp"
 
-#if RETRO_PLATFORM == RETRO_PS3
-float round(float f)
-{
-    return floor(f + 0.5);
-}
-float fminf(float x, float y)
-{
-    return x < y ? x : y;
-}
-#endif
-
 ushort blendLookupTable[0x20 * 0x100];
 ushort subtractLookupTable[0x20 * 0x100];
 ushort tintLookupTable[0x10000];
@@ -309,10 +298,6 @@ int InitRenderDevice()
 
     InitInputDevices();
 
-#if RETRO_PLATFORM == RETRO_PS3
-    DrawPS3();
-#endif
-
     return 1;
 }
 void FlipScreen()
@@ -368,10 +353,10 @@ void FlipScreen()
     // check if enhanced scaling is even necessary to be calculated by checking if the screen size is close enough on one axis
     // unfortunately it has to be "close enough" because of floating point precision errors. dang it
     if (Engine.scalingMode == 2) {
-        //bool cond1 = round((Engine.windowXSize / screenxsize) * 24) / 24 == std::floor(Engine.windowXSize / screenxsize);
-        //bool cond2 = round((Engine.windowYSize / screenysize) * 24) / 24 == std::floor(Engine.windowYSize / screenysize);
+        bool cond1 = std::round((Engine.windowXSize / screenxsize) * 24) / 24 == std::floor(Engine.windowXSize / screenxsize);
+        bool cond2 = std::round((Engine.windowYSize / screenysize) * 24) / 24 == std::floor(Engine.windowYSize / screenysize);
         //if (cond1 || cond2)
-        //disableEnhancedScaling = true;
+           //disableEnhancedScaling = true;
     }
 
     // get 2x resolution if HQ is enabled.
@@ -391,23 +376,23 @@ void FlipScreen()
         float scale = 1;
         if (!bilinearScaling) {
             scale =
-                fminf(std::floor((float)Engine.windowXSize / (float)SCREEN_XSIZE), std::floor((float)Engine.windowYSize / (float)SCREEN_YSIZE));
+                std::fminf(std::floor((float)Engine.windowXSize / (float)SCREEN_XSIZE), std::floor((float)Engine.windowYSize / (float)SCREEN_YSIZE));
         }
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // set interpolation to linear
         // create texture that's integer scaled.
         texTarget = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_TARGET, SCREEN_XSIZE * scale, SCREEN_YSIZE * scale);
 
         // keep aspect
-        float aspectScale = fminf(Engine.windowYSize / screenysize, Engine.windowXSize / screenxsize);
+        float aspectScale = std::fminf(Engine.windowYSize / screenysize, Engine.windowXSize / screenxsize);
         if (integerScaling) {
             aspectScale = std::floor(aspectScale);
         }
         float xoffset          = (Engine.windowXSize - (screenxsize * aspectScale)) / 2;
         float yoffset          = (Engine.windowYSize - (screenysize * aspectScale)) / 2;
-        destScreenPos_scaled.x = round(xoffset);
-        destScreenPos_scaled.y = round(yoffset);
-        destScreenPos_scaled.w = round(screenxsize * aspectScale);
-        destScreenPos_scaled.h = round(screenysize * aspectScale);
+        destScreenPos_scaled.x = std::round(xoffset);
+        destScreenPos_scaled.y = std::round(yoffset);
+        destScreenPos_scaled.w = std::round(screenxsize * aspectScale);
+        destScreenPos_scaled.h = std::round(screenysize * aspectScale);
         // fill the screen with the texture, making lerp work.
         SDL_RenderSetLogicalSize(Engine.renderer, Engine.windowXSize, Engine.windowYSize);
     }
@@ -494,9 +479,7 @@ void FlipScreen()
         if (dimAmount < 1.0)
             SDL_RenderFillRect(Engine.renderer, NULL);
         // finally present it
-#if RETRO_PLATFORM == RETRO_PS3
         SDL_RenderPresent(Engine.renderer);
-#endif
         // reset everything just in case
         SDL_RenderSetLogicalSize(Engine.renderer, SCREEN_XSIZE, SCREEN_YSIZE);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
@@ -602,13 +585,6 @@ void ReleaseRenderDevice(bool refresh)
 #endif
 #endif
 }
-
-#if RETRO_PLATFORM == RETRO_PS3
-void DrawPS3()
-{
-    // PS3-specific drawing logic will go here
-}
-#endif
 
 void GenerateBlendLookupTable(void)
 {
@@ -2734,9 +2710,8 @@ void DrawClassicFade(int XPos, int YPos, int width, int height, int R, int G, in
         height += YPos;
         YPos = 0;
     }
-    if (width <= 0 || height <= 0 || A <= 0) {
+    if (width <= 0 || height <= 0 || A <= 0)
         return;
-    }
 	
 	//A works differently here, and we're going to tweak the value to compensate
 	A *= 3;
