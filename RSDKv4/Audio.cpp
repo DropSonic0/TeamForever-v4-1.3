@@ -40,7 +40,7 @@ SDL_AudioSpec audioDeviceFormat;
 #define AUDIO_FREQUENCY (44100)
 #define AUDIO_FORMAT    (AUDIO_S16SYS) /**< Signed 16-bit samples */
 #define AUDIO_SAMPLES   (0x800)
-#define AUDIO_CHANNELS  (2)
+#define AUDIO_CHANNELS  (1)
 
 #define ADJUST_VOLUME(s, v) (s = (s * v) / MAX_VOLUME)
 #endif
@@ -52,10 +52,10 @@ int InitAudioPlayback()
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
     SDL_AudioSpec want;
-    want.freq     = 22050;          // Lower frequency
-    want.format   = AUDIO_S16SYS;   // Keep 16-bit signed
-    want.samples  = 1024;           // Smaller SDL buffer fragments
-    want.channels = 1;              // MONO output
+    want.freq     = AUDIO_FREQUENCY;
+    want.format   = AUDIO_FORMAT;
+    want.samples  = AUDIO_SAMPLES;
+    want.channels = AUDIO_CHANNELS;
     want.callback = ProcessAudioPlayback;
 
 #if RETRO_USING_SDL2
@@ -666,7 +666,7 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            LoadMusic(NULL);
+            LoadMusicAsync(NULL);
             UnlockAudioDevice();
             return true;
         }
