@@ -9,7 +9,11 @@
 #define RETRO_USE_ORIGINAL_CODE (0)
 
 #define RETRO_USE_MOD_LOADER (!RETRO_USE_ORIGINAL_CODE && 1)
+#if RETRO_PLATFORM == RETRO_PS3
+#define RETRO_USE_NETWORKING (0) // Deshabilitar networking para PS3
+#else
 #define RETRO_USE_NETWORKING (!RETRO_USE_ORIGINAL_CODE && 1)
+#endif
 
 // ================
 // STANDARD LIBS
