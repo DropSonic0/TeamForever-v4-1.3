@@ -146,11 +146,6 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
 void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
                         int sheetID, int alpha, int ink, int flags);
 
-#if RETRO_PLATFORM == RETRO_PS3
-void DrawSpriteAllFX_PS3(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation,
-                         int scale, int sheetID, int alpha, int ink, int flags);
-#endif
-
 void DrawBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int sheetID);
 void DrawAlphaBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int alpha, int sheetID);
 void DrawAdditiveBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int alpha, int sheetID);

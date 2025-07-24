@@ -9,21 +9,14 @@
 #define RETRO_USE_ORIGINAL_CODE (0)
 
 #define RETRO_USE_MOD_LOADER (!RETRO_USE_ORIGINAL_CODE && 1)
-// #define RETRO_USE_NETWORKING (!RETRO_USE_ORIGINAL_CODE && 1) // Original
-#if RETRO_PLATFORM == RETRO_PS3
-#define RETRO_USE_NETWORKING (0) // Deshabilitar networking para PS3
-#else
 #define RETRO_USE_NETWORKING (!RETRO_USE_ORIGINAL_CODE && 1)
-#endif
 
 // ================
 // STANDARD LIBS
 // ================
 #include <stdio.h>
 #include <string.h>
-#if RETRO_PLATFORM != RETRO_PS3
 #include <cmath>
-#endif
 
 // ================
 // STANDARD TYPES
@@ -38,7 +31,7 @@ typedef unsigned int uint;
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
 #define RETRO_XBOX_360 (2)
-#define RETRO_PS3_ENUM (3) // Enum value for PS3
+#define RETRO_PS3      (3)
 #define RETRO_iOS      (4)
 #define RETRO_ANDROID  (5)
 #define RETRO_WP7      (6)
@@ -51,11 +44,7 @@ typedef unsigned int uint;
 #define RETRO_STANDARD (0)
 #define RETRO_MOBILE   (1)
 
-#if defined(PS3)
-    #define RETRO_PS3        (RETRO_PS3_ENUM) // Actual define for RETRO_PS3
-    #define RETRO_PLATFORM   (RETRO_PS3)
-    #define RETRO_DEVICETYPE (RETRO_STANDARD)
-#elif defined _WIN32
+#if defined _WIN32
 
 #if defined WINAPI_FAMILY
 #if WINAPI_FAMILY != WINAPI_FAMILY_APP
@@ -131,8 +120,6 @@ typedef unsigned int uint;
 #define RETRO_GAMEPLATFORM (RETRO_MOBILE)
 #elif RETRO_PLATFORM == RETRO_UWP
 #define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
-#elif RETRO_PLATFORM == RETRO_PS3
-#define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #else
 #define RETRO_GAMEPLATFORM (RETRO_STANDARD)
 #endif
@@ -228,8 +215,8 @@ typedef unsigned int uint;
 #define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
 #elif RETRO_PLATFORM == RETRO_SWITCH
 #define RETRO_GAMEPLATFORMID (RETRO_SWITCH)
-#elif defined(PS3) // Use defined(PS3) to match the top platform block
-#define RETRO_GAMEPLATFORMID (RETRO_PS3) 
+#elif RETRO_PLATFORM == RETRO_PS3
+#define RETRO_GAMEPLATFORMID (RETRO_PS3)
 #else
 #error Unspecified RETRO_GAMEPLATFORMID
 #endif
@@ -310,7 +297,7 @@ enum RetroGameType {
 #define SCREEN_YSIZE   (240)
 #define SCREEN_CENTERY (SCREEN_YSIZE / 2)
 
-#if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_UWP || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_LINUX
+#if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_UWP || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_LINUX || RETRO_PLATFORM == RETRO_PS3
 #if RETRO_USING_SDL2
 #include <SDL2/SDL.h>
 #elif RETRO_USING_SDL1
@@ -323,10 +310,6 @@ enum RetroGameType {
 
 #include "cocoaHelpers.hpp"
 
-#elif RETRO_PLATFORM == RETRO_PS3
-#include <SDL2/SDL.h>
-#include <vorbis/vorbisfile.h> // Asumiendo que libvorbis está disponible para PS3
-// Es posible que se necesiten inclusiones específicas de PSL1GHT aquí
 #elif RETRO_USING_SDL2
 #include <SDL2/SDL.h>
 #include <vorbis/vorbisfile.h>
@@ -490,9 +473,9 @@ public:
     uint *texBuffer = nullptr;
 
 #if !RETRO_USE_ORIGINAL_CODE
-    bool isFullScreen = true;
+    bool isFullScreen = false;
 
-    bool startFullScreen  = true; // if should start as fullscreen
+    bool startFullScreen  = false; // if should start as fullscreen
     bool borderless       = false;
     bool vsync            = true;
     int scalingMode       = 0;
@@ -514,9 +497,9 @@ public:
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
 #if RETRO_SOFTWARE_RENDER
-    SDL_Texture *gameRenderTexture   = nullptr;
+    SDL_Texture *screenBuffer   = nullptr;
     SDL_Texture *screenBuffer2x = nullptr;
-    SDL_Texture *videoTexture = nullptr;
+    SDL_Texture *videoBuffer = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
 #endif
 
