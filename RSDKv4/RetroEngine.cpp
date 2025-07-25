@@ -210,8 +210,9 @@ bool processEvents()
                         break;
 
                     case SDLK_F4:
-                        Engine.isFullScreen ^= 1;
-                        SetFullScreen(Engine.isFullScreen);
+                        // Fullscreen is now locked ON, do nothing.
+                        // Engine.isFullScreen ^= 1;
+                        // SetFullScreen(Engine.isFullScreen);
                         break;
 
                     case SDLK_F5:
@@ -289,6 +290,8 @@ bool processEvents()
 
 void RetroEngine::Init()
 {
+    engineDebugMode = true;
+
     CalculateTrigAngles();
     GenerateBlendLookupTable();
 
@@ -300,44 +303,85 @@ void RetroEngine::Init()
 #if !RETRO_USE_ORIGINAL_CODE
     InitUserdata();
 #if RETRO_USE_MOD_LOADER
-    InitMods();
+    InitMods(); 
+    printf("MODPATH DEBUG: modsPath after InitMods() is: '%s'\n", modsPath);
+
+    if (RETRO_PLATFORM == RETRO_PS3) {
+        // This PS3-specific block was forcing modsPath to BASE_PATH + "Mods/" (uppercase M),
+        // overriding the generic logic in InitMods() which correctly uses BASE_PATH 
+        // and allows ModAPI.cpp functions to append "/mods" (lowercase m).
+        // By commenting out the StrAdd and the StrCopy, we let the value set by InitMods() persist.
+        // InitMods() sets modsPath = BASE_PATH (if empty) and removes trailing slash.
+        // Other functions in ModAPI.cpp then correctly append "/mods".
+        /*
+        char expectedPath[0x200];
+        StrCopy(expectedPath, BASE_PATH);
+        // StrAdd(expectedPath, "Mods/"); // Ensure 'Mods/' (capital M) --- THIS WAS THE ISSUE
+        if (strcmp(modsPath, expectedPath) != 0) {
+            // If modsPath (likely BASE_PATH from InitMods) is different from BASE_PATH alone,
+            // it implies BASE_PATH might have a trailing slash and modsPath doesn't, or vice-versa.
+            // This scenario should ideally be handled by consistent BASE_PATH definition or
+            // robust slash handling in InitMods. Forcing it here might be risky.
+            // For now, we assume InitMods correctly sets modsPath from BASE_PATH.
+            // printf("MODPATH DEBUG: PS3: modsPath ('%s') vs expectedPath ('%s'). Not forcing.\n", modsPath, expectedPath);
+        } else {
+            // printf("MODPATH DEBUG: PS3: modsPath already same as BASE_PATH: '%s'\n", modsPath);
+        }
+        */
+        // The desired state is that modsPath is effectively BASE_PATH (e.g., USRDIR),
+        // and ModAPI functions append "/mods" to it.
+        // The original InitMods() + the PS3 block resulted in modsPath = USRDIR/Mods/
+        // which then caused issues in SaveMods etc. (USRDIR/Mods/mods).
+        printf("MODPATH DEBUG: PS3: modsPath is '%s' (allowing ModAPI to handle '/mods' suffix)\n", modsPath);
+    }
+    printf("MODPATH DEBUG: Final modsPath is: '%s'\n", modsPath);
 #endif
-#if RETRO_USE_NETWORKING
+#if RETRO_USE_NETWORKING 
     InitNetwork();
 #endif
 
     char dest[0x200];
 #if RETRO_PLATFORM == RETRO_UWP
-    static char resourcePath[256] = { 0 };
-
+    static char resourcePath[256] = {0};
     if (strlen(resourcePath) == 0) {
         auto folder = winrt::Windows::Storage::ApplicationData::Current().LocalFolder();
         auto path   = to_string(folder.Path());
-
         std::copy(path.begin(), path.end(), resourcePath);
     }
-
     strcpy(dest, resourcePath);
-    strcat(dest, "\\");
-    strcat(dest, Engine.dataFile);
+    strcat(dest, "\\"); // Corrected path separator for Windows
+    strcat(dest, Engine.dataFile[0]); 
 #elif RETRO_PLATFORM == RETRO_ANDROID
     StrCopy(dest, gamePath);
     StrAdd(dest, Engine.dataFile[0]);
-    disableFocusPause = 0; // focus pause is ALWAYS enabled.
-#else
-
-    StrCopy(dest, BASE_PATH);
+#elif RETRO_PLATFORM == RETRO_PS3
+    StrCopy(dest, gamePath); // Use gamePath for PS3
     StrAdd(dest, Engine.dataFile[0]);
+    PrintLog("RetroEngine::Init - PS3: Loading primary data file '%s' from gamePath '%s'", Engine.dataFile[0], gamePath);
+#else
+    StrCopy(dest, BASE_PATH); // Fallback for other platforms
+    StrAdd(dest, Engine.dataFile[0]);
+    PrintLog("RetroEngine::Init - Other: Loading primary data file '%s' from BASE_PATH '%s'", Engine.dataFile[0], BASE_PATH);
 #endif
     CheckRSDKFile(dest);
+#else // Original RSDK code path
+#if RETRO_PLATFORM == RETRO_PS3
+    CheckRSDKFile(BASE_PATH "Data.rsdk");
 #else
     CheckRSDKFile("Data.rsdk");
 #endif
+#endif // !RETRO_USE_ORIGINAL_CODE
 
 #if !RETRO_USE_ORIGINAL_CODE
     for (int i = 1; i < RETRO_PACK_COUNT; ++i) {
-        if (!StrComp(Engine.dataFile[i], "")) {
-            StrCopy(dest, BASE_PATH);
+        if (Engine.dataFile[i][0] != '\0') { 
+#if RETRO_PLATFORM == RETRO_PS3
+            StrCopy(dest, gamePath); // Use gamePath for PS3
+            PrintLog("RetroEngine::Init - PS3: Loading additional data file '%s' from gamePath '%s'", Engine.dataFile[i], gamePath);
+#else
+            StrCopy(dest, BASE_PATH); // Fallback for other platforms
+            PrintLog("RetroEngine::Init - Other: Loading additional data file '%s' from BASE_PATH '%s'", Engine.dataFile[i], BASE_PATH);
+#endif
             StrAdd(dest, Engine.dataFile[i]);
             CheckRSDKFile(dest);
         }
@@ -346,92 +390,94 @@ void RetroEngine::Init()
 
     gameMode = ENGINE_MAINGAME;
     running  = false;
-#if !RETRO_USE_ORIGINAL_CODE
-    bool skipStart = skipStartMenu;
-#endif
-    SaveGame *saveGame = (SaveGame *)saveRAM;
 
     if (LoadGameConfig("Data/Game/GameConfig.bin")) {
         if (InitRenderDevice()) {
             if (InitAudioPlayback()) {
+                
                 InitFirstStage();
                 ClearScriptData();
                 initialised = true;
                 running     = true;
 
-#if !RETRO_USE_ORIGINAL_CODE
-                if ((startList_Game != 0xFF && startList_Game) || (startStage_Game != 0xFF && startStage_Game) || startPlayer != 0xFF) {
-                    skipStart = true;
-                    InitStartingStage(startList_Game == 0xFF ? STAGELIST_PRESENTATION : startList_Game, startStage_Game == 0xFF ? 0 : startStage_Game,
-                                      startPlayer == 0xFF ? 0 : startPlayer);
-                }
-                else if (startSave != 0xFF && startSave < 4) {
-                    if (startSave == 0) {
-                        SetGlobalVariableByName("options.saveSlot", 0);
-                        SetGlobalVariableByName("options.gameMode", 0);
+                #if !RETRO_USE_ORIGINAL_CODE
+                    bool skipStart = skipStartMenu; 
+                    SaveGame *saveGame = (SaveGame *)saveRAM; 
 
-                        SetGlobalVariableByName("options.stageSelectFlag", 0);
-                        SetGlobalVariableByName("player.lives", 3);
-                        SetGlobalVariableByName("player.score", 0);
-                        SetGlobalVariableByName("player.scoreBonus", 50000);
-                        SetGlobalVariableByName("specialStage.emeralds", 0);
-                        SetGlobalVariableByName("specialStage.listPos", 0);
-                        SetGlobalVariableByName("stage.player2Enabled", 0);
-                        SetGlobalVariableByName("lampPostID", 0); // For S1
-                        SetGlobalVariableByName("starPostID", 0); // For S2
-                        SetGlobalVariableByName("options.vsMode", 0);
-
-                        SetGlobalVariableByName("specialStage.nextZone", 0);
-                        InitStartingStage(STAGELIST_REGULAR, 0, 0);
+                    if ((startList_Game != 0xFF && startList_Game) || (startStage_Game != 0xFF && startStage_Game) || startPlayer != 0xFF) {
+                        skipStart = true;
+                        InitStartingStage(startList_Game == 0xFF ? STAGELIST_PRESENTATION : startList_Game, startStage_Game == 0xFF ? 0 : startStage_Game,
+                                          startPlayer == 0xFF ? 0 : startPlayer);
                     }
-                    else {
-                        SetGlobalVariableByName("options.saveSlot", startSave);
-                        SetGlobalVariableByName("options.gameMode", 1);
-                        int slot = (startSave - 1) << 3;
-
-                        SetGlobalVariableByName("options.stageSelectFlag", false);
-                        SetGlobalVariableByName("player.lives", saveGame->files[slot].lives);
-                        SetGlobalVariableByName("player.score", saveGame->files[slot].score);
-                        SetGlobalVariableByName("player.scoreBonus", saveGame->files[slot].scoreBonus);
-                        SetGlobalVariableByName("specialStage.emeralds", saveGame->files[slot].emeralds);
-                        SetGlobalVariableByName("specialStage.listPos", saveGame->files[slot].specialStageID);
-                        SetGlobalVariableByName("stage.player2Enabled", saveGame->files[slot].characterID == 3);
-                        SetGlobalVariableByName("lampPostID", 0); // For S1
-                        SetGlobalVariableByName("starPostID", 0); // For S2
-                        SetGlobalVariableByName("options.vsMode", 0);
-
-                        int nextStage = saveGame->files[slot].stageID;
-                        if (nextStage >= 0x80) {
-                            SetGlobalVariableByName("specialStage.nextZone", nextStage - 0x81);
-                            InitStartingStage(STAGELIST_SPECIAL, saveGame->files[slot].specialStageID, saveGame->files[slot].characterID);
-                        }
-                        else if (nextStage >= 1) {
-                            SetGlobalVariableByName("specialStage.nextZone", nextStage - 1);
-                            InitStartingStage(STAGELIST_REGULAR, nextStage - 1, saveGame->files[slot].characterID);
-                        }
-                        else {
-                            saveGame->files[slot].characterID    = 0;
-                            saveGame->files[slot].lives          = 3;
-                            saveGame->files[slot].score          = 0;
-                            saveGame->files[slot].scoreBonus     = 50000;
-                            saveGame->files[slot].stageID        = 0;
-                            saveGame->files[slot].emeralds       = 0;
-                            saveGame->files[slot].specialStageID = 0;
-                            saveGame->files[slot].unused         = 0;
-
+                    else if (startSave != 0xFF && startSave < 4) {
+                        if (startSave == 0) {
+                            SetGlobalVariableByName("options.saveSlot", 0);
+                            SetGlobalVariableByName("options.gameMode", 0);
+                            SetGlobalVariableByName("options.stageSelectFlag", 0);
+                            SetGlobalVariableByName("player.lives", 3);
+                            SetGlobalVariableByName("player.score", 0);
+                            SetGlobalVariableByName("player.scoreBonus", 50000);
+                            SetGlobalVariableByName("specialStage.emeralds", 0);
+                            SetGlobalVariableByName("specialStage.listPos", 0);
+                            SetGlobalVariableByName("stage.player2Enabled", 0);
+                            SetGlobalVariableByName("lampPostID", 0); 
+                            SetGlobalVariableByName("starPostID", 0); 
+                            SetGlobalVariableByName("options.vsMode", 0);
                             SetGlobalVariableByName("specialStage.nextZone", 0);
                             InitStartingStage(STAGELIST_REGULAR, 0, 0);
                         }
+                        else {
+                            SetGlobalVariableByName("options.saveSlot", startSave);
+                            SetGlobalVariableByName("options.gameMode", 1);
+                            int slot = (startSave - 1) << 3; 
+
+                            SetGlobalVariableByName("options.stageSelectFlag", false);
+                            SetGlobalVariableByName("player.lives", saveGame->files[slot].lives);
+                            SetGlobalVariableByName("player.score", saveGame->files[slot].score);
+                            SetGlobalVariableByName("player.scoreBonus", saveGame->files[slot].scoreBonus);
+                            SetGlobalVariableByName("specialStage.emeralds", saveGame->files[slot].emeralds);
+                            SetGlobalVariableByName("specialStage.listPos", saveGame->files[slot].specialStageID);
+                            SetGlobalVariableByName("stage.player2Enabled", saveGame->files[slot].characterID == 3);
+                            SetGlobalVariableByName("lampPostID", 0); 
+                            SetGlobalVariableByName("starPostID", 0); 
+                            SetGlobalVariableByName("options.vsMode", 0);
+
+                            int nextStage = saveGame->files[slot].stageID;
+                            if (nextStage >= 0x80) {
+                                SetGlobalVariableByName("specialStage.nextZone", nextStage - 0x81);
+                                InitStartingStage(STAGELIST_SPECIAL, saveGame->files[slot].specialStageID, saveGame->files[slot].characterID);
+                            }
+                            else if (nextStage >= 1) {
+                                SetGlobalVariableByName("specialStage.nextZone", nextStage - 1);
+                                InitStartingStage(STAGELIST_REGULAR, nextStage - 1, saveGame->files[slot].characterID);
+                            }
+                            else {
+                                saveGame->files[slot].characterID    = 0;
+                                saveGame->files[slot].lives          = 3;
+                                saveGame->files[slot].score          = 0;
+                                saveGame->files[slot].scoreBonus     = 50000;
+                                saveGame->files[slot].stageID        = 0;
+                                saveGame->files[slot].emeralds       = 0;
+                                saveGame->files[slot].specialStageID = 0;
+                                saveGame->files[slot].unused         = 0;
+                                SetGlobalVariableByName("specialStage.nextZone", 0);
+                                InitStartingStage(STAGELIST_REGULAR, 0, 0);
+                            }
+                        }
+                        skipStart = true; 
                     }
-                    skipStart = true;
-                }
-#endif
+                    
+                    if (skipStart) Engine.gameMode = ENGINE_MAINGAME; else Engine.gameMode = ENGINE_WAIT;
+                #endif 
+            } else { 
             }
+        } else { 
         }
+    } else { 
     }
 
 #if !RETRO_USE_ORIGINAL_CODE
-    gameType = GAME_SONIC2;
+    gameType = GAME_SONIC2; 
 #if RETRO_USE_MOD_LOADER
     if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
 #else
@@ -439,19 +485,18 @@ void RetroEngine::Init()
 #endif
         gameType = GAME_SONIC1;
     }
-#endif
+#endif 
 
 #if !RETRO_USE_ORIGINAL_CODE
-    bool skipStore = skipStartMenu;
-    skipStartMenu  = skipStart;
+    bool tempSkipStore = skipStartMenu; 
     InitNativeObjectSystem();
-    skipStartMenu = skipStore;
+    // skipStartMenu = tempSkipStore; // This logic might need review based on where skipStartMenu is set vs local skipStart
 #else
     InitNativeObjectSystem();
 #endif
 
+
 #if !RETRO_USE_ORIGINAL_CODE
-    // Calculate Skip frame
     int lower        = getLowerRate(targetRefreshRate, refreshRate);
     renderFrameIndex = targetRefreshRate / lower;
     skipFrameIndex   = refreshRate / lower;
@@ -459,8 +504,7 @@ void RetroEngine::Init()
     ReadSaveRAMData();
 
     if (Engine.gameType == GAME_SONIC1) {
-        AddAchievement("Ramp Ring Acrobatics",
-                       "Without touching the ground,\rcollect all the rings in a\rtrapezoid formation in Green\rHill Zone Act 1");
+        AddAchievement("Ramp Ring Acrobatics", "Without touching the ground,\rcollect all the rings in a\rtrapezoid formation in Green\rHill Zone Act 1");
         AddAchievement("Blast Processing", "Clear Green Hill Zone Act 1\rin under 30 seconds");
         AddAchievement("Secret of Marble Zone", "Travel though a secret\rroom in Marbale Zone Act 3");
         AddAchievement("Block Buster", "Break 16 blocks in a row\rwithout stopping");
@@ -487,12 +531,9 @@ void RetroEngine::Init()
         AddAchievement("Scrambled Egg", "Defeat Dr. Eggman's Boss\rAttack mode in under 7\rminutes");
         AddAchievement("Beat the Clock", "Complete the Time Attack\rmode in less than 45\rminutes");
     }
-
-    if (skipStart)
-        Engine.gameMode = ENGINE_MAINGAME;
-    else
-        Engine.gameMode = ENGINE_WAIT;
 #endif
+
+    printf("PS3 EXECUTION TEST: RetroEngine::Init() nearing end.\n");
 }
 
 void RetroEngine::Run()

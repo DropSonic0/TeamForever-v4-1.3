@@ -50,12 +50,12 @@ void PlayVideoFile(char *filePath) {
     // Fixes ".ani" ".Ani" bug and any other case differences
     char pathLower[0x100];
     memset(pathLower, 0, sizeof(char) * 0x100);
-    for (int c = 0; c < strlen(pathBuffer); ++c) {
+    for (size_t c = 0; c < strlen(pathBuffer); ++c) {
         pathLower[c] = tolower(pathBuffer[c]);
     }
 
 #if RETRO_USE_MOD_LOADER
-    for (int m = 0; m < modList.size(); ++m) {
+    for (size_t m = 0; m < modList.size(); ++m) {
         if (modList[m].active) {
             std::map<std::string, std::string>::const_iterator iter = modList[m].fileMap.find(pathLower);
             if (iter != modList[m].fileMap.cend()) {
@@ -101,7 +101,7 @@ void PlayVideoFile(char *filePath) {
 
         // TODO
         // perhaps implement multi audio stream support? (e.g. sonic cd cutscenes)
-#if RETRO_USING_SDL2 && !RETRO_USING_OPENGL
+#if (RETRO_USING_SDL2 && !RETRO_USING_OPENGL) || (RETRO_PLATFORM == RETRO_PS3)
         videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_IYUV);
 #endif
 
@@ -244,7 +244,7 @@ int ProcessVideo() {
 
             // Play video frames when it's time.
             if (videoVidData && (videoVidData->playms <= now)) {
-                if (vidFrameMS && ((now - videoVidData->playms) >= vidFrameMS)) {
+                if (vidFrameMS && ((now - videoVidData->playms) >= (unsigned int)vidFrameMS)) {
                     // Skip frames to catch up, but keep track of the last one+
                     //  in case we catch up to a series of dupe frames, which
                     //  means we'd have to draw that final frame and then wait for
@@ -254,7 +254,7 @@ int ProcessVideo() {
                     while ((videoVidData = THEORAPLAY_getVideo(videoDecoder)) != NULL) {
                         THEORAPLAY_freeVideo(last);
                         last = videoVidData;
-                        if ((now - videoVidData->playms) < vidFrameMS)
+                        if ((now - videoVidData->playms) < (unsigned int)vidFrameMS)
                             break;
                     }
 
@@ -271,15 +271,15 @@ int ProcessVideo() {
                 glBindTexture(GL_TEXTURE_2D, videoBuffer);
                 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, videoVidData->width, videoVidData->height, GL_RGBA, GL_UNSIGNED_BYTE, videoVidData->pixels);
                 glBindTexture(GL_TEXTURE_2D, 0);
-#elif RETRO_USING_SDL2
+#elif RETRO_USING_SDL2 || (RETRO_PLATFORM == RETRO_PS3)
                 int half_w     = videoVidData->width / 2;
                 const Uint8 *y = (const Uint8 *)videoVidData->pixels;
                 const Uint8 *u = y + (videoVidData->width * videoVidData->height);
                 const Uint8 *v = u + (half_w * (videoVidData->height / 2));
 
-                SDL_UpdateYUVTexture(Engine.videoBuffer, NULL, y, videoVidData->width, u, half_w, v, half_w);
+                SDL_UpdateYUVTexture(Engine.videoTexture, NULL, y, videoVidData->width, u, half_w, v, half_w);
 #elif RETRO_USING_SDL1
-                memcpy(Engine.videoBuffer->pixels, videoVidData->pixels, videoVidData->width * videoVidData->height * sizeof(uint));
+                memcpy(Engine.videoTexture->pixels, videoVidData->pixels, videoVidData->width * videoVidData->height * sizeof(uint));
 #endif
                 THEORAPLAY_freeVideo(videoVidData);
                 videoVidData = NULL;
@@ -341,14 +341,14 @@ void SetupVideoBuffer(int width, int height)
 	if (!videoBuffer || !&videoBuffer || !videoVidData)
         PrintLog("Failed to create video buffer!");
 #elif RETRO_USING_SDL1
-    Engine.videoBuffer = SDL_CreateRGBSurface(0, width, height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    Engine.videoTexture = SDL_CreateRGBSurface(0, width, height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 
-    if (!Engine.videoBuffer)
+    if (!Engine.videoTexture)
         PrintLog("Failed to create video buffer!");
-#elif RETRO_USING_SDL2
-    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_TARGET, width, height);
+#elif RETRO_USING_SDL2 || (RETRO_PLATFORM == RETRO_PS3)
+    Engine.videoTexture = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_TARGET, width, height);
 
-    if (!Engine.videoBuffer)
+    if (!Engine.videoTexture)
         PrintLog("Failed to create video buffer!");
 #endif
 }
@@ -362,11 +362,11 @@ void CloseVideoBuffer()
             videoBuffer = 0;
         }
 #elif RETRO_USING_SDL1
-        SDL_FreeSurface(Engine.videoBuffer);
-        Engine.videoBuffer = nullptr;
-#elif RETRO_USING_SDL2
-        SDL_DestroyTexture(Engine.videoBuffer);
-        Engine.videoBuffer = nullptr;
+        SDL_FreeSurface(Engine.videoTexture);
+        Engine.videoTexture = nullptr;
+#elif RETRO_USING_SDL2 || (RETRO_PLATFORM == RETRO_PS3)
+        SDL_DestroyTexture(Engine.videoTexture);
+        Engine.videoTexture = nullptr;
 #endif
     }
 }

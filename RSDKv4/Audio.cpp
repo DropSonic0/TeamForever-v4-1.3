@@ -9,6 +9,7 @@ int trackID       = -1;
 int sfxVolume     = 40;
 int bgmVolume     = 40;
 bool audioEnabled = false;
+bool contextInitialized = false;
 
 bool musicEnabled = 0;
 int musicStatus   = MUSIC_STOPPED;
@@ -45,8 +46,16 @@ SDL_AudioSpec audioDeviceFormat;
 #define ADJUST_VOLUME(s, v) (s = (s * v) / MAX_VOLUME)
 #endif
 
+void InitAudioChannels() {}
+
 int InitAudioPlayback()
 {
+    SDL_InitSubSystem(SDL_INIT_AUDIO);
+    if (!contextInitialized) {
+        contextInitialized = true;
+        InitAudioChannels();
+    }
+
     StopAllSfx(); //"init"
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -666,7 +675,7 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            LoadMusic(NULL);
+            LoadMusicAsync(NULL);
             UnlockAudioDevice();
             return true;
         }
