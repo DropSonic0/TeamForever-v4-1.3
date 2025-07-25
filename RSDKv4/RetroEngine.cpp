@@ -596,7 +596,14 @@ void RetroEngine::Run()
 #if !RETRO_USE_ORIGINAL_CODE
             if (!masterPaused || frameStep) {
 #endif
+                if (pendingMusicTrack != -1) {
+                    PlayMusic(pendingMusicTrack, musicStartPos);
+                    pendingMusicTrack = -1;
+                }
+
+                Engine.isDrawing = true;
                 FlipScreen();
+                Engine.isDrawing = false;
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_OPENGL && RETRO_USING_SDL2

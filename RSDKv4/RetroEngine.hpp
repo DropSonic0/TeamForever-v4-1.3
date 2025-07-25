@@ -325,8 +325,8 @@ enum RetroGameType {
 
 #elif RETRO_PLATFORM == RETRO_PS3
 #include <SDL2/SDL.h>
-#include <vorbis/vorbisfile.h> // Asumiendo que libvorbis está disponible para PS3
-// Es posible que se necesiten inclusiones específicas de PSL1GHT aquí
+#include <vorbis/vorbisfile.h> // Asumiendo que libvorbis estï¿½ disponible para PS3
+// Es posible que se necesiten inclusiones especï¿½ficas de PSL1GHT aquï¿½
 #elif RETRO_USING_SDL2
 #include <SDL2/SDL.h>
 #include <vorbis/vorbisfile.h>
@@ -507,6 +507,8 @@ public:
     int windowXSize; // width of window/screen in the previous frame
     int windowYSize; // height of window/screen in the previous frame
 #endif
+
+    bool isDrawing = false;
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL2

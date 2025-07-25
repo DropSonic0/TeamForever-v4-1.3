@@ -21,6 +21,7 @@ SFXInfo sfxList[SFX_COUNT];
 char sfxNames[SFX_COUNT][0x40];
 
 int currentStreamIndex = 0;
+int pendingMusicTrack  = -1;
 StreamFile streamFile[STREAMFILE_COUNT];
 StreamInfo streamInfo[STREAMFILE_COUNT];
 StreamFile *streamFilePtr = NULL;
@@ -665,6 +666,12 @@ bool PlayMusic(int track, int musStartPos)
         return false;
 
     if (musicTracks[track].fileName[0]) {
+        if (Engine.isDrawing) {
+            pendingMusicTrack = track;
+            musicStartPos     = musStartPos;
+            return true;
+        }
+
         if (musicStatus != MUSIC_LOADING) {
             LockAudioDevice();
             if (track < 0 || track >= TRACK_COUNT) {

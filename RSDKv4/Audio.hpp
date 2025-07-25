@@ -93,6 +93,7 @@ extern int musicRatio;
 extern TrackInfo musicTracks[TRACK_COUNT];
 
 extern int currentStreamIndex;
+extern int pendingMusicTrack;
 extern StreamFile streamFile[STREAMFILE_COUNT];
 extern StreamInfo streamInfo[STREAMFILE_COUNT];
 extern StreamFile *streamFilePtr;
