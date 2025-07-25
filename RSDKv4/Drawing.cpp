@@ -1,4 +1,12 @@
 #include "RetroEngine.hpp"
+#include <math.h>
+
+#if RETRO_PLATFORM == RETRO_PS3
+inline double round(double x)
+{
+    return floor(x + 0.5);
+}
+#endif
 
 ushort blendLookupTable[0x20 * 0x100];
 ushort subtractLookupTable[0x20 * 0x100];
@@ -300,6 +308,7 @@ int InitRenderDevice()
 
     return 1;
 }
+
 void FlipScreen()
 {
 #if !RETRO_USE_ORIGINAL_CODE
@@ -353,8 +362,8 @@ void FlipScreen()
     // check if enhanced scaling is even necessary to be calculated by checking if the screen size is close enough on one axis
     // unfortunately it has to be "close enough" because of floating point precision errors. dang it
     if (Engine.scalingMode == 2) {
-        bool cond1 = std::round((Engine.windowXSize / screenxsize) * 24) / 24 == std::floor(Engine.windowXSize / screenxsize);
-        bool cond2 = std::round((Engine.windowYSize / screenysize) * 24) / 24 == std::floor(Engine.windowYSize / screenysize);
+        bool cond1 = round((Engine.windowXSize / screenxsize) * 24) / 24 == floorf(Engine.windowXSize / screenxsize);
+        bool cond2 = round((Engine.windowYSize / screenysize) * 24) / 24 == floorf(Engine.windowYSize / screenysize);
         //if (cond1 || cond2)
            //disableEnhancedScaling = true;
     }
@@ -376,23 +385,23 @@ void FlipScreen()
         float scale = 1;
         if (!bilinearScaling) {
             scale =
-                std::fminf(std::floor((float)Engine.windowXSize / (float)SCREEN_XSIZE), std::floor((float)Engine.windowYSize / (float)SCREEN_YSIZE));
+                fminf(floorf((float)Engine.windowXSize / (float)SCREEN_XSIZE), floorf((float)Engine.windowYSize / (float)SCREEN_YSIZE));
         }
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // set interpolation to linear
         // create texture that's integer scaled.
         texTarget = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_TARGET, SCREEN_XSIZE * scale, SCREEN_YSIZE * scale);
 
         // keep aspect
-        float aspectScale = std::fminf(Engine.windowYSize / screenysize, Engine.windowXSize / screenxsize);
+        float aspectScale = fminf(Engine.windowYSize / screenysize, Engine.windowXSize / screenxsize);
         if (integerScaling) {
-            aspectScale = std::floor(aspectScale);
+            aspectScale = floorf(aspectScale);
         }
         float xoffset          = (Engine.windowXSize - (screenxsize * aspectScale)) / 2;
         float yoffset          = (Engine.windowYSize - (screenysize * aspectScale)) / 2;
-        destScreenPos_scaled.x = std::round(xoffset);
-        destScreenPos_scaled.y = std::round(yoffset);
-        destScreenPos_scaled.w = std::round(screenxsize * aspectScale);
-        destScreenPos_scaled.h = std::round(screenysize * aspectScale);
+        destScreenPos_scaled.x = round(xoffset);
+        destScreenPos_scaled.y = round(yoffset);
+        destScreenPos_scaled.w = round(screenxsize * aspectScale);
+        destScreenPos_scaled.h = round(screenysize * aspectScale);
         // fill the screen with the texture, making lerp work.
         SDL_RenderSetLogicalSize(Engine.renderer, Engine.windowXSize, Engine.windowYSize);
     }
@@ -402,7 +411,7 @@ void FlipScreen()
 
     // Clear the screen. This is needed to keep the
     // pillarboxes in fullscreen from displaying garbage data.
-    SDL_RenderClear(Engine.renderer);
+    //SDL_RenderClear(Engine.renderer);
 
     ushort *pixels = NULL;
     if (Engine.gameMode != ENGINE_VIDEOWAIT) {
@@ -471,7 +480,7 @@ void FlipScreen()
         // set render target back to the screen.
         SDL_SetRenderTarget(Engine.renderer, NULL);
         // clear the screen itself now, for same reason as above
-        SDL_RenderClear(Engine.renderer);
+        //SDL_RenderClear(Engine.renderer);
         // copy texture to screen with lerp
         SDL_RenderCopy(Engine.renderer, texTarget, NULL, &destScreenPos_scaled);
         // Apply dimming
