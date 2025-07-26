@@ -208,7 +208,7 @@ void MatrixRotateXYZ(Matrix *matrix, short rotationX, short rotationY, short rot
     matrix->values[3][2] = 0;
     matrix->values[3][3] = 0x100;
 }
-#if !RETRO_REV00 && RETRO_PLATFORM != RETRO_PS3
+#if !RETRO_REV00
 void MatrixInverse(Matrix *matrix)
 {
     double inv[16], det;

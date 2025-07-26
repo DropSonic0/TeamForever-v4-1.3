@@ -1,10 +1,6 @@
 #ifndef READER_H
 #define READER_H
 
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-#include <SDL2/SDL.h>
-#endif
-
 #if RETRO_PLATFORM == RETRO_LINUX   // Force case insensitivity for Linux
 
 #include "fcaseopen.h"
@@ -112,9 +108,6 @@ extern byte encryptionStringA[0x10];
 extern byte encryptionStringB[0x10];
 
 extern FileIO *cFileHandle;
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-extern SDL_mutex *fileMutex;
-#endif
 
 inline void CopyFilePath(char *dest, const char *src)
 {

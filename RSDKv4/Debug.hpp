@@ -35,7 +35,7 @@ inline void PrintLog(const char *msg, ...)
         sprintf(pathBuffer, "%s/log.txt", gamePath);
         __android_log_print(ANDROID_LOG_INFO, "RSDKv4", "%s", buffer);
 #else
-        sprintf(pathBuffer, "/dev_hdd0/tmp/log.txt");
+        sprintf(pathBuffer, BASE_PATH "log.txt");
 #endif
         FileIO *file = fOpen(pathBuffer, "a");
         if (file) {
@@ -68,7 +68,7 @@ inline void PrintLog(const ushort *msg)
         sprintf(pathBuffer, "%s/log.txt", gamePath);
         __android_log_print(ANDROID_LOG_INFO, "RSDKv4", "%ls", (wchar_t *)msg);
 #else
-        sprintf(pathBuffer, "/dev_hdd0/tmp/log.txt");
+        sprintf(pathBuffer, BASE_PATH "log.txt");
 #endif
         mPos         = 0;
         FileIO *file = fOpen(pathBuffer, "a");

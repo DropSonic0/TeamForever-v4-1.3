@@ -5313,7 +5313,7 @@ void ProcessScript(int scriptCodePtr, int jumpTablePtr, byte scriptEvent)
                     case MAT_TEMP: MatrixRotateXYZ(&matTemp, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]); break;
                 }
                 break;
-#if !RETRO_REV00 && RETRO_PLATFORM != RETRO_PS3
+#if !RETRO_REV00
             case FUNC_MATRIXINVERSE:
                 opcodeSize = 0;
                 switch (scriptEng.operands[0]) {

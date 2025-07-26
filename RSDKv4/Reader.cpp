@@ -21,9 +21,6 @@ byte encryptionStringA[0x10];
 byte encryptionStringB[0x10];
 
 FileIO *cFileHandle = nullptr;
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-SDL_mutex *fileMutex = SDL_CreateMutex();
-#endif
 
 bool CheckRSDKFile(const char *filePath)
 {
@@ -139,9 +136,6 @@ inline bool ends_with(std::string const &value, std::string const &ending)
 
 bool LoadFile(const char *filePath, FileInfo *fileInfo)
 {
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-    SDL_LockMutex(fileMutex);
-#endif
     MEM_ZEROP(fileInfo);
 
     if (cFileHandle)
@@ -249,9 +243,6 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
 
             Engine.usingDataFile = true;
 
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-            SDL_UnlockMutex(fileMutex);
-#endif
             return true;
         }
 #else
@@ -323,9 +314,6 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
         }
 #endif
         PrintLog("Couldn't load file '%s'", filePath);
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-        SDL_UnlockMutex(fileMutex);
-#endif
         return false;
     }
     else {
@@ -335,9 +323,6 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
         cFileHandle = fOpen(fileInfo->fileName, "rb");
         if (!cFileHandle) {
             PrintLog("Couldn't load file '%s'", filePath);
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-            SDL_UnlockMutex(fileMutex);
-#endif
             return false;
         }
         virtualFileOffset = 0;
@@ -358,9 +343,6 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
 #endif
 
         PrintLog("Loaded File '%s'", filePath);
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-        SDL_UnlockMutex(fileMutex);
-#endif
         return true;
     }
 }

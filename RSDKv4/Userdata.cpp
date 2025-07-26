@@ -404,10 +404,6 @@ void InitUserdata()
             Engine.devMenu = false;
         if (!ini.GetBool("Dev", "EngineDebugMode", &engineDebugMode))
             engineDebugMode = false;
-#if RETRO_PLATFORM == RETRO_PS3 // Forzar engineDebugMode a true para testing en PS3 retail
-        engineDebugMode = true;
-        PrintLog("FORZADO: engineDebugMode = true para PS3 testing\n");
-#endif
         if (!ini.GetBool("Dev", "TxtScripts", &forceUseScripts))
             forceUseScripts = true;
         forceUseScripts_Config = forceUseScripts;
