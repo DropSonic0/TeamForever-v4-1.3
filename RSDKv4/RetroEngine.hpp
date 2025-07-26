@@ -1,4 +1,4 @@
-#ifndef RETROENGINE_H#ifndef RETROENGINE_H
+#ifndef RETROENGINE_H
 #define RETROENGINE_H
 
 // Disables POSIX use c++ name blah blah stuff
@@ -9,7 +9,6 @@
 #define RETRO_USE_ORIGINAL_CODE (0)
 
 #define RETRO_USE_MOD_LOADER (!RETRO_USE_ORIGINAL_CODE && 1)
-// #define RETRO_USE_NETWORKING (!RETRO_USE_ORIGINAL_CODE && 1) // Original
 #if RETRO_PLATFORM == RETRO_PS3
 #define RETRO_USE_NETWORKING (0) // Deshabilitar networking para PS3
 #else
@@ -21,9 +20,7 @@
 // ================
 #include <stdio.h>
 #include <string.h>
-#if RETRO_PLATFORM != RETRO_PS3
 #include <cmath>
-#endif
 
 // ================
 // STANDARD TYPES
@@ -38,7 +35,7 @@ typedef unsigned int uint;
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
 #define RETRO_XBOX_360 (2)
-#define RETRO_PS3_ENUM (3) // Enum value for PS3
+#define RETRO_PS3_ENUM (3)
 #define RETRO_iOS      (4)
 #define RETRO_ANDROID  (5)
 #define RETRO_WP7      (6)
@@ -490,9 +487,9 @@ public:
     uint *texBuffer = nullptr;
 
 #if !RETRO_USE_ORIGINAL_CODE
-    bool isFullScreen = true;
+    bool isFullScreen = false;
 
-    bool startFullScreen  = true; // if should start as fullscreen
+    bool startFullScreen  = false; // if should start as fullscreen
     bool borderless       = false;
     bool vsync            = true;
     int scalingMode       = 0;
@@ -514,9 +511,9 @@ public:
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
 #if RETRO_SOFTWARE_RENDER
-    SDL_Texture *gameRenderTexture   = nullptr;
+    SDL_Texture *screenBuffer   = nullptr;
     SDL_Texture *screenBuffer2x = nullptr;
-    SDL_Texture *videoTexture = nullptr;
+    SDL_Texture *videoBuffer = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
 #endif
 

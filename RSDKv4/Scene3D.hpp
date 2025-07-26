@@ -3,6 +3,9 @@
 
 #define VERTEXBUFFER_SIZE (0x1000)
 #define FACEBUFFER_SIZE   (0x400)
+#if RETRO_PLATFORM == RETRO_PS3
+#define ZBUFFER_SIZE (424 * 240)
+#endif
 
 enum FaceFlags {
     FACE_FLAG_TEXTURED_3D      = 0,
@@ -60,6 +63,10 @@ extern Vertex vertexBuffer[VERTEXBUFFER_SIZE];
 extern Vertex vertexBufferT[VERTEXBUFFER_SIZE];
 
 extern DrawListEntry3D drawList3D[FACEBUFFER_SIZE];
+
+#if RETRO_PLATFORM == RETRO_PS3
+extern int zBuffer[ZBUFFER_SIZE];
+#endif
 
 extern int projectionX;
 extern int projectionY;

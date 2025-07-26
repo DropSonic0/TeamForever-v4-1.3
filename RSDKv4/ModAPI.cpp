@@ -8,9 +8,15 @@ char playerNames[PLAYER_COUNT][0x20];
 byte playerCount = 0;
 
 #if RETRO_USE_MOD_LOADER
+#if RETRO_PLATFORM == RETRO_PS3
+#include <sys/dirent.h>
+#include <sys/stat.h>
+#else
 #include <sys/stat.h>
 #include <dirent.h>
+#endif
 
+#include <functional>
 std::vector<ModInfo> modList;
 int activeMod = -1;
 
@@ -22,6 +28,8 @@ char modTypeNames[OBJECT_COUNT][0x40];
 char modScriptPaths[OBJECT_COUNT][0x40];
 byte modScriptFlags[OBJECT_COUNT];
 byte modObjCount = 0;
+
+void ScanModFolderSub(ModInfo *info, const std::string &modDir, const char *folder);
 
 int OpenModMenu()
 {
@@ -49,9 +57,15 @@ bool IsDirectory(const char *path)
 void InitMods()
 {
     modList.clear();
+    forceUseScripts   = forceUseScripts_Config;
+    skipStartMenu     = skipStartMenu_Config;
+    disableFocusPause = disableFocusPause_Config;
+    redirectSave      = false;
+    Engine.forceSonic1  = false;
+    sprintf(savePath, "");
 
     char modBuf[0x100];
-    sprintf(modBuf, "%s/mods", modsPath);
+    sprintf(modBuf, "%smods", modsPath);
 
     if (ModPathExists(modBuf) && IsDirectory(modBuf)) {
         std::string mod_config = std::string(modBuf) + "/modconfig.ini";
@@ -60,11 +74,11 @@ void InitMods()
             fClose(configFile);
             IniParser modConfig(mod_config.c_str(), false);
 
-            for (const auto& item : modConfig.items) {
+            for (int m = 0; m < modConfig.items.size(); ++m) {
                 bool active = false;
                 ModInfo info;
-                modConfig.GetBool("mods", item.key, &active);
-                if (LoadMod(&info, modBuf, item.key, active))
+                modConfig.GetBool("mods", modConfig.items[m].key, &active);
+                if (LoadMod(&info, modBuf, modConfig.items[m].key, active))
                     modList.push_back(info);
             }
         }
@@ -76,25 +90,20 @@ void InitMods()
                 if (entry->d_name[0] == '.')
                     continue;
 
-                bool isDir = entry->d_type == DT_DIR;
-                if (entry->d_type == DT_UNKNOWN) {
-                    std::string modDirPath = std::string(modBuf) + "/" + entry->d_name;
-                    isDir = IsDirectory(modDirPath.c_str());
-                }
-
-                if (isDir) {
+                std::string modDirPath = std::string(modBuf) + "/" + entry->d_name;
+                if (IsDirectory(modDirPath.c_str())) {
                     ModInfo info;
                     std::string folder = entry->d_name;
 
-                    bool found = false;
-                    for (const auto& mod : modList) {
-                        if (mod.folder == folder) {
-                            found = true;
+                    bool flag = true;
+                    for (int m = 0; m < modList.size(); ++m) {
+                        if (modList[m].folder == folder) {
+                            flag = false;
                             break;
                         }
                     }
 
-                    if (!found) {
+                    if (flag) {
                         if (LoadMod(&info, modBuf, folder.c_str(), false))
                             modList.insert(modList.begin(), info);
                     }
@@ -104,7 +113,31 @@ void InitMods()
         }
     }
 
-    RefreshEngine();
+    forceUseScripts   = forceUseScripts_Config;
+    skipStartMenu     = skipStartMenu_Config;
+    disableFocusPause = disableFocusPause_Config;
+    redirectSave      = false;
+    Engine.forceSonic1  = false;
+    sprintf(savePath, "");
+    for (int m = 0; m < modList.size(); ++m) {
+        if (!modList[m].active)
+            continue;
+        if (modList[m].useScripts)
+            forceUseScripts = true;
+        if (modList[m].skipStartMenu)
+            skipStartMenu = true;
+        if (modList[m].disableFocusPause)
+            disableFocusPause |= modList[m].disableFocusPause;
+        if (modList[m].redirectSave) {
+            sprintf(savePath, "%s", modList[m].savePath.c_str());
+            redirectSave = true;
+        }
+        if (modList[m].forceSonic1)
+            Engine.forceSonic1 = true;
+    }
+
+    ReadSaveRAMData();
+    ReadUserdata();
 }
 
 bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool active)
@@ -162,9 +195,9 @@ bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool activ
     return false;
 }
 
-void ScanModFolderSub(ModInfo *info, const char *modDir, const char *folder)
+void ScanModFolderSub(ModInfo *info, const std::string &modDir, const char *folder)
 {
-    std::string fullPath = std::string(modDir) + "/" + folder;
+    std::string fullPath = modDir + "/" + folder;
     if (ModPathExists(fullPath.c_str()) && IsDirectory(fullPath.c_str())) {
         DIR *dir = opendir(fullPath.c_str());
         if (dir) {
@@ -174,18 +207,13 @@ void ScanModFolderSub(ModInfo *info, const char *modDir, const char *folder)
                     continue;
 
                 std::string path = std::string(folder) + "/" + entry->d_name;
-                
-                bool isDir = entry->d_type == DT_DIR;
-                if (entry->d_type == DT_UNKNOWN) {
-                    std::string entryFullPath = fullPath + "/" + entry->d_name;
-                    isDir = IsDirectory(entryFullPath.c_str());
-                }
+                std::string entryFullPath = fullPath + "/" + entry->d_name;
 
-                if (isDir) {
+                if (IsDirectory(entryFullPath.c_str())) {
                     ScanModFolderSub(info, modDir, path.c_str());
                 }
                 else {
-                    std::string modPath = fullPath + "/" + entry->d_name;
+                    std::string modPath = entryFullPath;
                     char pathLower[0x100] = {0};
                     for (size_t c = 0; c < path.size(); ++c) {
                         pathLower[c] = tolower(path.c_str()[c]);
@@ -204,15 +232,15 @@ void ScanModFolder(ModInfo *info)
         return;
 
     char modBuf[0x100];
-    sprintf(modBuf, "%s/mods", modsPath);
+    sprintf(modBuf, "%smods", modsPath);
 
     const std::string modDir = std::string(modBuf) + "/" + info->folder;
 
     info->fileMap.clear();
 
-    ScanModFolderSub(info, modDir.c_str(), "Data");
-    ScanModFolderSub(info, modDir.c_str(), "Scripts");
-    ScanModFolderSub(info, modDir.c_str(), "Bytecode");
+    ScanModFolderSub(info, modDir, "Data");
+    ScanModFolderSub(info, modDir, "Scripts");
+    ScanModFolderSub(info, modDir, "Bytecode");
 }
 
 void SaveMods()

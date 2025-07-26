@@ -14,6 +14,10 @@ Vertex vertexBufferT[VERTEXBUFFER_SIZE];
 
 DrawListEntry3D drawList3D[FACEBUFFER_SIZE];
 
+#if RETRO_PLATFORM == RETRO_PS3
+int zBuffer[ZBUFFER_SIZE];
+#endif
+
 int projectionX = 136;
 int projectionY = 160;
 int fogColor    = 0;
@@ -334,6 +338,9 @@ void Sort3DDrawList()
 }
 void Draw3DScene(int spriteSheetID)
 {
+#if RETRO_PLATFORM == RETRO_PS3
+    for (int i = 0; i < ZBUFFER_SIZE; ++i) zBuffer[i] = 0x7FFFFFFF;
+#endif
     Vertex quad[4];
     for (int i = 0; i < faceCount; ++i) {
         Face *face = &faceBuffer[drawList3D[i].faceID];
@@ -358,6 +365,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[2].v = vertexBuffer[face->c].v;
                     quad[3].u = vertexBuffer[face->d].u;
                     quad[3].v = vertexBuffer[face->d].v;
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->b].z;
+                    quad[2].z = vertexBufferT[face->c].z;
+                    quad[3].z = vertexBufferT[face->d].z;
+#endif
                     DrawTexturedFace(quad, spriteSheetID);
                 }
                 break;
@@ -380,6 +393,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[2].v = vertexBuffer[face->c].v;
                     quad[3].u = vertexBuffer[face->d].u;
                     quad[3].v = vertexBuffer[face->d].v;
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->b].z;
+                    quad[2].z = vertexBufferT[face->c].z;
+                    quad[3].z = vertexBufferT[face->d].z;
+#endif
                     DrawTexturedFace(quad, spriteSheetID);
                 }
                 break;
@@ -393,6 +412,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[2].y = SCREEN_CENTERY - projectionY * vertexBufferT[face->c].y / vertexBufferT[face->c].z;
                     quad[3].x = SCREEN_CENTERX + projectionX * vertexBufferT[face->d].x / vertexBufferT[face->d].z;
                     quad[3].y = SCREEN_CENTERY - projectionY * vertexBufferT[face->d].y / vertexBufferT[face->d].z;
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->b].z;
+                    quad[2].z = vertexBufferT[face->c].z;
+                    quad[3].z = vertexBufferT[face->d].z;
+#endif
                     DrawFace(quad, face->color);
                 }
                 break;
@@ -407,6 +432,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[2].y = vertexBufferT[face->c].y;
                     quad[3].x = vertexBufferT[face->d].x;
                     quad[3].y = vertexBufferT[face->d].y;
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->b].z;
+                    quad[2].z = vertexBufferT[face->c].z;
+                    quad[3].z = vertexBufferT[face->d].z;
+#endif
                     DrawFace(quad, face->color);
                 }
                 break;
@@ -427,6 +458,12 @@ void Draw3DScene(int spriteSheetID)
                     if (fogStr > fogStrength)
                         fogStr = fogStrength;
 
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->b].z;
+                    quad[2].z = vertexBufferT[face->c].z;
+                    quad[3].z = vertexBufferT[face->d].z;
+#endif
                     DrawFadedFace(quad, face->color, fogColor, 0xFF - fogStr);
                 }
                 break;
@@ -455,6 +492,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[3].u = vertexBuffer[face->a].u + vertexBuffer[face->c].u;
                     quad[3].v = vertexBuffer[face->a].v + vertexBuffer[face->c].v;
 
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->a].z;
+                    quad[2].z = vertexBufferT[face->a].z;
+                    quad[3].z = vertexBufferT[face->a].z;
+#endif
                     DrawTexturedFace(quad, spriteSheetID);
                 }
                 break;
@@ -480,6 +523,12 @@ void Draw3DScene(int spriteSheetID)
                     quad[3].u = vertexBuffer[face->a].u + vertexBuffer[face->c].u;
                     quad[3].v = vertexBuffer[face->a].v + vertexBuffer[face->c].v;
 
+#if RETRO_PLATFORM == RETRO_PS3
+                    quad[0].z = vertexBufferT[face->a].z;
+                    quad[1].z = vertexBufferT[face->a].z;
+                    quad[2].z = vertexBufferT[face->a].z;
+                    quad[3].z = vertexBufferT[face->a].z;
+#endif
                     DrawTexturedFaceBlended(quad, spriteSheetID);
                 }
                 break;
