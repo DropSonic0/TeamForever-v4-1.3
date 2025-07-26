@@ -208,11 +208,60 @@ bool WriteSaveRAMData()
 
 void InitUserdata()
 {
+// #if RETRO_PLATFORM == RETRO_PS3 // Commented out explicit log file creation
+//     // Attempt to create/clear log.txt at startup for PS3
+//     char logPathBuffer[0x100];
+//     sprintf(logPathBuffer, BASE_PATH "log.txt");
+//     FileIO *logFile = fOpen(logPathBuffer, "w"); // "w" to create or truncate
+//     if (logFile) {
+//         // printf("PS3 LOG INIT: Successfully opened and truncated %s\n", logPathBuffer); // Console printf remains removed
+//         fClose(logFile); // Ensure file is closed after creation/truncation
+//     } else {
+//         // printf("PS3 LOG INIT ERROR: Failed to open/create %s for writing.\n", logPathBuffer); // Console printf remains removed
+//     }
+// #endif
+
+    bool is_s2a = false; // Declare for S2A detection state
+
     // userdata files are loaded from this directory
     sprintf(gamePath, "%s", BASE_PATH);
 #if RETRO_USE_MOD_LOADER
     sprintf(modsPath, "%s", BASE_PATH);
 #endif
+    PrintLog("Initial gamePath: %s", gamePath);
+#if RETRO_USE_MOD_LOADER
+    PrintLog("Initial modsPath: %s", modsPath);
+#endif
+
+    // Sonic 2 Absolute Path Detection & Override
+    // IMPORTANT: This path is specific to PS3.
+#if RETRO_PLATFORM == RETRO_PS3
+    char s2a_flag_check_path[0x180];
+    // Revert to checking for s2a_flag.txt in S2A's USRDIR (absolute path)
+    sprintf(s2a_flag_check_path, "/dev_hdd0/game/S2A00S1F0/USRDIR/s2a_flag.txt");
+    // Use printf for immediate console feedback
+    printf("PS3 S2A CHECK: Attempting to detect S2A by checking path: %s\n", s2a_flag_check_path);
+    FileIO *s2a_check_file = fOpen(s2a_flag_check_path, "rb");
+
+    if (s2a_check_file) {
+        fClose(s2a_check_file);
+        is_s2a = true;
+        printf("PS3 S2A CHECK: Sonic 2 Absolute DETECTED by presence of %s.\n", s2a_flag_check_path);
+        PrintLog("Sonic 2 Absolute detected by presence of %s.", s2a_flag_check_path); 
+
+        // Ensure gamePath and modsPath are correctly set for S2A if detected.
+        sprintf(gamePath, "/dev_hdd0/game/S2A00S1F0/USRDIR/");
+        PrintLog("Set gamePath FORCED for S2A: %s", gamePath);
+
+#if RETRO_USE_MOD_LOADER
+        sprintf(modsPath, "/dev_hdd0/game/S2A00S1F0/USRDIR/mods/");
+        PrintLog("Set modsPath FORCED for S2A: %s", modsPath);
+#endif
+    } else {
+        printf("PS3 S2A CHECK: Sonic 2 Absolute NOT detected via %s. Using gamePath derived from BASE_PATH: %s\n", s2a_flag_check_path, gamePath);
+        PrintLog("Sonic 2 Absolute not detected via %s. Using gamePath derived from BASE_PATH: %s", s2a_flag_check_path, gamePath);
+    }
+#endif // RETRO_PLATFORM == RETRO_PS3
 
 #if RETRO_PLATFORM == RETRO_OSX
     char macBuffer[0x100];
@@ -250,35 +299,56 @@ void InitUserdata()
     else
         sprintf(buffer, "%ssettings.ini", gamePath);
 #elif RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_ANDROID
-    sprintf(buffer, "%s/settings.ini", gamePath);
+    sprintf(buffer, "%s/settings.ini", gamePath); // Uses the potentially updated gamePath
+#elif RETRO_PLATFORM == RETRO_PS3
+    sprintf(buffer, "%ssettings.ini", gamePath); // gamePath is already correctly set for S1F or S2A by prior logic
 #else
-    sprintf(buffer, BASE_PATH "settings.ini");
+    sprintf(buffer, BASE_PATH "settings.ini"); // Generic fallback
 #endif
+    PrintLog("Attempting to load settings.ini from: %s", buffer);
     FileIO *file = fOpen(buffer, "rb");
     if (!file) {
         IniParser ini;
 
-        ini.SetBool("Dev", "DevMenu", Engine.devMenu = false);
-        ini.SetBool("Dev", "EngineDebugMode", engineDebugMode = false);
-        ini.SetBool("Dev", "TxtScripts", forceUseScripts = false);
-        forceUseScripts_Config = forceUseScripts;
-        ini.SetInteger("Dev", "StartingCategory", Engine.startList = 255);
-        ini.SetInteger("Dev", "StartingScene", Engine.startStage = 255);
-        ini.SetInteger("Dev", "StartingPlayer", Engine.startPlayer = 255);
-        ini.SetInteger("Dev", "StartingSaveFile", Engine.startSave = 255);
-        ini.SetInteger("Dev", "FastForwardSpeed", Engine.fastForwardSpeed = 8);
-        Engine.startList_Game  = Engine.startList;
-        Engine.startStage_Game = Engine.startStage;
+        ini.SetBool("Dev", "DevMenu", Engine.devMenu = false); // Common default
+        ini.SetBool("Dev", "EngineDebugMode", engineDebugMode = false); // Common default, also matches your S2A example
 
-        ini.SetBool("Dev", "UseHQModes", Engine.useHQModes = true);
-        ini.SetString("Dev", "DataFile", (char *)"Data.rsdk");
-		
-        StrCopy(Engine.dataFile[0], "Data.rsdk");
-
-        //if (!StrComp(Engine.dataFile[1], "")) {
-            ini.SetString("Dev", "DataFile2", (char *)"Data.rsdk.xmf");
+        // S2A Specific defaults if is_s2a is true
+#if RETRO_PLATFORM == RETRO_PS3 // This conditional setting is PS3-specific for S2A
+        if (is_s2a) {
+            ini.SetBool("Dev", "TxtScripts", forceUseScripts = false); // As per your S2A example (runtime override will still make it true for the session)
+            ini.SetString("Dev", "DataFile", (char *)"Data");
+            StrCopy(Engine.dataFile[0], "Data"); // Ensure engine immediately knows
+            Engine.dataFile[1][0] = '\0'; // S2A does not use DataFile2 by default
+            ini.SetString("Dev", "DataFile2", (char *)""); // Make it blank in INI too
+        } else {
+            ini.SetBool("Dev", "TxtScripts", forceUseScripts = false); // Standard default for S1F
+            ini.SetString("Dev", "DataFile", (char *)"Data.rsdk");
+            StrCopy(Engine.dataFile[0], "Data.rsdk");
+            ini.SetString("Dev", "DataFile2", (char *)"Data.rsdk.xmf"); // Standard default for S1F
             StrCopy(Engine.dataFile[1], "Data.rsdk.xmf");
-        //}
+        }
+#else // Fallback for other platforms or if PS3 S2A logic isn't hit
+        ini.SetBool("Dev", "TxtScripts", forceUseScripts = false);
+        ini.SetString("Dev", "DataFile", (char *)"Data.rsdk");
+        StrCopy(Engine.dataFile[0], "Data.rsdk");
+        ini.SetString("Dev", "DataFile2", (char *)"Data.rsdk.xmf");
+        StrCopy(Engine.dataFile[1], "Data.rsdk.xmf");
+#endif
+        forceUseScripts_Config = forceUseScripts; // Store whatever was decided
+
+        ini.SetInteger("Dev", "StartingCategory", Engine.startList = 255); // Common
+        ini.SetInteger("Dev", "StartingScene", Engine.startStage = 255); // Common
+        ini.SetInteger("Dev", "StartingPlayer", Engine.startPlayer = 255); // Common
+        ini.SetInteger("Dev", "StartingSaveFile", Engine.startSave = 255); // Common
+        ini.SetInteger("Dev", "FastForwardSpeed", Engine.fastForwardSpeed = 8); // Common
+        Engine.startList_Game  = Engine.startList; // Common
+        Engine.startStage_Game = Engine.startStage; // Common
+
+        ini.SetBool("Dev", "UseHQModes", Engine.useHQModes = true); // Common default, matches your S2A example
+		
+        // DataFile and DataFile2 are now set conditionally above
+        // The StrCopy to Engine.dataFile[0] and [1] are also handled above for the initial creation case.
 		
 		
 		/*
@@ -304,7 +374,12 @@ void InitUserdata()
         ini.SetInteger("Network", "Port", networkPort = 50);
 #endif
 
-        ini.SetBool("Window", "FullScreen", Engine.startFullScreen = DEFAULT_FULLSCREEN);
+        bool initialFullScreenState = DEFAULT_FULLSCREEN;
+#if RETRO_PLATFORM == RETRO_PS3
+        initialFullScreenState = true;
+#endif
+        Engine.startFullScreen = initialFullScreenState; // Keep Engine.startFullScreen consistent
+        ini.SetBool("Window", "FullScreen", initialFullScreenState);
         ini.SetBool("Window", "Borderless", Engine.borderless = false);
         ini.SetBool("Window", "VSync", Engine.vsync = true);
         ini.SetInteger("Window", "ScalingMode", Engine.scalingMode = 0);
@@ -403,7 +478,8 @@ void InitUserdata()
         if (!ini.GetBool("Dev", "DevMenu", &Engine.devMenu))
             Engine.devMenu = false;
         if (!ini.GetBool("Dev", "EngineDebugMode", &engineDebugMode))
-            engineDebugMode = false;
+            engineDebugMode = false; // Default to false if not in settings.ini
+        // If GetBool returns true, engineDebugMode is already set from settings.ini, so no 'else' needed to force it.
         if (!ini.GetBool("Dev", "TxtScripts", &forceUseScripts))
             forceUseScripts = true;
         forceUseScripts_Config = forceUseScripts;
@@ -460,6 +536,9 @@ void InitUserdata()
 
         if (!ini.GetBool("Window", "FullScreen", &Engine.startFullScreen))
             Engine.startFullScreen = DEFAULT_FULLSCREEN;
+#if RETRO_PLATFORM == RETRO_PS3
+        Engine.startFullScreen = true; // Force fullscreen ON for PS3, overriding INI
+#endif
         if (!ini.GetBool("Window", "Borderless", &Engine.borderless))
             Engine.borderless = false;
         if (!ini.GetBool("Window", "VSync", &Engine.vsync))
@@ -638,6 +717,44 @@ void InitUserdata()
 #endif
     }
 
+#if RETRO_PLATFORM == RETRO_PS3 // This S2A logic is PS3 specific
+    if (is_s2a) {
+        PrintLog("S2A: Current Engine.dataFile[0] after settings.ini load: %s", Engine.dataFile[0]);
+        if (strcmp(Engine.dataFile[0], "Data") != 0) {
+            PrintLog("S2A: Overriding Engine.dataFile[0] to 'Data'. Old value was: %s", Engine.dataFile[0]);
+            StrCopy(Engine.dataFile[0], "Data");
+        }
+        // Clear DataFile1, DataFile2, DataFile3 as S2A likely only uses one primary "Data" file.
+        // The settings.ini parsing might populate Engine.dataFile[1] with "Data.rsdk.xmf" by default.
+        if (Engine.dataFile[1][0] != '\0') {
+             PrintLog("S2A: Clearing Engine.dataFile[1]. Old value was: %s", Engine.dataFile[1]);
+             Engine.dataFile[1][0] = '\0';
+        }
+        if (Engine.dataFile[2][0] != '\0') {
+             PrintLog("S2A: Clearing Engine.dataFile[2]. Old value was: %s", Engine.dataFile[2]);
+             Engine.dataFile[2][0] = '\0';
+        }
+        if (Engine.dataFile[3][0] != '\0') {
+             PrintLog("S2A: Clearing Engine.dataFile[3]. Old value was: %s", Engine.dataFile[3]);
+             Engine.dataFile[3][0] = '\0';
+        }
+        PrintLog("S2A: Final Engine.dataFile[0]: %s, Engine.dataFile[1]: '%s'", Engine.dataFile[0], Engine.dataFile[1]);
+
+        // Ensure S2A uses loose scripts if TxtScripts wasn't already true from settings.ini
+        if (!forceUseScripts) {
+            PrintLog("S2A: Forcing forceUseScripts to true as it was false.");
+            forceUseScripts = true;
+            // forceUseScripts_Config is used when writing settings back.
+            // If settings.ini had TxtScripts=false, we are overriding it for this session.
+            // We might want to also set forceUseScripts_Config = true if this override should persist.
+            // For now, just ensuring it's true for this run.
+            // Userdata.cpp already has: forceUseScripts_Config = forceUseScripts; before settings.ini read
+            // and after settings.ini read. So this should be fine.
+        }
+    }
+#endif // RETRO_PLATFORM == RETRO_PS3
+    PrintLog("Userdata::InitUserdata - After S2A specific logic - forceUseScripts: %d, engineDebugMode: %d, gamePath: %s", forceUseScripts, engineDebugMode, gamePath);
+
 #if RETRO_USING_SDL2
     // Support for extra controller types SDL doesn't recognise
 #if RETRO_PLATFORM == RETRO_UWP
@@ -738,6 +855,9 @@ void WriteSettings()
 #endif
 
     ini.SetComment("Window", "FSComment", "Determines if the window will be fullscreen or not");
+#if RETRO_PLATFORM == RETRO_PS3
+    Engine.startFullScreen = true; // Ensure the value about to be saved is true for PS3
+#endif
     ini.SetBool("Window", "FullScreen", Engine.startFullScreen);
     ini.SetComment("Window", "BLComment", "Determines if the window will be borderless or not");
     ini.SetBool("Window", "Borderless", Engine.borderless);

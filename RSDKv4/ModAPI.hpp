@@ -53,7 +53,7 @@ extern byte playerCount;
 inline void SetActiveMod(int id) { activeMod = id; }
 
 void InitMods();
-bool LoadMod(ModInfo *info, const char* baseModsPath, const char* folderName, bool active);
+bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool active);
 void ScanModFolder(ModInfo *info);
 void SaveMods();
 
