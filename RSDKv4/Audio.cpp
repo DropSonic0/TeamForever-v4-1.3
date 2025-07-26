@@ -666,12 +666,6 @@ bool PlayMusic(int track, int musStartPos)
         return false;
 
     if (musicTracks[track].fileName[0]) {
-        if (Engine.isDrawing) {
-            pendingMusicTrack = track;
-            musicStartPos     = musStartPos;
-            return true;
-        }
-
         if (musicStatus != MUSIC_LOADING) {
             LockAudioDevice();
             if (track < 0 || track >= TRACK_COUNT) {

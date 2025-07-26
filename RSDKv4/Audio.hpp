@@ -93,7 +93,6 @@ extern int musicRatio;
 extern TrackInfo musicTracks[TRACK_COUNT];
 
 extern int currentStreamIndex;
-extern int pendingMusicTrack;
 extern StreamFile streamFile[STREAMFILE_COUNT];
 extern StreamInfo streamInfo[STREAMFILE_COUNT];
 extern StreamFile *streamFilePtr;
@@ -165,7 +164,6 @@ static inline void LoadMusicAsync(void *userdata)
 #else
 #define LoadMusicAsync(userdata) LoadMusic(userdata)
 #endif
-
 void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint);
 void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint ratio);
 bool PlayMusic(int track, int musStartPos);
