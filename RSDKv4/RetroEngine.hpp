@@ -9,6 +9,7 @@
 #define RETRO_USE_ORIGINAL_CODE (0)
 
 #define RETRO_USE_MOD_LOADER (!RETRO_USE_ORIGINAL_CODE && 1)
+// #define RETRO_USE_NETWORKING (!RETRO_USE_ORIGINAL_CODE && 1) // Original
 #if RETRO_PLATFORM == RETRO_PS3
 #define RETRO_USE_NETWORKING (0) // Deshabilitar networking para PS3
 #else
@@ -35,7 +36,7 @@ typedef unsigned int uint;
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
 #define RETRO_XBOX_360 (2)
-#define RETRO_PS3_ENUM (3)
+#define RETRO_PS3_ENUM (3) // Enum value for PS3
 #define RETRO_iOS      (4)
 #define RETRO_ANDROID  (5)
 #define RETRO_WP7      (6)
@@ -322,8 +323,8 @@ enum RetroGameType {
 
 #elif RETRO_PLATFORM == RETRO_PS3
 #include <SDL2/SDL.h>
-#include <vorbis/vorbisfile.h> // Asumiendo que libvorbis est� disponible para PS3
-// Es posible que se necesiten inclusiones espec�ficas de PSL1GHT aqu�
+#include <vorbis/vorbisfile.h> // Asumiendo que libvorbis está disponible para PS3
+// Es posible que se necesiten inclusiones específicas de PSL1GHT aquí
 #elif RETRO_USING_SDL2
 #include <SDL2/SDL.h>
 #include <vorbis/vorbisfile.h>
@@ -364,7 +365,80 @@ extern bool engineDebugMode;
 #include "Video.hpp"
 
 // Native Entities
-#include "NativeObjects.hpp"
+#include "NativeObjects/NativeObjects.hpp"
+
+#ifndef LAYER_DISABLED
+#define LAYER_DISABLED (0xFF)
+#endif
+#ifndef FX_NONE
+#define FX_NONE (0)
+#endif
+#ifndef FX_INK
+#define FX_INK (1 << 0)
+#endif
+#ifndef FX_ALPHA
+#define FX_ALPHA (1 << 1)
+#endif
+#ifndef FX_HSCALE
+#define FX_HSCALE (1 << 2)
+#endif
+#ifndef FX_VSCALE
+#define FX_VSCALE (1 << 3)
+#endif
+#ifndef FX_ROTATE
+#define FX_ROTATE (1 << 4)
+#endif
+#ifndef FX_FLIPX
+#define FX_FLIPX (1 << 5) 
+#endif
+#ifndef FX_FLIPY
+#define FX_FLIPY (1 << 6) 
+#endif
+#ifndef FX_ALL 
+#define FX_ALL (FX_INK | FX_ALPHA | FX_HSCALE | FX_VSCALE | FX_ROTATE | FX_FLIPX | FX_FLIPY)
+#endif
+
+#ifndef MAX_DEBUG_HITBOXES
+#define MAX_DEBUG_HITBOXES 256 
+#endif
+#ifndef MAX_MENU_ENTRIES_SIZE_ARRAY
+#define MAX_MENU_ENTRIES_SIZE_ARRAY 0x200 // o 512
+#endif
+#ifndef MAX_MENU_ROWS
+#define MAX_MENU_ROWS 128      
+#endif
+#ifndef MAX_TEXTMENU_CHARS 
+#define MAX_TEXTMENU_CHARS 2048 
+#endif
+#ifndef MAX_FONT_CHARS
+#define MAX_FONT_CHARS 256     
+#endif
+#ifndef MAX_PALETTE_COUNT 
+#define MAX_PALETTE_COUNT 8    
+#endif
+#ifndef GFXLINEBUFFER_SIZE
+#define GFXLINEBUFFER_SIZE SCREEN_YSIZE 
+#endif
+#ifndef PARALLAX_COUNT 
+#define PARALLAX_COUNT 16 
+#endif
+#ifndef VPARALLAX_COUNT
+#define VPARALLAX_COUNT 16 
+#endif
+#ifndef MAX_TILES_IN_SHEET 
+#define MAX_TILES_IN_SHEET 1024 
+#endif
+#ifndef MAX_TILE_CHUNKS_3D
+#define MAX_TILE_CHUNKS_3D 65536 
+#endif
+#ifndef M7_TABLE_SIZE
+#define M7_TABLE_SIZE 512 
+#endif
+
+#define SCRIPT_DATA_SIZE 0x100000 // O el tamaño real de tu scriptData
+#define MAX_SPRITE_FRAMES SPRITEFRAME_COUNT // SPRITEFRAME_COUNT viene de Animation.hpp
+// Solución temporal para STAGELAYER_COUNT (INVESTIGA EL VALOR CORRECTO):
+#define STAGELAYER_COUNT 4
 
 class RetroEngine
 {
@@ -487,9 +561,9 @@ public:
     uint *texBuffer = nullptr;
 
 #if !RETRO_USE_ORIGINAL_CODE
-    bool isFullScreen = false;
+    bool isFullScreen = true;
 
-    bool startFullScreen  = false; // if should start as fullscreen
+    bool startFullScreen  = true; // if should start as fullscreen
     bool borderless       = false;
     bool vsync            = true;
     int scalingMode       = 0;
@@ -506,35 +580,30 @@ public:
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
+    // ... otros miembros ...
 #if RETRO_USING_SDL2
     SDL_Window *window = nullptr;
 #if !RETRO_USING_OPENGL
     SDL_Renderer *renderer = nullptr;
 #if RETRO_SOFTWARE_RENDER
-    SDL_Texture *screenBuffer   = nullptr;
-    SDL_Texture *screenBuffer2x = nullptr;
-    SDL_Texture *videoBuffer = nullptr;
+    // SDL_Texture *screenBuffer   = nullptr; // Comentado o eliminado
+    SDL_Texture *gameRenderTexture = nullptr; // NUEVO NOMBRE
+    SDL_Texture *screenBuffer2x = nullptr;    // Se mantiene por ahora para posible uso HQ
+    // SDL_Texture *videoBuffer = nullptr;    // Comentado o eliminado
+    SDL_Texture *videoTexture = nullptr;      // NUEVO NOMBRE
 #endif // RETRO_SOFTWARE_RENDERER
-#endif
+#endif // !RETRO_USING_OPENGL
 
     SDL_Event sdlEvents;
 
 #if RETRO_USING_OPENGL
-    SDL_GLContext glContext; // OpenGL context
-#endif // RETRO_USING_OPENGL
+    SDL_GLContext glContext; 
+#endif 
 #endif // RETRO_USING_SDL2
-
-#if RETRO_USING_SDL1
-    SDL_Surface *windowSurface = nullptr;
-
-    SDL_Surface *screenBuffer   = nullptr;
-    SDL_Surface *screenBuffer2x = nullptr;
-    SDL_Surface *videoBuffer = nullptr;
-
-    SDL_Event sdlEvents;
-#endif // RETRO_USING_SDL1
+    // ... resto de la struct ...
 #endif //! RETRO_USE_ORIGINAL_CODE
-};
+// ...
+}; // Fin de class RetroEngine
 
 extern RetroEngine Engine;
 #endif // !RETROENGINE_H

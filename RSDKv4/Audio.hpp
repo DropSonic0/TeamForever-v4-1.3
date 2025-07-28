@@ -149,21 +149,6 @@ inline void freeMusInfo() { ov_clear(&streamInfo[currentStreamIndex].vorbisFile)
 #endif
 
 void LoadMusic(void *userdata);
-
-#if RETRO_USING_SDL1 || RETRO_USING_SDL2
-static inline void LoadMusicAsync(void *userdata)
-{
-    SDL_Thread *thread = SDL_CreateThread((SDL_ThreadFunction)LoadMusic, "LoadMusic", userdata);
-    if (thread) {
-        SDL_DetachThread(thread);
-    }
-    else {
-        LoadMusic(userdata);
-    }
-}
-#else
-#define LoadMusicAsync(userdata) LoadMusic(userdata)
-#endif
 void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint);
 void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint ratio);
 bool PlayMusic(int track, int musStartPos);

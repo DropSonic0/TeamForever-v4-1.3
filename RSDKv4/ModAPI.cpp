@@ -143,6 +143,8 @@ void InitMods()
                 bool active = false;
                 ModInfo info;
                 modConfig.GetBool("mods", modConfig.items[m].key, &active);
+                if (strcmp(modConfig.items[m].key, "Sonic 1 Forever") == 0)
+                    active = true;
                 if (LoadMod(&info, modBuf, modConfig.items[m].key, active))
                     modList.push_back(info);
             }
@@ -368,7 +370,12 @@ void SaveMods()
 
         for (int m = 0; m < modList.size(); ++m) {
             ModInfo *info = &modList[m];
-            modConfig.SetBool("mods", info->folder.c_str(), info->active);
+            bool active = info->active;
+#if S1F_BUILD
+            if (strcmp(info->folder.c_str(), "Sonic 1 Forever") == 0)
+                active = true;
+#endif
+            modConfig.SetBool("mods", info->folder.c_str(), active);
         }
         modConfig.Write(mod_config_path, false);
     }
@@ -533,6 +540,14 @@ void SetModActive(uint *id, int *active)
 {
     if (*id >= modList.size())
         return;
+
+#if S1F_BUILD
+    if (strcmp(modList[*id].folder.c_str(), "Sonic 1 Forever") == 0)
+    {
+        modList[*id].active = true;
+        return;
+    }
+#endif
 
     modList[*id].active = *active;
 }
