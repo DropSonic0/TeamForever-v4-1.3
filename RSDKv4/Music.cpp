@@ -320,3 +320,17 @@ void ResumeSound()
     if (musicStatus == MUSIC_PAUSED)
         musicStatus = MUSIC_PLAYING;
 }
+
+void ReleaseMusic()
+{
+    for (int i = 0; i < TRACK_COUNT; ++i) {
+        if (streamInfo[i].loaded) {
+            if (streamInfo[i].stream) {
+                SDL_FreeAudioStream(streamInfo[i].stream);
+                streamInfo[i].stream = NULL;
+            }
+            ov_clear(&streamInfo[i].vorbisFile);
+            streamInfo[i].loaded = false;
+        }
+    }
+}

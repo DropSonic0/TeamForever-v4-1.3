@@ -605,6 +605,7 @@ void LoadStageFiles(void)
     StopAllSfx();
     if (!CheckCurrentStageFolder(stageListPosition)) {
         PrintLog("Loading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
+        ReleaseMusic();
         ReleaseStageSfx();
         ClearScriptData();
         for (int i = SURFACE_COUNT; i > 0; i--) RemoveGraphicsFile((char *)"", i - 1);
