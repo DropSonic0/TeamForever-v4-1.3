@@ -208,7 +208,7 @@ void SettingsScreen_Main(void *objPtr)
                                 if (!musicEnabled) {
                                     musicEnabled = true;
                                     if (!self->isPauseMenu)
-                                        PlayMusic(0, 0);
+                                        PlayMusic(0, 0, true);
                                 }
                                 SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
                             }
@@ -322,7 +322,7 @@ void SettingsScreen_Main(void *objPtr)
                         }
                         if (!musicEnabled) {
                             musicEnabled = true;
-                            PlayMusic(0, 0);
+                            PlayMusic(0, 0, true);
                         }
                         SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
                     }

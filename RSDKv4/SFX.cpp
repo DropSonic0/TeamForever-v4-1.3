@@ -155,6 +155,7 @@ void LoadSfx(char *filePath, byte sfxID)
                     else { // this causes errors, actually
                         PrintLog("Unable to read sfx: %s (error: %s)", info.fileName, SDL_GetError());
                         sfxList[sfxID].loaded = false;
+                        free(convert.buf);
                         SDL_FreeWAV(wav_buffer);
                     }
                 }

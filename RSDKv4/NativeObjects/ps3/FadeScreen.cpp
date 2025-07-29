@@ -23,7 +23,7 @@ void FadeScreen_Main(void *objPtr)
                 RemoveNativeObject(self);
                 Engine.nativeMenuFadeIn = false;
                 SetMusicTrack("MainMenu.ogg", 0, true, 106596);
-                PlayMusic(0, 0);
+                PlayMusic(0, 0, true);
             }
             break;
 

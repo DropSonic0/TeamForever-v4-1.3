@@ -200,6 +200,7 @@ void LoadMusic(void *userdata)
             streamInfoPtr       = &streamInfo[currentStreamIndex];
             currentMusicTrack   = -1;
             musicPosition       = 0;
+            UnlockAudioDevice();
         }
         else {
             musicStatus = MUSIC_STOPPED;
@@ -213,13 +214,14 @@ void LoadMusic(void *userdata)
                 case OV_EBADHEADER: PrintLog("Vorbis open error: Invalid Vorbis bitstream header"); break;
                 case OV_EFAULT: PrintLog("Vorbis open error: Internal logic fault; indicates a bug or heap / stack corruption"); break;
             }
+            UnlockAudioDevice();
         }
     }
     else {
         musicStatus = MUSIC_STOPPED;
 		trackID = -1;
+        UnlockAudioDevice();
     }
-    UnlockAudioDevice();
 }
 
 void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint)
@@ -247,11 +249,11 @@ void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint rat
         track->loopPoint = loopPoint;
         musicRatio       = ratio;
         UnlockAudioDevice();
-        PlayMusic(trackID, 1);
+        PlayMusic(trackID, 1, true);
     }
 }
 
-bool PlayMusic(int track, int musStartPos)
+bool PlayMusic(int track, int musStartPos, bool async)
 {
     if (!audioEnabled)
         return false;
@@ -267,16 +269,23 @@ bool PlayMusic(int track, int musStartPos)
             musicStartPos     = musStartPos;
             currentMusicTrack = track;
             musicStatus       = MUSIC_LOADING;
-            LoadMusic(NULL);
-            UnlockAudioDevice();
+            if (async) {
+                SDL_Thread *thread = SDL_CreateThread((SDL_ThreadFunction)LoadMusic, "LoadMusic", NULL);
+                if (thread) {
+                    SDL_DetachThread(thread); // Detach the thread
+                } else {
+                    // Fallback to synchronous loading if thread creation failed
+                    // Optionally, add RSDK::PrintLog(PRINT_ERROR, "Failed to create SDL_Thread for LoadMusic, loading synchronously.");
+                    LoadMusic(NULL);
+                }
+            } else {
+                LoadMusic(NULL);
+            }
             return true;
         }
         else {
             PrintLog("WARNING music tried to play while music was loading!");
         }
-    }
-    else {
-        StopMusic(true);
     }
 
     return false;

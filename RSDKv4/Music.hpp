@@ -72,7 +72,7 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted);
 void LoadMusic(void *userdata);
 void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint);
 void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint ratio);
-bool PlayMusic(int track, int musStartPos);
+bool PlayMusic(int track, int musStartPos, bool async = false);
 void StopMusic(bool setStatus);
 bool PauseSound();
 void ResumeSound();

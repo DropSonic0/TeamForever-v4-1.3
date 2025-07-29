@@ -165,7 +165,7 @@ void TitleScreen_Main(void *objPtr)
 
     switch (self->state) {
         case TITLESCREEN_STATE_SETUP: {
-            PlayMusic(0, 0);
+            PlayMusic(0, 0, true);
             self->state = TITLESCREEN_STATE_ENTERINTRO;
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, self->introRectAlpha);

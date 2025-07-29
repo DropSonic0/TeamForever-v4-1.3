@@ -68,7 +68,7 @@ void MenuControl_Create(void *objPtr)
         offset += self->buttonIncline;
     }
 
-    PlayMusic(0, 0);
+    PlayMusic(0, 0, true);
     if (Engine.gameDeviceType == RETRO_STANDARD)
         usePhysicalControls = true;
     BackupNativeObjects();
