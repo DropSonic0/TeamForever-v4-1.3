@@ -255,6 +255,12 @@ void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint rat
 
 bool PlayMusic(int track, int musStartPos, bool async)
 {
+#if RETRO_PLATFORM == RETRO_PS3
+    if (musicStatus == MUSIC_PLAYING || musicStatus == MUSIC_PAUSED) {
+        async = true;
+    }
+#endif
+
     if (!audioEnabled)
         return false;
 
