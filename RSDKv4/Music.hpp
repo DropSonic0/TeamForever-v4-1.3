@@ -63,10 +63,10 @@ extern int musicRatio;
 extern TrackInfo musicTracks[TRACK_COUNT];
 
 extern int currentStreamIndex;
+extern int currentMusicTrack;
+extern SDL_mutex *musicMutex;
 extern StreamFile streamFile[STREAMFILE_COUNT];
 extern StreamInfo streamInfo[STREAMFILE_COUNT];
-extern StreamFile *streamFilePtr;
-extern StreamInfo *streamInfoPtr;
 
 void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted);
 void LoadMusic(void *userdata);
@@ -79,24 +79,7 @@ void ResumeSound();
 void ReleaseMusic();
 
 #if !RETRO_USE_ORIGINAL_CODE
-inline void freeMusInfo()
-{
-    LockAudioDevice();
-
-#if RETRO_USING_SDL2
-    if (streamInfo[currentStreamIndex].stream)
-        SDL_FreeAudioStream(streamInfo[currentStreamIndex].stream);
-    streamInfo[currentStreamIndex].stream = NULL;
-#endif
-
-    ov_clear(&streamInfo[currentStreamIndex].vorbisFile);
-
-#if RETRO_USING_SDL2
-    streamInfo[currentStreamIndex].stream = nullptr;
-#endif
-
-    UnlockAudioDevice();
-}
+void freeMusInfo();
 #endif
 
 #endif // !MUSIC_H

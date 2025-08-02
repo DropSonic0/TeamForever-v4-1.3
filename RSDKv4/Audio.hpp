@@ -23,6 +23,7 @@ extern int bgmVolume;
 extern bool audioEnabled;
 
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
+extern SDL_mutex *musicMutex;
 extern SDL_AudioSpec audioDeviceFormat;
 #endif
 
@@ -73,6 +74,9 @@ inline void ReleaseAudioDevice()
     StopAllSfx();
     ReleaseStageSfx();
     ReleaseGlobalSfx();
+
+    if (musicMutex)
+        SDL_DestroyMutex(musicMutex);
 }
 
 #endif // !AUDIO_H

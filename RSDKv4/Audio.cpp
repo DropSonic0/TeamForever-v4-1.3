@@ -3,10 +3,25 @@
 #include "SFX.hpp"
 #include <cmath>
 
+// --- Audio System ---
 int masterVolume  = MAX_VOLUME;
 int sfxVolume     = 40;
 int bgmVolume     = 40;
 bool audioEnabled = false;
+
+// --- Music System ---
+int trackID            = -1;
+bool musicEnabled      = false;
+int musicStatus        = MUSIC_STOPPED;
+int musicStartPos      = 0;
+int musicPosition      = 0;
+int musicRatio         = 0;
+TrackInfo musicTracks[TRACK_COUNT];
+int currentStreamIndex = 0;
+SDL_mutex *musicMutex  = NULL;
+StreamFile streamFile[STREAMFILE_COUNT];
+StreamInfo streamInfo[STREAMFILE_COUNT];
+int currentMusicTrack = -1;
 
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
 
@@ -71,6 +86,8 @@ int InitAudioPlayback()
 #endif
 
     LoadGlobalSfx();
+
+    musicMutex = SDL_CreateMutex();
 
     return true;
 }

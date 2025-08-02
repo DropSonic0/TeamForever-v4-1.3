@@ -1,41 +1,34 @@
 #include "RetroEngine.hpp"
 #include "VorbisCallbacks.hpp"
 
-int trackID       = -1;
-bool musicEnabled = 0;
-int musicStatus   = MUSIC_STOPPED;
-int musicStartPos = 0;
-int musicPosition = 0;
-int musicRatio    = 0;
-TrackInfo musicTracks[TRACK_COUNT];
-
-int currentStreamIndex = 0;
-StreamFile streamFile[STREAMFILE_COUNT];
-StreamInfo streamInfo[STREAMFILE_COUNT];
-StreamFile *streamFilePtr = NULL;
-StreamInfo *streamInfoPtr = NULL;
-
-int currentMusicTrack = -1;
 
 void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
 {
-    if (!streamFilePtr || !streamInfoPtr)
+    SDL_LockMutex(musicMutex);
+    StreamInfo *info = &streamInfo[currentStreamIndex];
+
+    if (!info->loaded) {
+        SDL_UnlockMutex(musicMutex);
         return;
-    if (!streamFilePtr->fileSize)
-        return;
+    }
+
     switch (musicStatus) {
         case MUSIC_READY:
         case MUSIC_PLAYING: {
 #if RETRO_USING_SDL2
-            while (musicStatus == MUSIC_PLAYING && streamInfoPtr->stream && SDL_AudioStreamAvailable(streamInfoPtr->stream) < bytes_wanted) {
+            if (!info->stream) {
+                SDL_UnlockMutex(musicMutex);
+                return;
+            }
+            while (musicStatus == MUSIC_PLAYING && info->stream && SDL_AudioStreamAvailable(info->stream) < bytes_wanted) {
                 // We need more samples: get some
-                long bytes_read = ov_read(&streamInfoPtr->vorbisFile, (char *)streamInfoPtr->buffer, sizeof(streamInfoPtr->buffer), 0, 2, 1,
-                                          &streamInfoPtr->vorbBitstream);
+                long bytes_read = ov_read(&info->vorbisFile, (char *)info->buffer, sizeof(info->buffer), 0, 2, 1,
+                                          &info->vorbBitstream);
 
                 if (bytes_read == 0) {
                     // We've reached the end of the file
-                    if (streamInfoPtr->trackLoop) {
-                        ov_pcm_seek(&streamInfoPtr->vorbisFile, streamInfoPtr->loopPoint);
+                    if (info->trackLoop) {
+                        ov_pcm_seek(&info->vorbisFile, info->loopPoint);
                         continue;
                     }
                     else {
@@ -46,17 +39,20 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
                 }
 
                 if (musicStatus != MUSIC_PLAYING
-                    || (streamInfoPtr->stream && SDL_AudioStreamPut(streamInfoPtr->stream, streamInfoPtr->buffer, (int)bytes_read) == -1))
+                    || (info->stream && SDL_AudioStreamPut(info->stream, info->buffer, (int)bytes_read) == -1)) {
+                    SDL_UnlockMutex(musicMutex);
                     return;
+                }
             }
 
             // Now that we know there are enough samples, read them and mix them
-            int bytes_done = SDL_AudioStreamGet(streamInfoPtr->stream, streamInfoPtr->buffer, (int)bytes_wanted);
+            int bytes_done = SDL_AudioStreamGet(info->stream, info->buffer, (int)bytes_wanted);
             if (bytes_done == -1) {
+                SDL_UnlockMutex(musicMutex);
                 return;
             }
             if (bytes_done != 0)
-                ProcessAudioMixing(stream, streamInfoPtr->buffer, bytes_done / sizeof(Sint16), (bgmVolume * masterVolume) / MAX_VOLUME, 0);
+                ProcessAudioMixing(stream, info->buffer, bytes_done / sizeof(Sint16), (bgmVolume * masterVolume) / MAX_VOLUME, 0);
 #endif
 
 #if RETRO_USING_SDL1
@@ -117,7 +113,7 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
                 free(buffer);
 #endif
 
-            musicPosition = ov_pcm_tell(&streamInfoPtr->vorbisFile);
+            musicPosition = ov_pcm_tell(&info->vorbisFile);
             break;
         }
         case MUSIC_STOPPED:
@@ -126,30 +122,67 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
             // dont play
             break;
     }
+    SDL_UnlockMutex(musicMutex);
 }
+
+#if !RETRO_USE_ORIGINAL_CODE
+void freeMusInfo()
+{
+    SDL_LockMutex(musicMutex);
+    int streamID = currentStreamIndex;
+
+#if RETRO_USING_SDL2
+    if (streamInfo[streamID].loaded && streamInfo[streamID].stream) {
+        SDL_FreeAudioStream(streamInfo[streamID].stream);
+        streamInfo[streamID].stream = NULL;
+    }
+#endif
+
+    if (streamInfo[streamID].loaded)
+        ov_clear(&streamInfo[streamID].vorbisFile);
+
+#if RETRO_USING_SDL2
+    streamInfo[streamID].stream = nullptr;
+#endif
+    streamInfo[streamID].loaded = false;
+
+    SDL_UnlockMutex(musicMutex);
+}
+#endif
 
 void LoadMusic(void *userdata)
 {
-    int oldStreamID = currentStreamIndex;
-    currentStreamIndex++;
-    currentStreamIndex %= STREAMFILE_COUNT;
+    // This function runs in a separate thread, so it needs to be careful with shared data.
+    // It prepares the "back buffer" and then swaps it with the active one.
 
-    LockAudioDevice();
+    SDL_LockMutex(musicMutex);
+    int activeStream = currentStreamIndex;
+    int backBuffer   = 1 - activeStream;
+    SDL_UnlockMutex(musicMutex);
 
-    if (streamFile[currentStreamIndex].fileSize > 0)
-        StopMusic(false);
+    // Clean up the back buffer before using it
+    if (streamInfo[backBuffer].loaded) {
+#if RETRO_USING_SDL2
+        if (streamInfo[backBuffer].stream) {
+            SDL_FreeAudioStream(streamInfo[backBuffer].stream);
+            streamInfo[backBuffer].stream = NULL;
+        }
+#endif
+        ov_clear(&streamInfo[backBuffer].vorbisFile);
+        streamInfo[backBuffer].loaded = false;
+    }
 
     FileInfo info;
     if (LoadFile(musicTracks[currentMusicTrack].fileName, &info)) {
-        StreamInfo *strmInfo = &streamInfo[currentStreamIndex];
+        StreamInfo *strmInfo = &streamInfo[backBuffer];
 
-        StreamFile *musFile = &streamFile[currentStreamIndex];
+        StreamFile *musFile = &streamFile[backBuffer];
         musFile->filePos    = 0;
         musFile->fileSize   = info.vfileSize;
         if (info.vfileSize > MUSBUFFER_SIZE)
             musFile->fileSize = MUSBUFFER_SIZE;
 
-        FileRead(streamFile[currentStreamIndex].buffer, musFile->fileSize);
+        FileRead(musFile->buffer, musFile->fileSize);
         CloseFile();
 
         unsigned long long samples = 0;
@@ -181,26 +214,28 @@ void LoadMusic(void *userdata)
 #endif
 
             if (musicStartPos) {
-                uint oldPos = (uint)ov_pcm_tell(&streamInfo[oldStreamID].vorbisFile);
-
-                float newPos  = oldPos * ((float)musicRatio * 0.0001); // 8,000 == 0.8, 10,000 == 1.0 (ratio / 10,000)
-                musicStartPos = fmod(newPos, samples);
-
-                ov_pcm_seek(&strmInfo->vorbisFile, musicStartPos);
+                if (streamInfo[activeStream].loaded) {
+                    uint oldPos   = (uint)ov_pcm_tell(&streamInfo[activeStream].vorbisFile);
+                    float newPos  = oldPos * ((float)musicRatio * 0.0001); // 8,000 == 0.8, 10,000 == 1.0 (ratio / 10,000)
+                    ov_pcm_seek(&strmInfo->vorbisFile, fmod(newPos, samples));
+                }
+                else {
+                    ov_pcm_seek(&strmInfo->vorbisFile, musicStartPos);
+                }
             }
             musicStartPos = 0;
 
+            SDL_LockMutex(musicMutex);
             musicStatus         = MUSIC_PLAYING;
             masterVolume        = MAX_VOLUME;
             trackID             = currentMusicTrack;
             strmInfo->trackLoop = musicTracks[currentMusicTrack].trackLoop;
             strmInfo->loopPoint = musicTracks[currentMusicTrack].loopPoint;
             strmInfo->loaded    = true;
-            streamFilePtr       = &streamFile[currentStreamIndex];
-            streamInfoPtr       = &streamInfo[currentStreamIndex];
+            currentStreamIndex = backBuffer;
             currentMusicTrack   = -1;
             musicPosition       = 0;
-            UnlockAudioDevice();
+            SDL_UnlockMutex(musicMutex);
         }
         else {
             musicStatus = MUSIC_STOPPED;
@@ -214,13 +249,11 @@ void LoadMusic(void *userdata)
                 case OV_EBADHEADER: PrintLog("Vorbis open error: Invalid Vorbis bitstream header"); break;
                 case OV_EFAULT: PrintLog("Vorbis open error: Internal logic fault; indicates a bug or heap / stack corruption"); break;
             }
-            UnlockAudioDevice();
         }
     }
     else {
         musicStatus = MUSIC_STOPPED;
 		trackID = -1;
-        UnlockAudioDevice();
     }
 }
 
