@@ -16,32 +16,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <ogg/os_types.h> // Para ogg_uint16_t, ANTES de theora/vorbis
 
-#if defined(PS3)
-/*
- * PS3's ogg/config_types.h (o el archivo que ogg/os_types.h incluye para PS3)
- * no define ogg_uint16_t. Lo definimos aquí para que theoraplay
- * y las cabeceras de theora (como theora/codec.h) lo encuentren.
- */
-typedef unsigned short ogg_uint16_t;
-#endif
-
-#if defined(PS3) || (!defined(_WIN32) && !defined(PS3)) // Para PS3 y otros POSIX
-#include <unistd.h> // Para usleep
-#endif
-
-typedef struct TheoraDecoder TheoraDecoder; // Declaración adelantada
-
-#if defined(_WIN32)
-    #define THEORAPLAY_THREAD_T HANDLE
-    #define THEORAPLAY_MUTEX_T  HANDLE
-#elif defined(PS3)
-    #define THEORAPLAY_THREAD_T int
-    #define THEORAPLAY_MUTEX_T  int
-#else // POSIX pthreads (este era el #else original)
-    #define THEORAPLAY_THREAD_T pthread_t
-    #define THEORAPLAY_MUTEX_T  pthread_mutex_t
+#ifdef _WIN32
+#include <windows.h>
+#define THEORAPLAY_THREAD_T    HANDLE
+#define THEORAPLAY_MUTEX_T     HANDLE
+#define sleepms(x) Sleep(x)
+#else
+#include <pthread.h>
+#include <unistd.h>
+#define sleepms(x) usleep((x) * 1000)
+#define THEORAPLAY_THREAD_T    pthread_t
+#define THEORAPLAY_MUTEX_T     pthread_mutex_t
 #endif
 
 #include "theoraplay.h"
@@ -152,9 +138,7 @@ typedef struct TheoraDecoder
 } TheoraDecoder;
 
 
-#if defined(_WIN32)
-    #include <windows.h> // Asegúrate que esté aquí si no estaba global
-    #define sleepms(x) Sleep(x) // Asegúrate que esté aquí
+#ifdef _WIN32
 static inline int Thread_Create(TheoraDecoder *ctx, void *(*routine) (void*))
 {
     ctx->worker = CreateThread(
@@ -189,27 +173,7 @@ static inline void Mutex_Unlock(THEORAPLAY_MUTEX_T mutex)
 {
     ReleaseMutex(mutex);
 }
-
-#elif defined(PS3)
-    // #include <unistd.h> // Ya debería estar incluido arriba si es necesario
-    #define sleepms(x) usleep((x) * 1000)
-    static void *WorkerThreadEntry(void *_this); // Declaración adelantada
-
-    static inline int Thread_Create(TheoraDecoder *ctx, void *(*routine) (void*)) {
-        if (routine == WorkerThreadEntry) { WorkerThreadEntry(ctx); return 0; }
-        return 1;
-    }
-    static inline void Thread_Join(THEORAPLAY_THREAD_T thread) { (void)thread; }
-    static inline int Mutex_Create(TheoraDecoder *ctx) { if(ctx) ctx->lock = 0; return 0; }
-    static inline void Mutex_Destroy(THEORAPLAY_MUTEX_T mutex) { (void)mutex; }
-    static inline void Mutex_Lock(THEORAPLAY_MUTEX_T mutex) { (void)mutex; }
-    static inline void Mutex_Unlock(THEORAPLAY_MUTEX_T mutex) { (void)mutex; }
-
-#else // POSIX pthreads (este era el #else original)
-    #include <pthread.h> // Asegúrate que esté aquí
-    // #include <unistd.h> // Ya debería estar incluido arriba si es necesario
-    #define sleepms(x) usleep((x) * 1000) // Asegúrate que esté aquí
-
+#else
 static inline int Thread_Create(TheoraDecoder *ctx, void *(*routine) (void*))
 {
     return pthread_create(&ctx->worker, NULL, routine, ctx);
@@ -1032,4 +996,3 @@ unsigned int THEORAPLAY_seek(THEORAPLAY_Decoder *decoder, unsigned long mspos)
 } // THEORAPLAY_seek
 
 // end of theoraplay.c ...
-
