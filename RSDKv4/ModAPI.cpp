@@ -383,6 +383,11 @@ void SaveMods()
 
 void RefreshEngine()
 {
+#if RETRO_SOFTWARE_RENDER
+    if (Engine.frameBuffer) delete[] Engine.frameBuffer;
+    if (Engine.texBuffer) delete[] Engine.texBuffer;
+#endif
+
     // Reload entire engine
     Engine.LoadGameConfig("Data/Game/GameConfig.bin");
 #if RETRO_USING_SDL2
@@ -482,6 +487,16 @@ void RefreshEngine()
     }
 
     SaveMods();
+
+#if RETRO_SOFTWARE_RENDER
+    Engine.frameBuffer   = new ushort[GFX_LINESIZE * SCREEN_YSIZE]; 
+    if (!Engine.frameBuffer) { /* ... handle error, cleanup ... */ }
+    memset(Engine.frameBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(ushort));
+
+    Engine.texBuffer = new uint[GFX_LINESIZE * SCREEN_YSIZE]; 
+    if (!Engine.texBuffer) { /* ... handle error, cleanup ... */ }
+    memset(Engine.texBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(uint)); 
+#endif
 
     ReadSaveRAMData();
     ReadUserdata();
