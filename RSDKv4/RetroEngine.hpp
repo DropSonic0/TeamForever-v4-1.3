@@ -323,6 +323,7 @@ enum RetroGameType {
 #elif RETRO_PLATFORM == RETRO_PS3
 #include <SDL2/SDL.h>
 #include <vorbis/vorbisfile.h> // Asumiendo que libvorbis est� disponible para PS3
+#include <theora/theoradec.h>
 // Es posible que se necesiten inclusiones espec�ficas de PSL1GHT aqu�
 #elif RETRO_USING_SDL2
 #include <SDL2/SDL.h>

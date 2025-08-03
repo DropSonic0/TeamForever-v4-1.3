@@ -7,11 +7,29 @@ int videoWidth = 0;
 int videoHeight = 0;
 float videoAR = 0;
 
+SDL_AudioStream *ogv_stream = NULL;
+
+#if defined(PS3)
+ogg_sync_state oggSyncState;
+ogg_stream_state oggTheoraStream;
+th_info theoraInfo;
+th_comment theoraComment;
+th_dec_ctx *theoraDecoder;
+th_setup_info *theoraSetup;
+
+ogg_stream_state oggVorbisStream;
+vorbis_info vorbisInfo;
+vorbis_dsp_state vorbisDSP;
+vorbis_block vorbisBlock;
+vorbis_comment vorbisComment;
+#else
 THEORAPLAY_Decoder *videoDecoder;
 const THEORAPLAY_VideoFrame *videoVidData;
 THEORAPLAY_Io callbacks;
+#endif
 
 byte videoSurface = 0;
+FileIO *videoFile = NULL;
 int videoFilePos = 0;
 int videoPlaying = 0;
 int vidFrameMS = 0;
@@ -19,6 +37,7 @@ int vidBaseTicks = 0;
 
 bool videoSkipped = false;
 
+#if !defined(PS3)
 static long videoRead(THEORAPLAY_Io *io, void *buf, long buflen)
 {
     FileIO *file    = (FileIO *)io->userdata;
@@ -33,6 +52,7 @@ static void videoClose(THEORAPLAY_Io *io)
     FileIO *file = (FileIO *)io->userdata;
     fClose(file);
 }
+#endif
 
 void PlayVideoFile(char *filePath) {
     char pathBuffer[0x100];
@@ -91,29 +111,133 @@ void PlayVideoFile(char *filePath) {
         sprintf(filepath, "%s", pathBuffer);
     }
 
-    FileIO *file = fOpen(filepath, "rb");
-    if (file) {
+    videoFile = fOpen(filepath, "rb");
+    if (videoFile) {
         PrintLog("Loaded File '%s'!", filepath);
 
+#if defined(PS3)
+        ogg_sync_init(&oggSyncState);
+        
+        th_comment_init(&theoraComment);
+        th_info_init(&theoraInfo);
+
+        vorbis_info_init(&vorbisInfo);
+        vorbis_comment_init(&vorbisComment);
+
+        int theora_p = 0;
+        int vorbis_p = 0;
+
+        while (!theora_p || !vorbis_p) {
+            char *buffer    = ogg_sync_buffer(&oggSyncState, 4096);
+            long bytes      = fRead(buffer, 1, 4096, videoFile);
+            ogg_sync_wrote(&oggSyncState, bytes);
+
+            ogg_page oggPage;
+            while (ogg_sync_pageout(&oggSyncState, &oggPage) > 0) {
+                ogg_stream_state test;
+
+                if (!ogg_page_bos(&oggPage)) {
+                    if (theora_p) ogg_stream_pagein(&oggTheoraStream, &oggPage);
+                    if (vorbis_p) ogg_stream_pagein(&oggVorbisStream, &oggPage);
+                    goto header_end;
+                }
+
+                ogg_stream_init(&test, ogg_page_serialno(&oggPage));
+                ogg_stream_pagein(&test, &oggPage);
+                
+                ogg_packet oggPacket;
+                ogg_stream_packetout(&test, &oggPacket);
+
+                if (!theora_p && th_decode_headerin(&theoraInfo, &theoraComment, &theoraSetup, &oggPacket) >= 0) {
+                    memcpy(&oggTheoraStream, &test, sizeof(test));
+                    theora_p = 1;
+                }
+                else if (!vorbis_p && vorbis_synthesis_headerin(&vorbisInfo, &vorbisComment, &oggPacket) >= 0) {
+                    memcpy(&oggVorbisStream, &test, sizeof(test));
+                    vorbis_p = 1;
+                }
+                else {
+                    ogg_stream_clear(&test);
+                }
+            }
+        }
+
+    header_end:
+        while (theora_p && theora_p < 3) {
+            ogg_packet oggPacket;
+            int ret = ogg_stream_packetout(&oggTheoraStream, &oggPacket);
+            if (ret < 0) break;
+            if (ret > 0) {
+                if(th_decode_headerin(&theoraInfo, &theoraComment, &theoraSetup, &oggPacket)) break;
+                theora_p++;
+            }
+
+            ogg_page oggPage;
+            if(ogg_sync_pageout(&oggSyncState, &oggPage) > 0) {
+                if (theora_p) ogg_stream_pagein(&oggTheoraStream, &oggPage);
+                if (vorbis_p) ogg_stream_pagein(&oggVorbisStream, &oggPage);
+            }
+            else {
+                char *buffer    = ogg_sync_buffer(&oggSyncState, 4096);
+                long bytes      = fRead(buffer, 1, 4096, videoFile);
+                ogg_sync_wrote(&oggSyncState, bytes);
+            }
+        }
+
+        while (vorbis_p && vorbis_p < 3) {
+            ogg_packet oggPacket;
+            int ret = ogg_stream_packetout(&oggVorbisStream, &oggPacket);
+            if (ret < 0) break;
+            if (ret > 0) {
+                if(vorbis_synthesis_headerin(&vorbisInfo, &vorbisComment, &oggPacket)) break;
+                vorbis_p++;
+            }
+
+            ogg_page oggPage;
+            if(ogg_sync_pageout(&oggSyncState, &oggPage) > 0) {
+                if (theora_p) ogg_stream_pagein(&oggTheoraStream, &oggPage);
+                if (vorbis_p) ogg_stream_pagein(&oggVorbisStream, &oggPage);
+            }
+            else {
+                char *buffer    = ogg_sync_buffer(&oggSyncState, 4096);
+                long bytes      = fRead(buffer, 1, 4096, videoFile);
+                ogg_sync_wrote(&oggSyncState, bytes);
+            }
+        }
+
+        theoraDecoder = th_decode_alloc(&theoraInfo, theoraSetup);
+        th_setup_free(theoraSetup);
+
+        vorbis_synthesis_init(&vorbisDSP, &vorbisInfo);
+        vorbis_block_init(&vorbisDSP, &vorbisBlock);
+
+        videoWidth  = theoraInfo.pic_width;
+        videoHeight = theoraInfo.pic_height;
+        videoAR = float(videoWidth) / float(videoHeight);
+
+        SetupVideoBuffer(videoWidth, videoHeight);
+        vidBaseTicks = SDL_GetTicks();
+        vidFrameMS   = (theoraInfo.fps_denominator == 0.0) ? 0 : ((Uint32)(1000.0 * theoraInfo.fps_denominator / theoraInfo.fps_numerator));
+#else
         callbacks.read     = videoRead;
         callbacks.close    = videoClose;
-        callbacks.userdata = (void *)file;
+        callbacks.userdata = (void *)videoFile;
 
         // TODO
         // perhaps implement multi audio stream support? (e.g. sonic cd cutscenes)
 #if RETRO_USING_SDL2 && !RETRO_USING_OPENGL
-        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_IYUV);
+        videoDecoder = THEORAPLAY_startDecode(&callbacks, 4, THEORAPLAY_VIDFMT_IYUV);
 #endif
 
         // TODO: does SDL1.2 support YUV?
 #if RETRO_USING_SDL1 && !RETRO_USING_OPENGL
         //videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0);
-        videoDecoder = THEORAPLAY_startDecodeFile(filepath, 30, THEORAPLAY_VIDFMT_IYUV);
+        videoDecoder = THEORAPLAY_startDecodeFile(filepath, 1, THEORAPLAY_VIDFMT_IYUV);
 #endif
 
 #if RETRO_USING_OPENGL
         //videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0);
-        videoDecoder = THEORAPLAY_startDecodeFile(filepath, 30, THEORAPLAY_VIDFMT_RGBA);
+        videoDecoder = THEORAPLAY_startDecodeFile(filepath, 1, THEORAPLAY_VIDFMT_RGBA);
 #endif
 
         if (!videoDecoder) {
@@ -137,6 +261,7 @@ void PlayVideoFile(char *filePath) {
         SetupVideoBuffer(videoWidth, videoHeight);
         vidBaseTicks = SDL_GetTicks();
         vidFrameMS   = (videoVidData->fps == 0.0) ? 0 : ((Uint32)(1000.0 / videoVidData->fps));
+#endif
         videoPlaying = 1; // playing ogv
         trackID      = TRACK_COUNT - 1;
 
@@ -219,6 +344,84 @@ int ProcessVideo() {
             videoSkipped = true;
         }
 
+#if defined(PS3)
+        // Main decoding loop
+        while (true) {
+            // Try to decode and queue some audio
+            float **pcm;
+            int frames = vorbis_synthesis_pcmout(&vorbisDSP, &pcm);
+            if (frames > 0) {
+                // Simple mono mixdown for now
+                float *buffer = (float*)malloc(frames * sizeof(float));
+                for (int i = 0; i < frames; i++) {
+                    buffer[i] = (pcm[0][i] + pcm[1][i]) * 0.5f;
+                }
+                SDL_AudioStreamPut(ogv_stream, buffer, frames * sizeof(float));
+                free(buffer);
+                vorbis_synthesis_read(&vorbisDSP, frames);
+            }
+
+            // Try to decode a video frame
+            ogg_packet oggPacket;
+            if (ogg_stream_packetout(&oggTheoraStream, &oggPacket) > 0) {
+                if (th_decode_packetin(theoraDecoder, &oggPacket, NULL) == 0) {
+                    th_ycbcr_buffer ycbcr;
+                    th_decode_ycbcr_out(theoraDecoder, ycbcr);
+                    void *pixels;
+                    int pitch;
+                    SDL_LockTexture(Engine.videoBuffer, NULL, &pixels, &pitch);
+                    
+                    int y_w = ycbcr[0].width;
+                    int y_h = ycbcr[0].height;
+                    int uv_w = ycbcr[1].width;
+                    int uv_h = ycbcr[1].height;
+
+                    Uint8 *p = (Uint8*)pixels;
+                    for(int i=0; i<y_h; i++) {
+                        memcpy(p, ycbcr[0].data + i * ycbcr[0].stride, y_w);
+                        p += pitch;
+                    }
+                    for(int i=0; i<uv_h; i++) {
+                        memcpy(p, ycbcr[1].data + i * ycbcr[1].stride, uv_w);
+                        p += pitch / 2;
+                    }
+                    for(int i=0; i<uv_h; i++) {
+                        memcpy(p, ycbcr[2].data + i * ycbcr[2].stride, uv_w);
+                        p += pitch / 2;
+                    }
+                    SDL_UnlockTexture(Engine.videoBuffer);
+                    break; // Decoded a video frame, exit loop for this ProcessVideo call
+                }
+            }
+
+            // If we are here, we need more data for one or both streams
+            char *buffer = ogg_sync_buffer(&oggSyncState, 4096);
+            long bytes = fRead(buffer, 1, 4096, videoFile);
+            if (bytes <= 0) {
+                // End of file
+                StopVideoPlayback();
+                ResumeSound();
+                return 1;
+            }
+            ogg_sync_wrote(&oggSyncState, bytes);
+
+            ogg_page oggPage;
+            while (ogg_sync_pageout(&oggSyncState, &oggPage) > 0) {
+                if (ogg_stream_pagein(&oggTheoraStream, &oggPage) != 0) {
+                    // Page doesn't belong to theora, try vorbis
+                    ogg_stream_pagein(&oggVorbisStream, &oggPage);
+                }
+            }
+
+            // Try to get an audio packet
+            if (ogg_stream_packetout(&oggVorbisStream, &oggPacket) > 0) {
+                if (vorbis_synthesis(&vorbisBlock, &oggPacket) == 0) {
+                    vorbis_synthesis_blockin(&vorbisDSP, &vorbisBlock);
+                }
+            }
+        }
+        return 2;
+#else
         // ok so
         // theoraplay is just never returning false for some reason???
         // i hacked around this i guess, check line 237
@@ -287,6 +490,7 @@ int ProcessVideo() {
 
             return 2; // its playing as expected
         }
+#endif
     }
 
     return 0; // its not even initialised
@@ -303,6 +507,20 @@ void StopVideoPlayback()
         if (videoSkipped && fadeMode >= 0xFF)
             fadeMode = 0;
 
+#if defined(PS3)
+        ogg_stream_clear(&oggTheoraStream);
+        th_decode_free(theoraDecoder);
+        th_comment_clear(&theoraComment);
+        th_info_clear(&theoraInfo);
+
+        ogg_stream_clear(&oggVorbisStream);
+        vorbis_block_clear(&vorbisBlock);
+        vorbis_dsp_clear(&vorbisDSP);
+        vorbis_comment_clear(&vorbisComment);
+        vorbis_info_clear(&vorbisInfo);
+
+        ogg_sync_clear(&oggSyncState);
+#else
         if (videoVidData) {
             THEORAPLAY_freeVideo(videoVidData);
             videoVidData = NULL;
@@ -311,7 +529,7 @@ void StopVideoPlayback()
             THEORAPLAY_stopDecode(videoDecoder);
             videoDecoder = NULL;
         }
-
+#endif
         CloseVideoBuffer();
         videoPlaying = 0;
 
@@ -346,7 +564,11 @@ void SetupVideoBuffer(int width, int height)
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
 #elif RETRO_USING_SDL2
-    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_TARGET, width, height);
+#if defined(PS3)
+    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, width, height);
+#else
+    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_TARGET, width, height);
+#endif
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
