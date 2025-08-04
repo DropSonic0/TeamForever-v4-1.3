@@ -23,8 +23,6 @@ distribution.
 
 #include "tinyxml2.h"
 
-#include <cstdio>
-
 #include <new>		// yes, this one new style header, is in the Android SDK.
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <stddef.h>
@@ -35,69 +33,71 @@ distribution.
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
-    // Microsoft Visual Studio, version 2005 and higher. Not WinCE.
-    static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... ) {
-        va_list va;
-        va_start( va, format );
-        const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
-        va_end( va );
-        return result;
-    }
-    static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va ) {
-        const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
-        return result;
-    }
-    #define TIXML_VSCPRINTF _vscprintf
-    #define TIXML_SSCANF    sscanf_s
-#elif defined(_MSC_VER)
-    // Microsoft Visual Studio 2003 and earlier or WinCE
-    #define TIXML_SNPRINTF  _snprintf
-    #define TIXML_VSNPRINTF _vsnprintf
-    #define TIXML_SSCANF    sscanf
-    #if (_MSC_VER < 1400 ) && (!defined WINCE)
-        #define TIXML_VSCPRINTF   _vscprintf
-    #else
-        static inline int TIXML_VSCPRINTF( const char* format, va_list va ) {
-            int len = 512;
-            for (;;) {
-                len = len*2;
-                char* str = new char[len]();
-                const int required = _vsnprintf(str, len, format, va); // Usa _vsnprintf
-                delete[] str;
-                if ( required != -1 ) {
-                    TIXMLASSERT( required >= 0 );
-                    len = required;
-                    break;
-                }
-            }
-            TIXMLASSERT( len >= 0 );
-            return len;
-        }
-    #endif
-#elif defined(PS3) // NUESTRO CASO PARA PS3
-    #include <cstdio> // O <stdio.h> - Asegúrate que esté al inicio del archivo globalmente también.
-    
-    // Macro para TIXML_SNPRINTF: llama a sprintf, ignorando el argumento 'size'.
-    #define TIXML_SNPRINTF(buffer, size, format, ...) sprintf(buffer, format, ##__VA_ARGS__)
+	// Microsoft Visual Studio, version 2005 and higher. Not WinCE.
+	/*int _snprintf_s(
+	   char *buffer,
+	   size_t sizeOfBuffer,
+	   size_t count,
+	   const char *format [,
+		  argument] ...
+	);*/
+	static inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+	{
+		va_list va;
+		va_start( va, format );
+		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		va_end( va );
+		return result;
+	}
 
-    // Macro para TIXML_VSNPRINTF: llama a vsprintf, ignorando el argumento 'size'.
-    #define TIXML_VSNPRINTF(buffer, size, format, va) vsprintf(buffer, format, va)
+	static inline int TIXML_VSNPRINTF( char* buffer, size_t size, const char* format, va_list va )
+	{
+		const int result = vsnprintf_s( buffer, size, _TRUNCATE, format, va );
+		return result;
+	}
 
-    static inline int TIXML_VSCPRINTF( const char* format, va_list va ) {
-        (void)format; (void)va; // Para evitar warnings de no usado
-        return -1; // No podemos calcular longitud de forma segura sin vsnprintf(0,0,...)
-    }
-    #define TIXML_SSCANF sscanf
-#else // Para otros GCC que sí tienen snprintf/vsnprintf
-    // GCC version 3 and higher
-    #define TIXML_SNPRINTF  snprintf
-    #define TIXML_VSNPRINTF vsnprintf
-    static inline int TIXML_VSCPRINTF( const char* format, va_list va ) {
-        int len = vsnprintf( 0, 0, format, va );
-        TIXMLASSERT( len >= 0 );
-        return len;
-    }
-    #define TIXML_SSCANF   sscanf
+	#define TIXML_VSCPRINTF	_vscprintf
+	#define TIXML_SSCANF	sscanf_s
+#elif defined _MSC_VER
+	// Microsoft Visual Studio 2003 and earlier or WinCE
+	#define TIXML_SNPRINTF	_snprintf
+	#define TIXML_VSNPRINTF _vsnprintf
+	#define TIXML_SSCANF	sscanf
+	#if (_MSC_VER < 1400 ) && (!defined WINCE)
+		// Microsoft Visual Studio 2003 and not WinCE.
+		#define TIXML_VSCPRINTF   _vscprintf // VS2003's C runtime has this, but VC6 C runtime or WinCE SDK doesn't have.
+	#else
+		// Microsoft Visual Studio 2003 and earlier or WinCE.
+		static inline int TIXML_VSCPRINTF( const char* format, va_list va )
+		{
+			int len = 512;
+			for (;;) {
+				len = len*2;
+				char* str = new char[len]();
+				const int required = _vsnprintf(str, len, format, va);
+				delete[] str;
+				if ( required != -1 ) {
+					TIXMLASSERT( required >= 0 );
+					len = required;
+					break;
+				}
+			}
+			TIXMLASSERT( len >= 0 );
+			return len;
+		}
+	#endif
+#else
+	// GCC version 3 and higher
+	//#warning( "Using sn* functions." )
+	#define TIXML_SNPRINTF	snprintf
+	#define TIXML_VSNPRINTF	vsnprintf
+	static inline int TIXML_VSCPRINTF( const char* format, va_list va )
+	{
+		int len = vsnprintf( 0, 0, format, va );
+		TIXMLASSERT( len >= 0 );
+		return len;
+	}
+	#define TIXML_SSCANF   sscanf
 #endif
 
 #if defined(_WIN64)
