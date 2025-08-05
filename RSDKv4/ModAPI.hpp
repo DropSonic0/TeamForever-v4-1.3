@@ -56,6 +56,7 @@ void InitMods();
 bool LoadMod(ModInfo *info, const char *modsPath, const char *folder, bool active);
 void ScanModFolder(ModInfo *info);
 void SaveMods();
+void ReleaseMods();
 
 int OpenModMenu();
 

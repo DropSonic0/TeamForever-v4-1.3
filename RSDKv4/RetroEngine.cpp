@@ -631,6 +631,7 @@ void RetroEngine::Run()
     WriteSettings();
 #if RETRO_USE_MOD_LOADER
     SaveMods();
+    ReleaseMods();
 #endif
 #endif
 
@@ -671,18 +672,27 @@ const char *getXMLAttributeValueString(const tinyxml2::XMLAttribute *attributePt
 void RetroEngine::LoadXMLVariables()
 {
     FileInfo info;
+
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
 
-            char *xmlData = new char[info.fileSize + 1];
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -714,29 +724,40 @@ void RetroEngine::LoadXMLVariables()
                 }
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 void RetroEngine::LoadXMLPalettes()
 {
     FileInfo info;
+
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
-
-            char *xmlData = new char[info.fileSize + 1];
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -781,12 +802,15 @@ void RetroEngine::LoadXMLPalettes()
                 }
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 void RetroEngine::LoadXMLObjects()
@@ -794,18 +818,25 @@ void RetroEngine::LoadXMLObjects()
     FileInfo info;
     modObjCount = 0;
 
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
-
-            char *xmlData = new char[info.fileSize + 1];
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -830,8 +861,8 @@ void RetroEngine::LoadXMLObjects()
 
                             byte flags = 0;
 
-                            // forces the object to be loaded, this means the object doesn't have to be and *SHOULD NOT* be in the stage object list
-                            // if it is, it'll cause issues!!!!
+                            // forces the object to be loaded, this means the object doesn't have to be and *SHOULD NOT* be in the stage object
+                            // list if it is, it'll cause issues!!!!
                             const tinyxml2::XMLAttribute *loadAttr = findXMLAttribute(objElement, "forceLoad");
                             int objForceLoad                       = false;
                             if (loadAttr)
@@ -852,30 +883,41 @@ void RetroEngine::LoadXMLObjects()
                 PrintLog("Failed to parse Game.xml File!");
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 void RetroEngine::LoadXMLSoundFX()
 {
     FileInfo info;
     FileInfo infoStore;
+
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
-
-            char *xmlData = new char[info.fileSize + 1];
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -914,30 +956,40 @@ void RetroEngine::LoadXMLSoundFX()
                 PrintLog("Failed to parse Game.xml File!");
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 void RetroEngine::LoadXMLPlayers(TextMenu *menu)
 {
     FileInfo info;
 
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
-
-            char *xmlData = new char[info.fileSize + 1];
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -968,29 +1020,40 @@ void RetroEngine::LoadXMLPlayers(TextMenu *menu)
                 PrintLog("Failed to parse Game.xml File!");
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 void RetroEngine::LoadXMLStages(TextMenu *menu, int listNo)
 {
     FileInfo info;
+
+    tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
+    char *xmlData              = nullptr;
+    int xmlDataSize            = 0;
+
     for (int m = 0; m < (int)modList.size(); ++m) {
-	//We reversed the load order to fix a bug
-	//Flip yo for real
-	//for (int m = ((int)modList.size() - 1); m >= 0; --m) {
+        // We reversed the load order to fix a bug
+        // Flip yo for real
+        // for (int m = ((int)modList.size() - 1); m >= 0; --m) {
         if (!modList[m].active)
             continue;
 
         SetActiveMod(m);
         if (LoadFile("Data/Game/Game.xml", &info)) {
-            tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument;
-
-            char *xmlData = new char[info.fileSize + 1];
+            if (info.fileSize + 1 > xmlDataSize) {
+                if (xmlData)
+                    delete[] xmlData;
+                xmlDataSize = info.fileSize + 1;
+                xmlData     = new char[xmlDataSize];
+            }
             FileRead(xmlData, info.fileSize);
             xmlData[info.fileSize] = 0;
 
@@ -1056,12 +1119,15 @@ void RetroEngine::LoadXMLStages(TextMenu *menu, int listNo)
                 PrintLog("Failed to parse Game.xml File!");
             }
 
-            delete[] xmlData;
-            delete doc;
-
+            doc->Clear();
             CloseFile();
         }
     }
+
+    if (xmlData)
+        delete[] xmlData;
+    delete doc;
+
     SetActiveMod(-1);
 }
 #endif

@@ -381,6 +381,8 @@ void SaveMods()
     }
 }
 
+void ReleaseMods() { modList.clear(); }
+
 void RefreshEngine()
 {
 #if RETRO_SOFTWARE_RENDER

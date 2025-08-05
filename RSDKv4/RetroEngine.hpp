@@ -323,7 +323,6 @@ enum RetroGameType {
 #elif RETRO_PLATFORM == RETRO_PS3
 #include <SDL2/SDL.h>
 #include <vorbis/vorbisfile.h> // Asumiendo que libvorbis est� disponible para PS3
-#include <theora/theoradec.h>
 // Es posible que se necesiten inclusiones espec�ficas de PSL1GHT aqu�
 #elif RETRO_USING_SDL2
 #include <SDL2/SDL.h>
@@ -513,8 +512,10 @@ public:
     SDL_Renderer *renderer = nullptr;
 #if RETRO_SOFTWARE_RENDER
     SDL_Texture *screenBuffer   = nullptr;
+    SDL_Texture *gameRenderTexture = nullptr;
     SDL_Texture *screenBuffer2x = nullptr;
     SDL_Texture *videoBuffer = nullptr;
+    SDL_Texture *videoTexture = nullptr;
 #endif // RETRO_SOFTWARE_RENDERER
 #endif
 
