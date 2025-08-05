@@ -39,7 +39,7 @@ PKGFILES	:=	../pkgfiles1
 ICON0		:=	$(PKGFILES)/ICON0.PNG
 SFOXML		:=	../sfo1.xml
 
-TITLE		:=	Sonic 1 Forever
+TITLE		:=	SonicForever
 APPID		:=	S1F00S2A0
 CONTENTID	:=	UP0001-$(APPID)_00-SONIC1FOREVER000
 
