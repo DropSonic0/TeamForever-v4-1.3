@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "fcaseopen.h"
 #include <string>
 
 RSDKContainer rsdkContainer;
@@ -22,6 +23,20 @@ byte encryptionStringB[0x10];
 
 FileIO *cFileHandle = nullptr;
 
+FileIO *fOpenCaseInsensitive(const char *path, const char *mode)
+{
+    FileIO *f = fOpen(path, mode);
+#if !defined(_WIN32)
+    if (!f) {
+        char *r = (char *)alloca(strlen(path) + 2);
+        if (casepath(path, r)) {
+            f = fOpen(r, mode);
+        }
+    }
+#endif
+    return f;
+}
+
 bool CheckRSDKFile(const char *filePath)
 {
     FileInfo info;
@@ -33,7 +48,7 @@ bool CheckRSDKFile(const char *filePath)
     sprintf(filePathBuffer, "%s", filePath);
 #endif
 
-    cFileHandle = fOpen(filePathBuffer, "rb");
+    cFileHandle = fOpenCaseInsensitive(filePathBuffer, "rb");
     if (cFileHandle) {
         byte signature[6] = { 'R', 'S', 'D', 'K', 'v', 'B' };
         byte buf          = 0;
@@ -327,7 +342,7 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
         StrCopy(fileInfo->fileName, filePathBuf);
         StrCopy(fileName, fileInfo->fileName);
 
-        cFileHandle = fOpen(fileInfo->fileName, "rb");
+        cFileHandle = fOpenCaseInsensitive(fileInfo->fileName, "rb");
         if (!cFileHandle) {
             PrintLog("Couldn't load file '%s'", filePath);
             return false;
