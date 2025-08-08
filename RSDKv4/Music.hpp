@@ -76,7 +76,6 @@ bool PlayMusic(int track, int musStartPos, bool async = false);
 void StopMusic(bool setStatus);
 bool PauseSound();
 void ResumeSound();
-void ReleaseMusic();
 
 #if !RETRO_USE_ORIGINAL_CODE
 void freeMusInfo();
