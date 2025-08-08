@@ -181,6 +181,13 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
     }
 #endif
 
+#if RETRO_PLATFORM == RETRO_PS3
+    if (!forceFolder && filePathBuf[0] != '/') {
+        char systemPath[0x200];
+        sprintf(systemPath, "%s%s", gamePath, filePathBuf);
+        StrCopy(filePathBuf, systemPath);
+    }
+#endif
 #if RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_ANDROID
 #if RETRO_USE_MOD_LOADER
     if (addPath) {

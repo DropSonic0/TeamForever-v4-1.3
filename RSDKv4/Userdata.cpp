@@ -233,36 +233,6 @@ void InitUserdata()
     PrintLog("Initial modsPath: %s", modsPath);
 #endif
 
-    // Sonic 2 Absolute Path Detection & Override
-    // IMPORTANT: This path is specific to PS3.
-#if RETRO_PLATFORM == RETRO_PS3
-    char s2a_flag_check_path[0x180];
-    // Revert to checking for s2a_flag.txt in S2A's USRDIR (absolute path)
-    sprintf(s2a_flag_check_path, "/dev_hdd0/game/S2A00S1F0/USRDIR/s2a_flag.txt");
-    // Use printf for immediate console feedback
-    printf("PS3 S2A CHECK: Attempting to detect S2A by checking path: %s\n", s2a_flag_check_path);
-    FileIO *s2a_check_file = fOpen(s2a_flag_check_path, "rb");
-
-    if (s2a_check_file) {
-        fClose(s2a_check_file);
-        is_s2a = true;
-        printf("PS3 S2A CHECK: Sonic 2 Absolute DETECTED by presence of %s.\n", s2a_flag_check_path);
-        PrintLog("Sonic 2 Absolute detected by presence of %s.", s2a_flag_check_path); 
-
-        // Ensure gamePath and modsPath are correctly set for S2A if detected.
-        sprintf(gamePath, "/dev_hdd0/game/S2A00S1F0/USRDIR/");
-        PrintLog("Set gamePath FORCED for S2A: %s", gamePath);
-
-#if RETRO_USE_MOD_LOADER
-        sprintf(modsPath, "/dev_hdd0/game/S2A00S1F0/USRDIR/mods/");
-        PrintLog("Set modsPath FORCED for S2A: %s", modsPath);
-#endif
-    } else {
-        printf("PS3 S2A CHECK: Sonic 2 Absolute NOT detected via %s. Using gamePath derived from BASE_PATH: %s\n", s2a_flag_check_path, gamePath);
-        PrintLog("Sonic 2 Absolute not detected via %s. Using gamePath derived from BASE_PATH: %s", s2a_flag_check_path, gamePath);
-    }
-#endif // RETRO_PLATFORM == RETRO_PS3
-
 #if RETRO_PLATFORM == RETRO_OSX
     char macBuffer[0x100];
     getResourcesPath(macBuffer, sizeof(macBuffer));
