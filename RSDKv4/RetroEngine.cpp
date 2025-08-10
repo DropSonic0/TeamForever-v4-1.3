@@ -1,5 +1,9 @@
 #include "RetroEngine.hpp"
 
+#if RETRO_PLATFORM == RETRO_PS3
+#include <sysutil/sysutil.h>
+#endif
+
 #if !RETRO_USE_ORIGINAL_CODE
 bool usingCWD        = false;
 bool engineDebugMode = false;
@@ -52,6 +56,7 @@ bool processEvents()
                     }
                     case SDL_WINDOWEVENT_CLOSE: return false;
                     case SDL_WINDOWEVENT_FOCUS_LOST:
+#if RETRO_PLATFORM != RETRO_PS3
 						/*
                         if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
                             Engine.gameMode = ENGINE_INITPAUSE;
@@ -61,8 +66,13 @@ bool processEvents()
 #endif
 						*/
                         Engine.hasFocus = false;
+#endif
                         break;
-                    case SDL_WINDOWEVENT_FOCUS_GAINED: Engine.hasFocus = true; break;
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+#if RETRO_PLATFORM != RETRO_PS3
+                        Engine.hasFocus = true;
+#endif
+                        break;
                 }
                 break;
             // TODO!!!!:
@@ -73,6 +83,7 @@ bool processEvents()
             case SDL_CONTROLLERDEVICEREMOVED: controllerClose(Engine.sdlEvents.cdevice.which); break;
             // ---
             case SDL_APP_WILLENTERBACKGROUND:
+#if RETRO_PLATFORM != RETRO_PS3
 				/*
                 if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
                     Engine.gameMode = ENGINE_INITPAUSE;
@@ -82,8 +93,13 @@ bool processEvents()
 #endif
 				*/
                 Engine.hasFocus = false;
+#endif
                 break;
-            case SDL_APP_WILLENTERFOREGROUND: Engine.hasFocus = true; break;
+            case SDL_APP_WILLENTERFOREGROUND:
+#if RETRO_PLATFORM != RETRO_PS3
+                Engine.hasFocus = true;
+#endif
+                break;
             case SDL_APP_TERMINATING: return false;
 #endif
 
@@ -505,6 +521,9 @@ void RetroEngine::Run()
 	int lastFPS = Engine.refreshRate;
 
     while (running) {
+#if RETRO_PLATFORM == RETRO_PS3
+        sysUtilCheckCallback();
+#endif
 #if !RETRO_USE_ORIGINAL_CODE
         //if (!vsync) {
             curTicks = SDL_GetPerformanceCounter();
@@ -523,19 +542,17 @@ void RetroEngine::Run()
 		}
 		
         // Focus Checks
-		/*
-        if (!(disableFocusPause & 2)) {
-            if (!Engine.hasFocus) {
-                if (!(Engine.focusState & 1))
-                    Engine.focusState = PauseSound() ? 3 : 1;
-            }
-            else if (Engine.focusState) {
-                if ((Engine.focusState & 2))
-                    ResumeSound();
-                Engine.focusState = 0;
+        if (!Engine.hasFocus) {
+            if (!(Engine.focusState & 1)) {
+                PauseSound();
+                Engine.focusState = 3;
             }
         }
-		*/
+        else if (Engine.focusState) {
+            if ((Engine.focusState & 2))
+                ResumeSound();
+            Engine.focusState = 0;
+        }
 
         if (!(Engine.focusState & 1) || vsPlaying) {
 #if !RETRO_USE_ORIGINAL_CODE
@@ -551,73 +568,73 @@ void RetroEngine::Run()
                 }
 #endif
             }
+        }
 
 #if !RETRO_USE_ORIGINAL_CODE
-            if (!masterPaused || frameStep) {
+        if (!masterPaused || frameStep) {
 #endif
-                FlipScreen();
+            FlipScreen();
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_OPENGL && RETRO_USING_SDL2
-                SDL_GL_SwapWindow(Engine.window);
+            SDL_GL_SwapWindow(Engine.window);
 #endif
-                frameStep = false;
-            }
+            frameStep = false;
+        }
 #endif
 
 #if RETRO_PLATFORM == RETRO_SWITCH
-            //it's time for some devmenu switch hacks
-            if (getControllerButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) && Engine.devMenu) {
-                if (getControllerButton(SDL_CONTROLLER_BUTTON_BACK)) {
-                    SDL_Event event;
-                    event.type           = SDL_KEYDOWN;
-                    event.key.keysym.sym = SDLK_ESCAPE;
-                    SDL_PushEvent(&event);
-                }
-                if (getControllerButton(SDL_CONTROLLER_BUTTON_ZL)) {
-                    if (!masterPaused) masterPaused = true;
-                }
-                else {
-                    if (masterPaused) masterPaused = false;
-                }
-
-                if (masterPaused) {
-                    if (getControllerButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) {
-                        if (!devDownTimer++) frameStep = true;
-                    }
-                    else devDownTimer = 0;
-                }
-                else {
-                    if (getControllerButton(SDL_CONTROLLER_BUTTON_ZR)) {
-                        Engine.gameSpeed = Engine.fastForwardSpeed;
-                    }
-                    else Engine.gameSpeed = 1;
-                }
+        //it's time for some devmenu switch hacks
+        if (getControllerButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) && Engine.devMenu) {
+            if (getControllerButton(SDL_CONTROLLER_BUTTON_BACK)) {
+                SDL_Event event;
+                event.type           = SDL_KEYDOWN;
+                event.key.keysym.sym = SDLK_ESCAPE;
+                SDL_PushEvent(&event);
+            }
+            if (getControllerButton(SDL_CONTROLLER_BUTTON_ZL)) {
+                if (!masterPaused) masterPaused = true;
             }
             else {
-                if (Engine.gameSpeed != 1) 
-                    Engine.gameSpeed = 1;
-                
-                if (masterPaused)
-                    masterPaused = false;
-            } 
+                if (masterPaused) masterPaused = false;
+            }
+
+            if (masterPaused) {
+                if (getControllerButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) {
+                    if (!devDownTimer++) frameStep = true;
+                }
+                else devDownTimer = 0;
+            }
+            else {
+                if (getControllerButton(SDL_CONTROLLER_BUTTON_ZR)) {
+                    Engine.gameSpeed = Engine.fastForwardSpeed;
+                }
+                else Engine.gameSpeed = 1;
+            }
+        }
+        else {
+            if (Engine.gameSpeed != 1) 
+                Engine.gameSpeed = 1;
+            
+            if (masterPaused)
+                masterPaused = false;
+        } 
 #endif
 
 
 #if RETRO_REV00
-            Engine.message = MESSAGE_NONE;
+        Engine.message = MESSAGE_NONE;
 #endif
 
 #if RETRO_USE_HAPTICS
-            int hapticID = GetHapticEffectNum();
-            if (hapticID >= 0) {
-                // playHaptics(hapticID);
-            }
-            else if (hapticID == HAPTIC_STOP) {
-                // stopHaptics();
-            }
-#endif
+        int hapticID = GetHapticEffectNum();
+        if (hapticID >= 0) {
+            // playHaptics(hapticID);
         }
+        else if (hapticID == HAPTIC_STOP) {
+            // stopHaptics();
+        }
+#endif
     }
 
     ReleaseAudioDevice();

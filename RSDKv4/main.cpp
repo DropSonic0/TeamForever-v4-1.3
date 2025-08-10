@@ -1,5 +1,27 @@
 #include "RetroEngine.hpp"
 
+#if RETRO_PLATFORM == RETRO_PS3
+#include <sysutil/sysutil.h>
+#include <sys/process.h>
+
+// System callback
+static void sysutil_callback(uint64_t status, uint64_t param, void* userdata)
+{
+    switch (status) {
+        case SYSUTIL_EXIT_GAME:
+            sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
+			sysProcessExit(0);
+            break;
+        case SYSUTIL_MENU_OPEN:
+            Engine.hasFocus = false;
+            break;
+        case SYSUTIL_MENU_CLOSE:
+            Engine.hasFocus = true;
+            break;
+    }
+}
+#endif
+
 #if !RETRO_USE_ORIGINAL_CODE
 
 #if RETRO_PLATFORM == RETRO_WIN
@@ -85,6 +107,11 @@ int main(int argc, char *argv[])
 
     SDL_SetHint(SDL_HINT_WINRT_HANDLE_BACK_BUTTON, "1");
     Engine.Init();
+
+#if RETRO_PLATFORM == RETRO_PS3
+    sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sysutil_callback, NULL);
+#endif
+
     Engine.Run();
 
 #if !RETRO_USE_ORIGINAL_CODE

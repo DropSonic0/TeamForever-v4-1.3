@@ -100,7 +100,6 @@ bool bilinearScaling = false;
 
 int InitRenderDevice()
 {
-    Engine.windowScale = 4; 
 
     char gameTitle[0x100];
     if (Engine.gameWindowText[0] == '\0') {
