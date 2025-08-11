@@ -23,6 +23,7 @@ BUILD		:=	build
 SOURCES		:=	\
 	../RSDKv4/ 			\
 	../RSDKv4/NativeObjects/		\
+	../dependencies/all/stb-image \
 	../dependencies/all/theoraplay 	\
 	../dependencies/all/tinyxml2
 
@@ -31,26 +32,26 @@ INCLUDES	:=	\
 	../RSDKv4/NativeObjects/		\
 	../dependencies/all/asio/asio/include \
 	../dependencies/all/stb-image \
-	../dependencies/all/tinyxml2 \
-	../dependencies/all/theoraplay
+	../dependencies/all/theoraplay \
+	../dependencies/all/tinyxml2
 
 PKGFILES	:=	../pkgfiles2
 ICON0		:=	$(PKGFILES)/ICON0.PNG
 SFOXML		:=	../sfo2.xml
 
-TITLE		:=	Sonic 2 Absolute
-APPID		:=	S2A00S1F0
+TITLE		:=	SonicAbsolute
+APPID		:=	S2A000S1F
 CONTENTID	:=	UP0001-$(APPID)_00-SONIC2ABSOLUTE00
 
-CFLAGS		=	-std=c++17 -DPS3 -DS2A_BUILD -DPS3_DISABLE_NETWORKING -g3 -Wall -mcpu=cell $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS) -DPS3_DISABLE_NETWORKING -DS2A_BUILD
+CFLAGS		=	-O3 -DPS3 -D__PS3__ -DS2A_BUILD -DPS3_DISABLE_NETWORKING -Wall -mcpu=cell -mbig-endian $(MACHDEP) $(INCLUDE) $(INCLUDE) -include ps3_compat.h
+CXXFLAGS	=	$(CFLAGS) -std=c++17 -DPS3_DISABLE_NETWORKING -DS2A_BUILD
 
-LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
+LDFLAGS		=	-Wl,--gc-sections -s -Wl,--strip-all -Wl,--sort-common=descending $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS		+=	-lSDL_mixer -lSDL2 -lSDL_image -lSDL_ttf -lvorbisfile -lvorbis -logg -ltheoradec -lpngdec -lpng -ljpeg -ljpgdec -lfreetype -lz -laudio -lio -lsysmodule -lsysutil -lnet -lnetctl -lgcm_sys -lrsx -lcamera -lrt -llv2 -lsysfs -lm
+LIBS		+=	$(shell pkg-config --libs sdl2 theora vorbisfile) -lnet -lsysutil -lsysmodule
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

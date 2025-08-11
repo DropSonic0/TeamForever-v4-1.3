@@ -3,6 +3,7 @@
 #if RETRO_PLATFORM == RETRO_PS3
 #include <sysutil/sysutil.h>
 #include <sys/process.h>
+#include <sysmodule/sysmodule.h>
 
 // System callback
 static void sysutil_callback(uint64_t status, uint64_t param, void* userdata)
@@ -10,7 +11,7 @@ static void sysutil_callback(uint64_t status, uint64_t param, void* userdata)
     switch (status) {
         case SYSUTIL_EXIT_GAME:
             sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
-			sysProcessExit(0);
+            sysProcessExit(0);
             break;
         case SYSUTIL_MENU_OPEN:
             Engine.hasFocus = false;
@@ -97,6 +98,12 @@ static void initNxLink()
 
 int main(int argc, char *argv[])
 {
+#if RETRO_PLATFORM == RETRO_PS3
+    sysModuleLoad(SYSMODULE_SYSUTIL);
+    sysModuleLoad(SYSMODULE_GCM_SYS);
+    sysModuleLoad(SYSMODULE_JPGENC);
+    sysModuleLoad(SYSMODULE_PNGENC);
+#endif
 #ifdef NXLINK
     initNxLink();
 #endif
@@ -126,6 +133,12 @@ int main(int argc, char *argv[])
     socketExit();
 #endif //! NXLINK
 
+#if RETRO_PLATFORM == RETRO_PS3
+    sysModuleUnload(SYSMODULE_PNGENC);
+    sysModuleUnload(SYSMODULE_JPGENC);
+    sysModuleUnload(SYSMODULE_GCM_SYS);
+    sysModuleUnload(SYSMODULE_SYSUTIL);
+#endif
     return 0;
 }
 
